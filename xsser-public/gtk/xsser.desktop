@@ -1,0 +1,10 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=XSSer
+Comment=XSS Injection Tool
+TryExec=/usr/bin/xsser
+Categories=Application;Network;System;Security;GTK;Pentesting;
+Exec=/usr/bin/xsser --gtk --silent
+Icon=/usr/share/xsser/gtk/images/xssericon_24x24.png
+

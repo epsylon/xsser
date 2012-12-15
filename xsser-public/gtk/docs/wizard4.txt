@@ -1,0 +1,23 @@
+
+    
+
+    ==========
+
+    Perfect!. Now you can decide which 'bypasser(s)' do you want to use:
+
+
+        1)- I want to inject XSS scripts without encoding. So, build normal injections.
+
+
+        2)- Try to inject code using 'Hexadecimal' encoding.
+
+
+        3)- Try to inject code mixing 'String.FromCharCode()' and 'Unescape()'.
+
+
+        4)- I want to create different 'Character Encoding Mutations', manually. 
+
+
+        5)- I dont know exactly what is a 'bypasser'... But, I want to inject code... :-)
+
+    ==========

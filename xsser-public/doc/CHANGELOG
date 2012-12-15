@@ -1,0 +1,131 @@
+================================================================
+Changelog: XSSer v1.6 (beta) (xsser.sf.net)
+==============================
+
+=================
+November 28, 2011:
+=================
+
+- Added Drop Cookie option
+- Added Random IP X-Forwarded-For an X-Client-IP option
+- Added GSS and NTLM authentication methods
+- Added Ignore proxy option
+- Added TCP-NODELAY option
+- Added Follow redirects option
+- Added Follow redirects limiter parameter
+- Added Auto-HEAD precheck system
+- Added No-HEAD option
+- Added Isalive option
+- Added Check at url option (Blind XSS)
+- Added Reverse Check parameter
+- Added PHPIDS (v.0.6.5) exploit
+- Added More vectors to auto-payloading
+- Added HTML5 studied vectors
+- Fixed Different bugs on core
+- Fixed Curl handlerer options
+- Fixed Dorkerers system
+- Fixed Bugs on results propagation
+- Fixed POST requests
+- Added New features to GTK controller
+- Added Detailed views to GTK interface
+
+=================
+February 21, 2011:
+=================
+
+- Added heuristic test
+- Updated dorkers list
+- HTTP Response Splitting Induced code 
+- GTK+ interface
+- Geomapping
+- Multithreading workers
+- Test controllers
+- Added websockets technology (orbited)
+- Added update option
+- DoS (server) side injection
+- DCP/DOM/Induced final code
+- Code clean
+- Bugfixing
+- New options menu
+- More advanced statistics system
+
+=================
+November 7, 2010:
+=================
+
+- Added "final remote injections" option
+- Cross Flash Attack! 
+- Cross Frame Scripting
+- Data Control Protocol Injections  
+- Base64 (rfc2397) PoC
+- OnMouseMove PoC
+- Browser launcher
+- Code clean
+- Bugfixing
+- New options menu
+- Pre-check system
+- Crawler spidering clones
+- More advanced statistics system
+- "Mana" ouput results
+
+=================
+September 22, 2010:
+=================
+
+- Added a-xml exporter 
+- ImageXSS 
+- New dorker engines (total 10) 
+- Core clean 
+- Bugfixing 
+- Social Networking auto-publisher -
+- Started -federated- XSS (full disclosure) pentesting botnet.
+
+    http://identi.ca/xsserbot01
+    http://twitter.com/xsserbot01
+
+=================
+August 20, 2010:
+=================
+
+- Added attack payloads to fuzzer (26 new injections) 
+- POST 
+- Statistics 
+- URL Shorteners 
+- IP Octal 
+- Post-processing payloading 
+- DOM Shadows! 
+- Cookie injector 
+- Browser DoS (Denegation of Service).
+
+=================
+July 1, 2010:
+=================
+
+- Dorking 
+- Crawling 
+- IP DWORD + Core clean.
+
+=================
+April 19, 2010:
+=================
+
+- HTTPS implemented + patched bugs.
+
+=================
+March 22, 2010:
+=================
+
+- Added "inject your own payload" option. Can be used with all character encoding -bypassers- of XSSer.
+
+=================
+March 18, 2010:
+=================
+
+- Added attack payloads to fuzzer (62 different XSS injections).
+
+=================
+March 16, 2010:
+=================
+
+- Added new payload encoders to bypass filters.
+

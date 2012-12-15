@@ -1,0 +1,16 @@
+
+  
+
+   ==========
+
+    Very nice!... thats all. Your last step is to -accept, or not- your template selection. Look the buttons below:
+
+        + If you click on "Previous", you can -undo- your options. 
+    
+        + If you click on "Cancel", you will reset this wizard. 
+
+        + If you click on "Start Test!", you will see on this screen the results of your injection(s). 
+
+   ==========
+ 
+    Good fly ... and happy "Cross" hacking !!! :-)

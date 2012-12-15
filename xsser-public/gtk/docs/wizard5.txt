@@ -1,0 +1,17 @@
+
+
+
+    ==========
+
+    Time to exploit!. If you want, you can decide your final code injection(s), to exploit each vulnerability founded:
+
+        
+        1)- I want to inject a classic "alert" message box with a "md5 Hash" to certificate the vulnerability.
+
+
+        2)- I want to inject some scripts on my vulnerable target(s), that I will write -manually-.
+
+
+        3)- I dont want to inject final code. I only want to discover vulnerabilities. :-)
+
+    ==========

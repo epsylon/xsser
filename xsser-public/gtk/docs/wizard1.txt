@@ -1,0 +1,20 @@
+
+    
+
+    ==========
+
+    OK!, so now is time to -fly your mosquito(s)-. You need to dedice some policies: 
+
+
+        1)- I want to enter the url of my target(s) directly.
+
+  
+        2)- I want to enter a list of targets, that I have ready in a file with .txt extension.
+
+   
+        3)- I dont know where are my target(s)... I want to explore... :-)
+
+    ==========
+
+    Choose a number below (enter your input if is necessary) and press button "Next" to follow 
+    this Wizard, "Previous" to return to your last step or press "FLY!!" to start directly.

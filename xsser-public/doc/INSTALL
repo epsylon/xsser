@@ -1,0 +1,48 @@
+========================================================
+XSSer - Cross Site Scripter - "The Mosquito" - 2011/2012
+========================================================
+
+Cross Site "Scripter" is an automatic -framework- to detect, exploit and report XSS vulnerabilities in web-based applications.
+
+===================
+How-to INSTALL:
+===================
+
+XSSer runs on many platforms.  It requires Python and the following libraries:
+
+    - python-pycurl - Python bindings to libcurl
+    - python-beautifulsoup - error-tolerant HTML parser for Python
+    - python-geoip - Python bindings for the GeoIP IP-to-country resolver library
+
+On Debian-based systems (ex: Ubuntu), run: 
+
+    sudo apt-get install python-pycurl python-beautifulsoup python-xml python-geoip
+
+Also, you have on the Internet some precompiled packages for:
+
+    - Debian/Ubuntu
+    - ArchLinux
+    - Gentoo
+
+=========
+
+Please report any problems you encounter using/installing XSSer to the xsser-users mailing-list:
+
+    - xsser-users@lists.sourceforge.net
+
+Or write directly to:
+
+    - root@lordepsylon.net / epsylon@riseup.net
+
+Website: 
+
+    - http://xsser.sourceforge.net/
+
+Community:
+
+    - lorea.org: https://n-1.cc/pg/groups/15466/xsser/
+    - identi.ca: http://identi.ca/group/xsser
+    - twitter: https://twitter.com/lord_epsylon/xsser
+
+=========
+

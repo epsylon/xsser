@@ -1,0 +1,20 @@
+
+
+
+    ==========
+
+    Now, you need to select which class of connection(s) do you want to do with your target(s):
+
+           
+        1)- I want to connect using GET and select some possible vulnerable parameter(s) directly.
+
+
+        2)- I want to connect using POST and select some possible vulnerable parameter(s) directly.
+
+
+        3)- I want to "crawl" all the links of the website of my target(s), to search as much vulnerabilities as possible.
+
+
+        4)- I dont know how to connect... But, do it... :-)
+
+    ==========

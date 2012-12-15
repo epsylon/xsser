@@ -1,0 +1,20 @@
+
+
+
+   ==========
+
+    Do you want to be as much 'anonymous' as possible?:
+
+ 
+        1)- Yes. I want to enter my proxy manually and "spoof" my HTTP User Agent and HTTP Referer automatically
+
+
+        2)- Anonymous?. Yes!!!!!. I have my tor proxy listening on: http://127.0.0.1:8118. 
+   
+
+        3)- Yes. but I haven't any proxy. :-)
+
+   
+        4)- No. Is not a problem for me connect directly to my target(s).
+
+    ==========

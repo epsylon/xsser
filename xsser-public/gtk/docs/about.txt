@@ -1,0 +1,168 @@
+
+
+                                                                                                                
+                                                                    `.`                   ..              
+            Welcome to XSSer ....                       `-:`              .-`               
+                                                                        `/-     -      +`                                        
+                                                                          o     +      /                                    Grey Swarm (v1.6b) !!!! 
+                                                                          ./   -Ny    /.                                         
+                                                             `::-`       :--yMN:--.      `.....                      
+                                         `mMMMMMmdhysoooosMyoo+oyhdmNMMMMMMMs       
+                                        .+ymNMMMMMMMMNmhNdmNMMMMMMMMMMNds/`       
+                                                                ```o/``-+.M+/:``o/`````             
+                                                                      o:  /+ /My .+` :+                 
+                                                                   o- ++  +My  `+- .o`               
+                                                                   `o.   :o  .Ms   .o   o:              
+                                                                  .::`     h`  o-  o.    :+.                       
+                       GPLv3                                .--.        :o      y       :/.          
+                                                               ``            h      .s         -:.        
+                                                                              :/       o.          ``                2011/2012 - by psy
+                                                                            .o         o                   
+                                                                             o          ./                  
+                                                                            +`           :.                 
+                                                                            :.             /`                
+                                                                           -.               :                
+                                                                           `                 .   
+
+    ====================================
+  0.- "Mosquito" Manifesto:
+    ===================
+
+      The Mosquito or Mosquito alarm (marketed as the Beethoven in France and the Swiss-Mosquito in Switzerland)
+      is an electronic device, used for solving loitering problems, which emits a sound with a high frequency. 
+
+      The newest version of the device, launched late in 2008, has two frequency settings, one of approximately  
+      17.4 kHzthat can generally be heard only by young people, and another at 8 kHz that can be heard by 
+      most people.
+
+      The maximum potential output sound pressure level is stated by the manufacturer to be 108 decibels (dB). 
+      The sound can typically only be heard by people below 25 years of age, as the ability to hear high frequencies 
+      deteriorates in humans with age (a phenomenon known as presbycusis).
+
+      The device is marketed as a safety and security tool for preventing youths from congregating in specific areas. 
+      As such, it is promoted to reduce anti-social behaviour such as loitering, graffiti, vandalism, drug use, 
+      drug distribution, and violence. In the UK, over 3,000 have been sold, mainly for use outside shops and near 
+      transport hubs. 
+
+      The device is also sold in Australia, France, Denmark, Italy, Germany, Switzerland, Canada and the USA. 
+
+      ----------
+
+      " The code don't obey the system. "
+
+      ----------
+
+    ====================================
+  1.- Mailing list:
+    ===================
+
+      XSSer has one mailing list hosted on SourceForge:
+
+          - http://sourceforge.net/mail/?group_id=310700
+
+      The xsser-users@lists.sourceforge.net mailing list is the preferred way to ask questions, 
+      report bugs, suggest new features and discuss with other users. The mailing list is archived online:
+
+          - http://sourceforge.net/mailarchive/forum.php?forum_name=xsser-users 
+
+      To subscribe use the online web form.
+
+          - https://lists.sourceforge.net/lists/listinfo/xsser-users
+
+    ====================================
+  2.- Community:
+    ===================
+
+      You can join #xsser community (be real part of the swarm!) on many different places:
+
+          - Microblogging: 
+
+                identi.ca: http://identi.ca/group/xsser
+
+                twitter.com: https://twitter.com/lord_epsylon/xsser
+
+          - Social networks: 
+
+                https://n-1.cc/pg/groups/15466/xsser/
+
+          - Or using IRC: 
+
+                irc.freenode.net - channel: #xsser
+
+    ====================================
+  3.- License:
+    ===================
+
+      XSSer is released under the terms of the General Public License v3 and is copyrighted 
+      by psy (root@lordepsylon.net - epsylon@riseup.net). 0x3CAA25B3
+
+    ====================================
+  4.- Author:
+    ===================
+
+      c0dename:
+
+          psy (epsylon) - 1982
+
+      web:
+
+          http://lordepsylon.net
+
+      emails:
+
+          <root@lordepsylon.net> // PGP Key ID: 0x3CAA25B3
+
+          <epsylon@riseup.net> // PGP Key ID: 0xB18E792B
+
+      social networks:
+
+          - identi.ca: https://identi.ca/psy
+
+          - twitter: https://twitter.com/lord_epsylon
+
+          - lorea.org: https://n-1.cc/pg/profile/epsylon
+
+    ====================================
+  5.- Contribute:
+    ===================
+
+    If you want to contribute to XSSer development reporting a bug, providing a patch, 
+    commenting on the code base or simply need to find help to run XSSer first refer to the xsser documentation:
+
+      - http://xsser.sourceforge.net/#docs
+
+    Then, surf the xsser mailing list online archives:
+
+      - http://sourceforge.net/mailarchive/forum.php?forum_name=xsser-users
+
+    And if you still have something to say, do that on the appropriate xsser mailing list:
+
+      - https://lists.sourceforge.net/lists/listinfo/xsser-users
+
+    If nobody gets back to you, then drop me an e-mail.
+
+      - psy: 0x3CAA25B3 -> root@lordepsylon.net / epsylon@riseup.net
+    
+    If you discover any vulnerability in a software using XSSer, please add to the report a link to this site.
+
+      - http://xsser.sourceforge.net/
+
+    Or also, talk about :-)
+
+    ====================================
+  6.- Supports:
+    ===================
+
+     XSSer tool was been one of the winner projects of the NLnet Awards of April (2010):
+
+      - http://www.nlnet.nl/news/2010/20100623-awards.html
+
+     This -framework- is actively looking for new sponsors and funding. 
+     If you or your organization has an interest in keeping the XSSer tool, please contact directly:
+
+      - psy: 0x3CAA25B3 -> root@lordepsylon.net / epsylon@riseup.net
+
+     Or send your ideas to the mailing list:
+
+      - https://lists.sourceforge.net/lists/listinfo/xsser-users
+
