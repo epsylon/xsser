@@ -4,7 +4,7 @@
                                                                     `.`                   ..              
             Welcome to XSSer ....                       `-:`              .-`               
                                                                         `/-     -      +`                                        
-                                                                          o     +      /                                    Grey Swarm (v1.6b) !!!! 
+                                                                          o     +      /                                    Grey Swarm (v1.7b) !!!! 
                                                                           ./   -Ny    /.                                         
                                                              `::-`       :--yMN:--.      `.....                      
                                          `mMMMMMmdhysoooosMyoo+oyhdmNMMMMMMMs       
@@ -16,7 +16,7 @@
                                                                   .::`     h`  o-  o.    :+.                       
                        GPLv3                                .--.        :o      y       :/.          
                                                                ``            h      .s         -:.        
-                                                                              :/       o.          ``                2011/2012 - by psy
+                                                                              :/       o.          ``                2011/2012/2013 - by psy
                                                                             .o         o                   
                                                                              o          ./                  
                                                                             +`           :.                 
@@ -94,7 +94,7 @@
     ===================
 
       XSSer is released under the terms of the General Public License v3 and is copyrighted 
-      by psy (root@lordepsylon.net - epsylon@riseup.net). 0x3CAA25B3
+      by psy (root@lordepsylon.net - epsylon@riseup.net). 0xB8AC3776
 
     ====================================
   4.- Author:
@@ -110,9 +110,9 @@
 
       emails:
 
-          <root@lordepsylon.net> // PGP Key ID: 0x3CAA25B3
+          <root@lordepsylon.net> // PGP Key ID: 0xB8AC3776
 
-          <epsylon@riseup.net> // PGP Key ID: 0xB18E792B
+          <epsylon@riseup.net> // PGP Key ID: 0xB8AC3776
 
       social networks:
 
@@ -141,7 +141,7 @@
 
     If nobody gets back to you, then drop me an e-mail.
 
-      - psy: 0x3CAA25B3 -> root@lordepsylon.net / epsylon@riseup.net
+      - psy: 0xB8AC3776 -> root@lordepsylon.net / epsylon@riseup.net
     
     If you discover any vulnerability in a software using XSSer, please add to the report a link to this site.
 
@@ -157,10 +157,18 @@
 
       - http://www.nlnet.nl/news/2010/20100623-awards.html
 
+     XSSer has been added to BackTrack Linux (2010):
+
+      - http://www.backtrack-linux.org/forums/showthread.php?t=34770
+
+     XSSer has been added to OWASP project (2012):
+     
+      - https://www.owasp.org/index.php/OWASP_XSSER
+
      This -framework- is actively looking for new sponsors and funding. 
      If you or your organization has an interest in keeping the XSSer tool, please contact directly:
 
-      - psy: 0x3CAA25B3 -> root@lordepsylon.net / epsylon@riseup.net
+      - psy: 0xB8AC3776 -> root@lordepsylon.net / epsylon@riseup.net
 
      Or send your ideas to the mailing list:
 

@@ -1,0 +1,3 @@
+"""
+XSSer python package
+"""

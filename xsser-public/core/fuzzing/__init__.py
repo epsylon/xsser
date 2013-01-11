@@ -1,6 +1,3 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-"
-# vim: set expandtab tabstop=4 shiftwidth=4:
 """
 $Id$
 
@@ -21,20 +18,3 @@ You should have received a copy of the GNU General Public License along
 with xsser; if not, write to the Free Software Foundation, Inc., 51
 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 """
-from core.main import xsser
-
-class NullOutput(object):
-    def write(self, text):
-        pass
-    def flush(self):
-        pass
-
-if __name__ == "__main__":
-    app = xsser()
-    options = app.create_options()
-    if options:
-        app.set_options(options)
-        app.run()
-    app.land(True)
-
-
