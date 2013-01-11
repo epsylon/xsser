@@ -1,3 +1,0 @@
-"""
-XSSer python package
-"""
