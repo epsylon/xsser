@@ -27,7 +27,7 @@ class XSSerOptions(optparse.OptionParser):
         optparse.OptionParser.__init__(self, 
                            description='Cross Site "Scripter" is an automatic -framework- to detect, exploit and\nreport XSS vulnerabilities in web-based applications.',
                            prog='XSSer.py',
-			   version='\nXSSer v1.7 (beta): "Total Swarm!" - 2011/2012 - (GPLv3.0) -> by psy\n',
+			   version='\nXSSer v1.7 (beta): "Total Swarm!" - 2013 - (GPLv3.0) -> by psy\n',
                            usage= '\n\nxsser [OPTIONS] [-u <url> |-i <file> |-d <dork>] [-g <get> |-p <post> |-c <crawl>] [-C <csser>] [Request(s)] [Vector(s)] [Bypasser(s)] [Technique(s)] [Final Injection(s)]')
 
         self.set_defaults(verbose=False, threads=5, retries=1, delay=0, timeout=30,
@@ -131,6 +131,8 @@ class XSSerOptions(optparse.OptionParser):
         group8.add_option("--Css", action="store_true", dest="csser", help="CSS - Cascading Style Sheets injections")
         group8.add_option("--Anchor", action="store_true", dest="anchor", help="ANC - Use Anchor Stealth payloader (DOM shadows!)")
         group8.add_option("--Phpids", action="store_true", dest="phpids", help="PHP - Exploit PHPIDS bug (0.6.5) to bypass filters")
+        group8.add_option("--Chrome", action="store_true", dest="chrome", help="CHR - Bypass Chrome Anti-XSS filter")
+        group8.add_option("--IE8", action="store_true", dest="ie8", help="IE8 - Abuse Anti-XSS filters built into IE8")
         self.add_option_group(group8)
 
         group9 = optparse.OptionGroup(self, "*Select Final injection(s)*",
@@ -141,6 +143,7 @@ class XSSerOptions(optparse.OptionParser):
         group9.add_option("--Dos", action="store_true", dest="dos", help="DOS    - XSS Denial of service (client) injection")
         group9.add_option("--B64", action="store_true", dest="b64", help="B64    - Base64 code encoding in META tag (rfc2397)")
         group9.add_option("--CssPop", action="store_true", dest="popup", help="CSS    - Use a popup to show a PoC of CSS hijacking")
+        group9.add_option("--Keylog", action="store_true", dest="keylogger", help="LOG    - Inject a javascript keylogger")
         self.add_option_group(group9)
         
         group10 = optparse.OptionGroup(self, "*Special Final injection(s)*",
@@ -156,6 +159,7 @@ class XSSerOptions(optparse.OptionParser):
         group11.add_option("--save", action="store_true", dest="fileoutput", help="output all results directly to template (XSSlist.dat)")
         group11.add_option("--xml", action="store", dest="filexml", help="output 'positives' to aXML file (--xml filename.xml)")
         group11.add_option("--json", action="store", dest="filejson", help="output 'positives' to JSON file (--json filename.json)")
+        group11.add_option("--pdf", action="store", dest="filepdf", help="output 'positives' to PDF file (--pdf filename.pdf)")
         group11.add_option("--short", action="store", dest="shorturls", help="display -final code- shortered (tinyurl, is.gd) ")
         group11.add_option("--launch", action="store_true", dest="launch_browser", help="launch a browser at the end with each XSS discovered")
         group11.add_option("--tweet", action="store_true", dest="tweet", help="publish each XSS discovered into the 'Grey Swarm!'")
