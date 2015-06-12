@@ -3,7 +3,7 @@ $Id$
 
 This file is part of the xsser project, http://xsser.sourceforge.net.
 
-Copyright (c) 2011/2012/2013 psy <root@lordepsylon.net> - <epsylon@riseup.net>
+Copyright (c) 2011/2012/2013/2014/2015 - <epsylon@riseup.net>
 
 xsser is free software; you can redistribute it and/or modify it under
 the terms of the GNU General Public License as published by the Free
@@ -18,11 +18,8 @@ You should have received a copy of the GNU General Public License along
 with xsser; if not, write to the Free Software Foundation, Inc., 51
 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 """
-
-## XSSer.py @@ DCP vectors @@ psy
-#
-## This file contains common filtered parameters used to write scripting languages.
-## If you have some new vectors, please email me to [root@lordepsylon.net - epsylon@riseup.net] and will be added to XSSer framework.
+## This file contains different XSS fuzzing vectors to inject in payloads and browser supports.
+## If you have some new vectors, please email me to [epsylon@riseup.net] and will be added to XSSer framework.
 ## Thats all.
 ###
 ## Happy Cross Hacking! ;)

