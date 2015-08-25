@@ -33,7 +33,7 @@ Happy "Cross" Federated Hacking. ;)
 -----
 This file is part of the xsser project, http://xsser.sourceforge.net.
 
-Copyright (c) 2011/2012/2013 psy <root@lordepsylon.net> - <epsylon@riseup.net>
+Copyright (c) 2011/2012 psy <root@lordepsylon.net> - <epsylon@riseup.net>
 
 xsser is free software; you can redistribute it and/or modify it under
 the terms of the GNU General Public License as published by the Free
@@ -70,5 +70,5 @@ class publisher(object):
 
 if __name__ == "__main__":
     publish = publisher(object)
-    publish.send_to_identica('XSSer v1.7b -Total Swarm!- Website: http://xsser.sf.net', 'xsserbot01', '8vnVw8wvs', 'http://identi.ca/api/statuses/update.xml')
+    publish.send_to_identica('XSSer v1.6b -Grey Swarm!- Website: http://xsser.sf.net', 'xsserbot01', '8vnVw8wvs', 'http://identi.ca/api/statuses/update.xml')
 

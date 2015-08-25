@@ -5,7 +5,7 @@ $Id$
 
 This file is part of the xsser project, http://xsser.sourceforge.net.
 
-Copyright (c) 2011/2012/2013 psy <root@lordepsylon.net> - <epsylon@riseup.net>
+Copyright (c) 2011/2012 psy <root@lordepsylon.net> - <epsylon@riseup.net>
 
 xsser is free software; you can redistribute it and/or modify it under
 the terms of the GNU General Public License as published by the Free
@@ -21,29 +21,27 @@ with xsser; if not, write to the Free Software Foundation, Inc., 51
 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 """
 import os, re, sys, datetime, hashlib, time, urllib, cgi, traceback, webbrowser
-import core.fuzzing
-import core.fuzzing.vectors
-import core.fuzzing.DCP
-import core.fuzzing.DOM
-import core.fuzzing.HTTPsr
-import core.fuzzing.heuristic
+import XSSer.fuzzing
+import XSSer.fuzzing.vectors
+import XSSer.fuzzing.DCP
+import XSSer.fuzzing.DOM
+import XSSer.fuzzing.HTTPsr
+import XSSer.fuzzing.heuristic
 from collections import defaultdict
 from itertools import islice, chain
-from core.curlcontrol import Curl
-from core.encdec import EncoderDecoder
-from core.options import XSSerOptions
-from core.dork import Dorker
-from core.crawler import Crawler
-from core.post.shorter import ShortURLReservations
-from core.imagexss import ImageInjections
-from core.flashxss import FlashInjections
-from core.popup import PopupInjections
-from core.publish import publisher
-from core.post.xml_exporter import xml_reporting
-from core.post.json_exporter import json_reporting
-from core.tokenhub import HubThread
-from core.reporter import XSSerReporter
-from core.threadpool import ThreadPool, NoResultsPending
+from XSSer.curlcontrol import Curl
+from XSSer.encdec import EncoderDecoder
+from XSSer.options import XSSerOptions
+from XSSer.dork import Dorker
+from XSSer.crawler import Crawler
+from XSSer.post.shorter import ShortURLReservations
+from XSSer.imagexss import ImageInjections
+from XSSer.flashxss import FlashInjections
+from XSSer.publish import publisher
+from XSSer.post.xml_exporter import xml_reporting
+from XSSer.tokenhub import HubThread
+from XSSer.reporter import XSSerReporter
+from XSSer.threadpool import ThreadPool, NoResultsPending
 
 # set to emit debug messages about errors (0 = off).
 DEBUG = 1
@@ -94,8 +92,6 @@ class xsser(EncoderDecoder, XSSerReporter):
 
         # this payload comes with vector already..
         #self.DEFAULT_XSS_PAYLOAD = "<img src=x onerror=alert('XSS')>"
-        # this payload come this vector_css already...
-        #self.DEFAULT_CSSER_XSS_PAYLOAD = '<style>body{background:"red";}<style>'
         self.DEFAULT_XSS_PAYLOAD = 'XSS'
         #self.DEFAULT_XSS_VECTOR = '">PAYLOAD'
         self.DEFAULT_XSS_VECTOR = ''
@@ -135,15 +131,6 @@ class xsser(EncoderDecoder, XSSerReporter):
         self.httpsr_injection = 0
         self.check_positives = 0
         
-	# some statistics counters for payloads at css
-        self.css_injection = 0
-        self.css_failed    = 0
-        self.css_auto      = 0
-
-        #some statistics counter for injection css founded
-        self.csser_founded = 0
-        self.csser_manual_founded = 0
-
         # some statistics counters for injections founded
         self.xsr_founded = 0
         self.xsa_founded = 0
@@ -281,16 +268,16 @@ class xsser(EncoderDecoder, XSSerReporter):
         """
         options = self.options
 	# payloading sources
-        payloads_fuzz   = core.fuzzing.vectors.vectors
-        payloads_css    = core.fuzzing.vectors.vectors_css
-        payloads_dcp    = core.fuzzing.DCP.DCPvectors
-        payloads_dom    = core.fuzzing.DOM.DOMvectors
-        payloads_httpsr = core.fuzzing.HTTPsr.HTTPrs_vectors
-        manual_payload  = [{"payload":options.script, "browser":"[manual_injection]"}]
+        payloads_fuzz = XSSer.fuzzing.vectors.vectors
+        payloads_dcp = XSSer.fuzzing.DCP.DCPvectors
+        payloads_dom = XSSer.fuzzing.DOM.DOMvectors
+        payloads_httpsr = XSSer.fuzzing.HTTPsr.HTTPrs_vectors
+        manual_payload = [{"payload":options.script, "browser":"[manual_injection]"}]
+        # sustitute payload for hash to check false positives
         self.hashed_payload = self.generate_hash('url')
         checker_payload = [{"payload":self.hashed_payload, "browser":"[hashed_precheck_system]"}]
         # heuristic parameters
-        heuristic_params = core.fuzzing.heuristic.heuristic_test
+        heuristic_params = XSSer.fuzzing.heuristic.heuristic_test
         def enable_options_heuristic(payloads):
             if options.heuristic:
                 payloads = heuristic_params + payloads
@@ -311,10 +298,6 @@ class xsser(EncoderDecoder, XSSerReporter):
                                 payloads = heuristic_params + payloads
                                 if options.dom:
                                     payloads = payloads + payloads_dom
-                                    if options.csser:
-										payloads = payloads_css
-										if options.script:
-											payloads = payloads + manual_payload
                     elif options.inducedcode:
                         payloads = payloads + payloads_httpsr
                         if options.heuristic:
@@ -329,10 +312,6 @@ class xsser(EncoderDecoder, XSSerReporter):
                             payloads = payloads + payloads_dom
                     elif options.dom:
                         payloads = payloads + payloads_dom
-                    elif options.csser:
-						payloads = payloads_css
-						if options.script:
-							payloads = payloads + manual_payload
                 elif options.hash:
                     payloads = checker_payload + payloads
                     if options.inducedcode:
@@ -343,10 +322,6 @@ class xsser(EncoderDecoder, XSSerReporter):
                                 payloads = payloads + payloads_dom
                         elif options.dom:
                             payloads = payloads + payloads_dom
-                        elif options.csser:
-							payloads = payloads_css
-							if options.script:
-								payloads = payloads + manual_payload
                 elif options.inducedcode:
                     payloads = payloads + payloads_httpsr
                     if options.heuristic:
@@ -355,12 +330,6 @@ class xsser(EncoderDecoder, XSSerReporter):
                             payloads = payloads + payloads_dom
                     elif options.dom:
                         payloads = payloads + payloads_dom
-
-            elif options.csser:
-                payloads = payloads_css
-                if options.script:
-					payloads = payloads + manual_payload
-
             elif options.script:
                 payloads = payloads + manual_payload
                 if options.hash:
@@ -371,10 +340,6 @@ class xsser(EncoderDecoder, XSSerReporter):
                             payloads = heuristic_params + payloads
                             if options.dom:
                                 payloads = payloads + payloads_dom
-                            if options.csser:
-								payloads = payloads + payloads_css
-								if options.script:
-									payloads = payloads + manual_payload
             elif options.hash:
                 payloads = checker_payload + payloads
                 if options.inducedcode:
@@ -383,10 +348,6 @@ class xsser(EncoderDecoder, XSSerReporter):
                         payloads = heuristic_params + payloads
                         if options.dom:
                             payloads = payloads + payloads_dom
-                            if options.csser:
-								payloads = payloads + payloads_css
-								if options.script:
-									payloads = payloads + manual_payload
                     elif options.dom:
                         payloads = payloads + payloads_dom
                 elif options.heuristic:
@@ -395,10 +356,6 @@ class xsser(EncoderDecoder, XSSerReporter):
                         payloads = payloads + payloads_dom
                 elif options.dom:
                     payloads = payloads + payloads_dom
-                elif options.csser:
-					payloads = payloads_css
-					if options.script:
-						payloads = payloads + manual_payload
             elif options.inducedcode:
                 payloads = payloads + payloads_httpsr
                 if options.hash:
@@ -409,21 +366,12 @@ class xsser(EncoderDecoder, XSSerReporter):
                             payloads = payloads + payloads_dom
                     elif options.dom:
                         payloads = payloads + payloads_dom
-                    elif options.csser:
-                        payloads = payloads + payloads_css
-                        if options.script:
-							payloads = payloads + manual_payload
             elif options.heuristic:
                 payloads = heuristic_params + payloads
                 if options.dom:
                     payloads = payloads + payloads_dom
             elif options.dom:
                 payloads = payloads + payloads_dom
-            elif options.csser:
-                payloads = payloads_css
-                if options.script:
-					payloads = payloads + manual_payload
-
             
         elif options.dcp:
             payloads = payloads_dcp
@@ -437,10 +385,6 @@ class xsser(EncoderDecoder, XSSerReporter):
                             payloads = heuristic_params + payloads
                             if options.dom:
                                 payloads = payloads + payloads_dom
-                                if options.csser:
-									payloads = payloads_css
-									if options.script:
-										payloads = payloads + manual_payload
             elif options.hash:
                 payloads = checker_payload + payloads
                 if options.inducedcode:
@@ -476,10 +420,6 @@ class xsser(EncoderDecoder, XSSerReporter):
                         payloads = heuristic_params + payloads
                         if options.dom:
                             payloads = payloads + payloads_dom
-                            if options.csser:
-								payloads = payloads + payloads_css
-								if options.script:
-									payloads = payloads + manual_payload
             elif options.inducedcode:
                 payloads = payloads + payloads_httpsr
                 if options.heuristic:
@@ -519,13 +459,7 @@ class xsser(EncoderDecoder, XSSerReporter):
         elif options.dom:
             payloads = payloads_dom
 
-        elif options.csser:
-            payloads = payloads_css
-            if options.script:
-				payloads = payloads + manual_payload
-
-
-        elif not options.fuzz and not options.csser and not options.dcp and not options.script and not options.hash and not options.inducedcode and not options.heuristic and not options.dom:
+        elif not options.fuzz and not options.dcp and not options.script and not options.hash and not options.inducedcode and not options.heuristic and not options.dom:
             payloads = [{"payload":'">PAYLOAD',
 			 "browser":"[IE7.0|IE6.0|NS8.1-IE] [NS8.1-G|FF2.0] [O9.02]"
                          }]
@@ -588,25 +522,6 @@ class xsser(EncoderDecoder, XSSerReporter):
             return self.options.getdata
         return ""
 
-	#def csser_xss(self, url, payloads):
-	#	"""
-	#	Attack the given url with CSS (Cascading Style Sheets)
-	#	"""
-	#	self.url = url
-	#	self.payloads = payloads
-	#	if options.csser:
-	#		for payload in self.payloads:
-	#			if self.payload == "":
-	#				payload_default = "<style>body{background:red;}</style>"
-	#				self.payload    = payload_default
-	#				hash_payload    = hashlib.md5(str(self.payload)).hexdigest()
-	#				website_attack  = self.url + hash_payload
-	#				return website_attack
-	#			else:
-	#				hash_payload    = hashlib.md5(str(self.payload)).hexdigest()
-	#				website_attack  = self.url + hash_payload
-	#				return website_attack
-
     def attack_url(self, url, payloads, query_string):
         """
         Attack the given url, checking or not, if is alive.
@@ -614,10 +529,6 @@ class xsser(EncoderDecoder, XSSerReporter):
         if self.options.nohead:
             for payload in payloads:
                 self.attack_url_payload(url, payload, query_string)
-		
-        #elif self.options.csser:
-		#	for payload in payloads:
-		#		self.attack_url_payload(url, payload, query_string)
 
         else:
             hc = Curl()
@@ -695,7 +606,7 @@ class xsser(EncoderDecoder, XSSerReporter):
         def _error_cb(request, error):
             self.error_attack_url_payload(c, url, request, error)
 
-        if self.options.getdata or not self.options.postdata or not self.options.csser:
+        if self.options.getdata or not self.options.postdata:
             dest_url, newhash = self.get_url_payload(url, payload, query_string)
             #self.report(dest_url)
             self._prepare_extra_attacks()
@@ -868,7 +779,7 @@ class xsser(EncoderDecoder, XSSerReporter):
         c.close()
         del c
 
-        #jumper system
+        # jumper system
         #if self.options.jumper <= 0:
         #    pass
                 
@@ -1201,8 +1112,6 @@ class xsser(EncoderDecoder, XSSerReporter):
             self.dcp_injection = self.dcp_injection + 1
         elif payload['browser']=="[Document Object Model Injection]":
             self.dom_injection = self.dom_injection + 1
-        elif payload['browser']=="[Cascading Style Sheets Injection]":
-            self.css_injection = self.css_injection + 1
         elif payload['browser']=="[Induced Injection]":
             self.httpsr_injection = self.httpsr_injection + 1
         elif payload['browser']=="[manual_injection]":
@@ -1288,11 +1197,6 @@ class xsser(EncoderDecoder, XSSerReporter):
             #sys.exit()
             return []
 
-        if options.popup:
-			self.create_fake_popup(options.url)
-			#sys.exit()
-			return []
-
         if options.update:
             # XXX implement XSSer autoupdater
             self.report('='*75)
@@ -1310,14 +1214,6 @@ class xsser(EncoderDecoder, XSSerReporter):
             self.report(str(p.version))
             self.report('='*75)
             self.report("Testing [XSS from URL] injections... looks like your target is good defined ;)")
-            self.report('='*75)
-            urls = [options.url]
-
-        if options.csser:
-            self.report('='*75)
-            self.report(str(p.version))
-            self.report('='*75)
-            self.report("Testing [CSS from URL] injections... looks like your target is good defined ;)")
             self.report('='*75)
             urls = [options.url]
 
@@ -1339,7 +1235,6 @@ class xsser(EncoderDecoder, XSSerReporter):
                     self.report('\nThere is some errors opening the file: ', options.readfile, "\n")
                 else:
                     self.report('\nThe file: ', options.readfile, " doesn't exist!!\n")
-
 
         elif options.dork:
             self.report('='*75)
@@ -1397,7 +1292,7 @@ class xsser(EncoderDecoder, XSSerReporter):
             self.report("Mosquitoes founded a total of: " + str(len(self.crawled_urls)) + " urls")
             return self.crawled_urls
      
-        if not options.imx or not options.flash or not  options.popup or not options.xsser_gtk or not options.update:
+        if not options.imx or not options.flash or not options.xsser_gtk or not options.update:
             return urls
             
     def run_crawl(self, crawler, url, options):
@@ -1464,23 +1359,12 @@ class xsser(EncoderDecoder, XSSerReporter):
         flash_injections = flash_xss_injections.flash_xss(options.flash, options.script)
         return flash_injections
 
-    def create_fake_popup(self, url):
-		"""
-		Create -fake- popup with code injected css to make hijacking
-		"""
-		options = self.options
-		url     = options.url
-		popup   = PopupInjections()
-		addPopup = popup.addPopup(options.url)
-		return addPopup
-		
-
     def create_gtk_interface(self):
         """
         Create GTK Interface
         """
         options = self.options
-        from core.gtkcontroller import Controller, reactor
+        from XSSer.gtkcontroller import Controller, reactor
         uifile = "xsser.ui"
         controller = Controller(uifile, self)
         self._reporters.append(controller)
@@ -1526,16 +1410,6 @@ class xsser(EncoderDecoder, XSSerReporter):
             self.report("[Flash Attack! XSS auto-builder]...ready to be embedded ;)")
             self.report('='*75)
             self.report(''.join(self.create_fake_flash(self.options.flash, self.options.script)))
-            self.report('='*75 + "\n")
-
-        if options.popup: # create -fake- popup with code injected css to make hijacking
-            p = self.optionParser
-            self.report('='*75)
-            self.report(str(p.version))
-            self.report('='*75)
-            self.report(self.options.url) # URI
-            self.report("[CSSer Attack! CSS auto-builder]...ready to be embedded ;)")
-            self.report('='*75)
             self.report('='*75 + "\n")
 
         if options.xsser_gtk:
@@ -1672,7 +1546,6 @@ class xsser(EncoderDecoder, XSSerReporter):
             Curl.cookie = "<script>alert('" + hashing + "')</script>"
             self._ongoing_attacks['cookie'] = hashing
             self.coo_injection = self.coo_injection + 1
-
 
     def attack(self, urls, payloads, query_string):
         """
@@ -1983,10 +1856,6 @@ class xsser(EncoderDecoder, XSSerReporter):
                 self.report("[+] Injection:", line[0])
                 if self.options.finalpayload or self.options.finalremote or self.options.doss or self.options.dos or self.options.b64:
                     self.report("[*] Final Attack: ", attack_url)
-                elif self.options.csser:
-					self.report("[-] Method csser")	
-					self.report("[-] Browsers:", line[1], "\n", '-'*50, "\n")
-					break
                 else:
                     pass
                 self.report("[-] Method: xss")
@@ -2236,11 +2105,6 @@ class xsser(EncoderDecoder, XSSerReporter):
         if self.options.filexml:
             xml_report_results = xml_reporting(self)
             xml_report_results.print_xml_results(self.options.filexml)
-		
-        # print results to xml file
-        if self.options.filejson:
-            json_report_results = json_reporting(self)
-            json_report_results.print_json_results(self.options.filejson)
 
         # publish discovered vulnerabilities
         if self.options.tweet and self.hash_found:

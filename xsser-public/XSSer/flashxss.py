@@ -6,7 +6,7 @@ $Id$
 
 This file is part of the xsser project, http://xsser.sourceforge.net.
 
-Copyright (c) 2011/2012/2013 psy <root@lordepsylon.net> - <epsylon@riseup.net>
+Copyright (c) 2011/2012 psy <root@lordepsylon.net> - <epsylon@riseup.net>
 
 xsser is free software; you can redistribute it and/or modify it under
 the terms of the GNU General Public License as published by the Free
@@ -31,7 +31,7 @@ class FlashInjections(object):
     def flash_xss(self, filename, payload):
         """
         Create -fake- flash movie (.swf) with code XSS injected.
-		"""
+	"""
         root, ext = os.path.splitext(filename)
         if ext.lower() in [".swf"]:
             f = open(filename, 'wb')

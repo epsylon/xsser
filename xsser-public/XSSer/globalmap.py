@@ -5,7 +5,7 @@ $Id$
 
 This file is part of the xsser project, http://xsser.sourceforge.net.
 
-Copyright (c) 2011/2012/2013 psy <root@lordepsylon.net> - <epsylon@riseup.net>
+Copyright (c) 2011/2012 psy <root@lordepsylon.net> - <epsylon@riseup.net>
 
 xsser is free software; you can redistribute it and/or modify it under
 the terms of the GNU General Public License as published by the Free
@@ -24,8 +24,8 @@ import os
 import gtk
 import user
 import gobject
-from core.reporter import XSSerReporter
-from core.curlcontrol import Curl
+from XSSer.reporter import XSSerReporter
+from XSSer.curlcontrol import Curl
 from glib import markup_escape_text
 from collections import defaultdict
 from threading import Thread

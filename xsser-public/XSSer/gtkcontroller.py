@@ -5,7 +5,7 @@ $Id$
 
 This file is part of the xsser project, http://xsser.sourceforge.net.
 
-Copyright (c) 2011/2012/2013 psy <root@lordepsylon.net> - <epsylon@riseup.net>
+Copyright (c) 2011/2012 psy <root@lordepsylon.net> - <epsylon@riseup.net>
 
 xsser is free software; you can redistribute it and/or modify it under
 the terms of the GNU General Public License as published by the Free
@@ -43,10 +43,10 @@ if use_twisted:
 else:
     reactor = None
 
-from core.main import xsser
-from core.globalmap import GlobalMap
-from core.reporter import XSSerReporter
-from core.mozchecker import MozChecker
+from XSSer.main import xsser
+from XSSer.globalmap import GlobalMap
+from XSSer.reporter import XSSerReporter
+from XSSer.mozchecker import MozChecker
 
 class Controller(XSSerReporter):
     def __init__(self, uifile, mothership, window='window1'):

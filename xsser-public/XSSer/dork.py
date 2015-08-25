@@ -5,7 +5,7 @@ $Id$
 
 This file is part of the xsser project, http://xsser.sourceforge.net.
 
-Copyright (c) 2011/2012/2013 psy <root@lordepsylon.net> - <epsylon@riseup.net>
+Copyright (c) 2011/2012 psy <root@lordepsylon.net> - <epsylon@riseup.net>
 
 xsser is free software; you can redistribute it and/or modify it under
 the terms of the GNU General Public License as published by the Free
@@ -24,10 +24,7 @@ import urlparse
 import urllib2
 import traceback
 urllib2.socket.setdefaulttimeout(5.0)
-try:
-    from BeautifulSoup import BeautifulSoup
-except:
-    from bs4 import BeautifulSoup
+from BeautifulSoup import BeautifulSoup
 
 DEBUG = 1
 
@@ -84,7 +81,7 @@ class Dorker(object):
                 while pos < len(html_data):
                     pos = html_data.find('span class="g">', pos)
                     if pos == -1:
-                        break
+                        break;
                     href = html_data[pos+15:html_data.find('<', pos)].strip()
                     pos = pos + 1
                     if not href:

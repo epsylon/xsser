@@ -5,7 +5,7 @@ $Id$
 
 This file is part of the xsser project, http://xsser.sourceforge.net.
 
-Copyright (c) 2011/2012/2013 psy <root@lordepsylon.net> - <epsylon@riseup.net>
+Copyright (c) 2011/2012 psy <root@lordepsylon.net> - <epsylon@riseup.net>
 
 xsser is free software; you can redistribute it and/or modify it under
 the terms of the GNU General Public License as published by the Free
@@ -25,10 +25,7 @@ Post processing filter to make reservations on shortered links.
 import urllib
 import pycurl
 from cStringIO import StringIO
-try:
-    from BeautifulSoup import BeautifulSoup
-except:
-    from bs4 import BeautifulSoup
+from BeautifulSoup import BeautifulSoup
 
 class ShortURLReservations(object):
     #options = [['-foo!', 'do stuff']]

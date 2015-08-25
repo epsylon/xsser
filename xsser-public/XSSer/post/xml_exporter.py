@@ -5,7 +5,7 @@ $Id$
 
 This file is part of the xsser project, http://xsser.sourceforge.net.
 
-Copyright (c) 2011/2012/2013 psy <root@lordepsylon.net> - <epsylon@riseup.net>
+Copyright (c) 2011/2012 psy <root@lordepsylon.net> - <epsylon@riseup.net>
 
 xsser is free software; you can redistribute it and/or modify it under
 the terms of the GNU General Public License as published by the Free
@@ -84,7 +84,7 @@ class xml_reporting(object):
             othercon.text = str(self.instance.other_connection)
             st_accur = ET.SubElement(con, "accur")
             try:
-                st_accur.text = "%s %%" % (str(((len(str((self.instance.success_connection) * 100))) / total_connections)), )
+                st_accur.text = "%s %%" % (str(((len(self.instance.success_connection) * 100) / total_connections)), )
             except ZeroDivisionError:
                 st_accur.text = "0 %"
             st_inj = ET.SubElement(stats, "injections")
@@ -156,7 +156,9 @@ class xml_reporting(object):
                     pass
                 else:
                     aurl.text = attack_url
-            if line[2] not in ["xsr", "xsa", "coo", "dcp", "dom", "ind"]:
+            if line[2] == "xsr" or line[2] == "xsa" or line[2] == "coo" or line[2] == "dcp" or line[2] == "dom" or line[2] == "ind":
+                pass
+            else:
                 browsers = ET.SubElement(attack, "browsers")
                 browsers.text = line[1]
                 method = ET.SubElement(attack, "method")

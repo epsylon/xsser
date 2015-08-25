@@ -5,7 +5,7 @@ $Id$
 
 This file is part of the xsser project, http://xsser.sourceforge.net.
 
-Copyright (c) 2011/2012/2013 psy <root@lordepsylon.net> - <epsylon@riseup.net>
+Copyright (c) 2011/2012 psy <root@lordepsylon.net> - <epsylon@riseup.net>
 
 xsser is free software; you can redistribute it and/or modify it under
 the terms of the GNU General Public License as published by the Free
@@ -43,7 +43,6 @@ class Curl:
     xclient = None
     atype = None
     acred = None
-	#popup = None
     #acert = None
     retries = 1
     delay = 0
@@ -207,7 +206,7 @@ class Curl:
             self.set_option(pycurl.SSL_VERIFYHOST, 0)
             self.set_option(pycurl.SSL_VERIFYPEER, 0)
             if self.fakeheaders:
-                from core.randomip import RandomIP
+                from XSSer.randomip import RandomIP
                 if self.xforw:
                     generate_random_xforw = RandomIP()
                     xforwip = generate_random_xforw._generateip('')
@@ -254,7 +253,7 @@ class Curl:
         Perform a request and returns the payload.
         """
         if self.fakeheaders:
-            from core.randomip import RandomIP
+            from XSSer.randomip import RandomIP
             if self.xforw:
                 """
                 Set the X-Forwarded-For to use.

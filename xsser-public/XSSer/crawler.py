@@ -5,7 +5,7 @@ $Id$
 
 This file is part of the xsser project, http://xsser.sourceforge.net.
 
-Copyright (c) 2011/2012/2013 psy <root@lordepsylon.net> - <epsylon@riseup.net>
+Copyright (c) 2011/2012 psy <root@lordepsylon.net> - <epsylon@riseup.net>
 
 xsser is free software; you can redistribute it and/or modify it under
 the terms of the GNU General Public License as published by the Free
@@ -32,10 +32,7 @@ import curlcontrol
 import threadpool
 from Queue import Queue
 from collections import defaultdict
-try:
-    from BeautifulSoup import BeautifulSoup
-except:
-    from bs4 import BeautifulSoup
+from BeautifulSoup import BeautifulSoup
 
 class EmergencyLanding(Exception):
     pass

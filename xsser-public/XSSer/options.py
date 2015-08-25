@@ -5,7 +5,7 @@ $Id$
 
 This file is part of the xsser project, http://xsser.sourceforge.net.
 
-Copyright (c) 2011/2012/2013 psy <root@lordepsylon.net> - <epsylon@riseup.net>
+Copyright (c) 2011/2012 psy <root@lordepsylon.net> - <epsylon@riseup.net>
 
 xsser is free software; you can redistribute it and/or modify it under
 the terms of the GNU General Public License as published by the Free
@@ -27,8 +27,8 @@ class XSSerOptions(optparse.OptionParser):
         optparse.OptionParser.__init__(self, 
                            description='Cross Site "Scripter" is an automatic -framework- to detect, exploit and\nreport XSS vulnerabilities in web-based applications.',
                            prog='XSSer.py',
-			   version='\nXSSer v1.7 (beta): "Total Swarm!" - 2013 - (GPLv3.0) -> by psy\n',
-                           usage= '\n\nxsser [OPTIONS] [-u <url> |-i <file> |-d <dork>] [-g <get> |-p <post> |-c <crawl>] [-C <csser>] [Request(s)] [Vector(s)] [Bypasser(s)] [Technique(s)] [Final Injection(s)]')
+			   version='\nXSSer v1.6 (beta): "Grey Swarm!" - 2011/2012 - (GPLv3.0) -> by psy\n',
+                           usage= '\n\nxsser [OPTIONS] [-u <url> |-i <file> |-d <dork>] [-g <get> |-p <post> |-c <crawl>] [Request(s)] [Vector(s)] [Bypasser(s)] [Technique(s)] [Final Injection(s)]')
 
         self.set_defaults(verbose=False, threads=5, retries=1, delay=0, timeout=30,
                           silent=False)
@@ -38,7 +38,6 @@ class XSSerOptions(optparse.OptionParser):
         self.add_option("-v", "--verbose", action="store_true", dest="verbose", help="active verbose mode output results")
         self.add_option("--gtk", action="store_true", dest="xsser_gtk", help="launch XSSer GTK Interface (Wizard included!)")
         #self.add_option("--swarm", action="store_true", dest="xsser_web", help="launch XSSer Swarm daemon(s) + Web-Shell")
-        self.add_option("--update", action="store_true", dest="update", help="check for XSSer latest stable version")
 
         group1 = optparse.OptionGroup(self, "*Special Features*",
         "You can choose Vector(s) and Bypasser(s) to inject code with this extra special features:")
@@ -77,7 +76,6 @@ class XSSerOptions(optparse.OptionParser):
         #group4.add_option("--auth-cert", action="store", dest="acert", help="HTTP Authentication certificate (key_file,cert_file)") 
         group4.add_option("--proxy", action="store", dest="proxy", help="Use proxy server (tor: http://localhost:8118)")
         group4.add_option("--ignore-proxy", action="store_true", dest="ignoreproxy", help="Ignore system default HTTP proxy")
-        group4.add_option("--force-ssl", action="store_true", dest="forcessl", help="Force usage of SSL/HTTPS requests")
         group4.add_option("--timeout", action="store", dest="timeout", type="int", help="Select your timeout (default 30)")
         group4.add_option("--retries", action="store", dest="retries", type="int", help="Retries when the connection timeouts (default 1)")
         group4.add_option("--threads", action="store", dest="threads", type="int", help="Maximum number of concurrent HTTP requests (default 5)") 
@@ -96,9 +94,8 @@ class XSSerOptions(optparse.OptionParser):
         group5.add_option("--checkaturl", action="store", dest="alt", help="check for a valid XSS response from target(s) at an alternative url. 'blind XSS'")
         group5.add_option("--checkmethod", action="store", dest="altm", help="check responses from target(s) using a different connection type: GET or POST (default: GET)")
         group5.add_option("--checkatdata", action="store", dest="ald", help="check responses from target(s) using an alternative payload (default: same than first injection)") 
-        #group5.add_option("--jump", action="store", dest="jumper", type="int", help="set limit of errors allowed before to jump to the next target/payload. default: no limits!")
-        group5.add_option("--checkcode", action="store", dest="chcode", help="set a possible target code response to try to evade false positives")
         group5.add_option("--reverse-check", action="store_true", dest="reversecheck", help="establish a reverse connection from target(s) to XSSer to certificate that is 100% vulnerable")
+        #group5.add_option("--jump", action="store", dest="jumper", type="int", help="set limit of errors allowed before to jump to the next target/payload. default: no limits!")
         self.add_option_group(group5)
 
         group6 = optparse.OptionGroup(self, "*Select Vector(s)*",
@@ -121,18 +118,15 @@ class XSSerOptions(optparse.OptionParser):
         self.add_option_group(group7)
 
         group8 = optparse.OptionGroup(self, "*Special Technique(s)*",
-        "These options can be used to try to inject code using different types of XSS techniques. You can choose multiple:")
+        "These options can be used to try to inject code using different type of XSS techniques. You can choose multiple:")
         group8.add_option("--Coo", action="store_true", dest="coo", help="COO - Cross Site Scripting Cookie injection")
         group8.add_option("--Xsa", action="store_true", dest="xsa", help="XSA - Cross Site Agent Scripting")
         group8.add_option("--Xsr", action="store_true", dest="xsr", help="XSR - Cross Site Referer Scripting")
         group8.add_option("--Dcp", action="store_true", dest="dcp", help="DCP - Data Control Protocol injections")
         group8.add_option("--Dom", action="store_true", dest="dom", help="DOM - Document Object Model injections")
         group8.add_option("--Ind", action="store_true", dest="inducedcode", help="IND - HTTP Response Splitting Induced code")
-        group8.add_option("--Css", action="store_true", dest="csser", help="CSS - Cascading Style Sheets injections")
         group8.add_option("--Anchor", action="store_true", dest="anchor", help="ANC - Use Anchor Stealth payloader (DOM shadows!)")
         group8.add_option("--Phpids", action="store_true", dest="phpids", help="PHP - Exploit PHPIDS bug (0.6.5) to bypass filters")
-        group8.add_option("--Chrome", action="store_true", dest="chrome", help="CHR - Bypass Chrome Anti-XSS filter")
-        group8.add_option("--IE8", action="store_true", dest="ie8", help="IE8 - Abuse Anti-XSS filters built into IE8")
         self.add_option_group(group8)
 
         group9 = optparse.OptionGroup(self, "*Select Final injection(s)*",
@@ -142,8 +136,6 @@ class XSSerOptions(optparse.OptionParser):
         group9.add_option("--Doss", action="store_true", dest="doss", help="DOSs   - XSS Denial of service (server) injection")
         group9.add_option("--Dos", action="store_true", dest="dos", help="DOS    - XSS Denial of service (client) injection")
         group9.add_option("--B64", action="store_true", dest="b64", help="B64    - Base64 code encoding in META tag (rfc2397)")
-        group9.add_option("--CssPop", action="store_true", dest="popup", help="CSS    - Use a popup to show a PoC of CSS hijacking")
-        group9.add_option("--Keylog", action="store_true", dest="keylogger", help="LOG    - Inject a javascript keylogger")
         self.add_option_group(group9)
         
         group10 = optparse.OptionGroup(self, "*Special Final injection(s)*",
@@ -155,11 +147,9 @@ class XSSerOptions(optparse.OptionParser):
 
         group11 = optparse.OptionGroup(self, "*Miscellaneous*")
         group11.add_option("--silent", action="store_true", dest="silent", help="inhibit console output results")
-        group11.add_option("--check-tor", action="store_true", dest="checktor", help="check to see if Tor is used properly")
+        group11.add_option("--update", action="store_true", dest="update", help="check for XSSer latest stable version")
         group11.add_option("--save", action="store_true", dest="fileoutput", help="output all results directly to template (XSSlist.dat)")
         group11.add_option("--xml", action="store", dest="filexml", help="output 'positives' to aXML file (--xml filename.xml)")
-        group11.add_option("--json", action="store", dest="filejson", help="output 'positives' to JSON file (--json filename.json)")
-        group11.add_option("--pdf", action="store", dest="filepdf", help="output 'positives' to PDF file (--pdf filename.pdf)")
         group11.add_option("--short", action="store", dest="shorturls", help="display -final code- shortered (tinyurl, is.gd) ")
         group11.add_option("--launch", action="store_true", dest="launch_browser", help="launch a browser at the end with each XSS discovered")
         group11.add_option("--tweet", action="store_true", dest="tweet", help="publish each XSS discovered into the 'Grey Swarm!'")
@@ -168,7 +158,7 @@ class XSSerOptions(optparse.OptionParser):
 
     def get_options(self, user_args=None):
         (options, args) = self.parse_args(user_args)
-        if (not options.url and not options.readfile and not options.dork and not options.imx and not options.flash and not options.csser and not options.update and not options.xsser_gtk):
+        if (not options.url and not options.readfile and not options.dork and not options.imx and not options.flash and not options.update and not options.xsser_gtk):
             print '='*75
             print  self.version
             print  self.description, "\n"
