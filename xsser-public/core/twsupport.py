@@ -24,7 +24,7 @@ import sys
 from twisted.internet.protocol import Protocol
 from twisted.internet.protocol import Factory
 from twisted.internet import reactor
-from XSSer.main import xsser
+from core.main import xsser
 import cgi
 import traceback
 try:

@@ -206,7 +206,7 @@ class Curl:
             self.set_option(pycurl.SSL_VERIFYHOST, 0)
             self.set_option(pycurl.SSL_VERIFYPEER, 0)
             if self.fakeheaders:
-                from XSSer.randomip import RandomIP
+                from core.randomip import RandomIP
                 if self.xforw:
                     generate_random_xforw = RandomIP()
                     xforwip = generate_random_xforw._generateip('')
@@ -253,7 +253,7 @@ class Curl:
         Perform a request and returns the payload.
         """
         if self.fakeheaders:
-            from XSSer.randomip import RandomIP
+            from core.randomip import RandomIP
             if self.xforw:
                 """
                 Set the X-Forwarded-For to use.

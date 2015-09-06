@@ -43,10 +43,10 @@ if use_twisted:
 else:
     reactor = None
 
-from XSSer.main import xsser
-from XSSer.globalmap import GlobalMap
-from XSSer.reporter import XSSerReporter
-from XSSer.mozchecker import MozChecker
+from core.main import xsser
+from core.globalmap import GlobalMap
+from core.reporter import XSSerReporter
+from core.mozchecker import MozChecker
 
 class Controller(XSSerReporter):
     def __init__(self, uifile, mothership, window='window1'):

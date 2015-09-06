@@ -24,8 +24,8 @@ import os
 import gtk
 import user
 import gobject
-from XSSer.reporter import XSSerReporter
-from XSSer.curlcontrol import Curl
+from core.reporter import XSSerReporter
+from core.curlcontrol import Curl
 from glib import markup_escape_text
 from collections import defaultdict
 from threading import Thread

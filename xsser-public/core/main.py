@@ -21,27 +21,27 @@ with xsser; if not, write to the Free Software Foundation, Inc., 51
 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 """
 import os, re, sys, datetime, hashlib, time, urllib, cgi, traceback, webbrowser
-import XSSer.fuzzing
-import XSSer.fuzzing.vectors
-import XSSer.fuzzing.DCP
-import XSSer.fuzzing.DOM
-import XSSer.fuzzing.HTTPsr
-import XSSer.fuzzing.heuristic
+import core.fuzzing
+import core.fuzzing.vectors
+import core.fuzzing.DCP
+import core.fuzzing.DOM
+import core.fuzzing.HTTPsr
+import core.fuzzing.heuristic
 from collections import defaultdict
 from itertools import islice, chain
-from XSSer.curlcontrol import Curl
-from XSSer.encdec import EncoderDecoder
-from XSSer.options import XSSerOptions
-from XSSer.dork import Dorker
-from XSSer.crawler import Crawler
-from XSSer.post.shorter import ShortURLReservations
-from XSSer.imagexss import ImageInjections
-from XSSer.flashxss import FlashInjections
-from XSSer.publish import publisher
-from XSSer.post.xml_exporter import xml_reporting
-from XSSer.tokenhub import HubThread
-from XSSer.reporter import XSSerReporter
-from XSSer.threadpool import ThreadPool, NoResultsPending
+from core.curlcontrol import Curl
+from core.encdec import EncoderDecoder
+from core.options import XSSerOptions
+from core.dork import Dorker
+from core.crawler import Crawler
+from core.post.shorter import ShortURLReservations
+from core.imagexss import ImageInjections
+from core.flashxss import FlashInjections
+from core.publish import publisher
+from core.post.xml_exporter import xml_reporting
+from core.tokenhub import HubThread
+from core.reporter import XSSerReporter
+from core.threadpool import ThreadPool, NoResultsPending
 
 # set to emit debug messages about errors (0 = off).
 DEBUG = 1
@@ -268,16 +268,16 @@ class xsser(EncoderDecoder, XSSerReporter):
         """
         options = self.options
 	# payloading sources
-        payloads_fuzz = XSSer.fuzzing.vectors.vectors
-        payloads_dcp = XSSer.fuzzing.DCP.DCPvectors
-        payloads_dom = XSSer.fuzzing.DOM.DOMvectors
-        payloads_httpsr = XSSer.fuzzing.HTTPsr.HTTPrs_vectors
+        payloads_fuzz = core.fuzzing.vectors.vectors
+        payloads_dcp = core.fuzzing.DCP.DCPvectors
+        payloads_dom = core.fuzzing.DOM.DOMvectors
+        payloads_httpsr = core.fuzzing.HTTPsr.HTTPrs_vectors
         manual_payload = [{"payload":options.script, "browser":"[manual_injection]"}]
         # sustitute payload for hash to check false positives
         self.hashed_payload = self.generate_hash('url')
         checker_payload = [{"payload":self.hashed_payload, "browser":"[hashed_precheck_system]"}]
         # heuristic parameters
-        heuristic_params = XSSer.fuzzing.heuristic.heuristic_test
+        heuristic_params = core.fuzzing.heuristic.heuristic_test
         def enable_options_heuristic(payloads):
             if options.heuristic:
                 payloads = heuristic_params + payloads
@@ -1364,7 +1364,7 @@ class xsser(EncoderDecoder, XSSerReporter):
         Create GTK Interface
         """
         options = self.options
-        from XSSer.gtkcontroller import Controller, reactor
+        from core.gtkcontroller import Controller, reactor
         uifile = "xsser.ui"
         controller = Controller(uifile, self)
         self._reporters.append(controller)
