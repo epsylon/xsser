@@ -25,7 +25,7 @@ Post processing filter to make reservations on shortered links.
 import urllib
 import pycurl
 from cStringIO import StringIO
-from BeautifulSoup import BeautifulSoup
+from bs4 import BeautifulSoup
 
 class ShortURLReservations(object):
     #options = [['-foo!', 'do stuff']]
