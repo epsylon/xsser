@@ -32,7 +32,7 @@ import curlcontrol
 import threadpool
 from Queue import Queue
 from collections import defaultdict
-from BeautifulSoup import BeautifulSoup
+from bs4 import BeautifulSoup
 
 class EmergencyLanding(Exception):
     pass
