@@ -24,7 +24,7 @@ import urlparse
 import urllib2
 import traceback
 urllib2.socket.setdefaulttimeout(5.0)
-from BeautifulSoup import BeautifulSoup
+from bs4 import BeautifulSoup
 
 DEBUG = 1
 
