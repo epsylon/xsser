@@ -3,12 +3,12 @@
           
     ==========
 
-    Welcome to the XSS injection(s) Wizard Helper!
+    Welcome to the Wizard Helper!
 
 
-    You only need to response some questions to create your pentesting template. If you haven't time to read, press "Next" in all the screens. :-)
+    You only need to reply some questions to create your pentesting attack. If you haven't time to read just press "Next". :-)
 
-    XSSer will take your answers to build -automagically- all the necessary commands to start your XSS "research".
+    XSSer will takes your answers to build -automagically- all commands needed.
 
 
     Press "Start Wizard" button (below) to start your configuration...

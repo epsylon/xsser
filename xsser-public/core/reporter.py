@@ -1,11 +1,12 @@
-#!/usr/bin/python
-# -*- coding: iso-8859-15 -*-
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-"
+# vim: set expandtab tabstop=4 shiftwidth=4:
 """
 $Id$
 
-This file is part of the xsser project, http://xsser.sourceforge.net.
+This file is part of the xsser project, http://xsser.03c8.net
 
-Copyright (c) 2011/2012 psy <root@lordepsylon.net> - <epsylon@riseup.net>
+Copyright (c) 2011/2016 psy <epsylon@riseup.net>
 
 xsser is free software; you can redistribute it and/or modify it under
 the terms of the GNU General Public License as published by the Free
@@ -20,12 +21,11 @@ You should have received a copy of the GNU General Public License along
 with xsser; if not, write to the Free Software Foundation, Inc., 51
 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 """
-"""
- Base class for objects wanting to receive report information from XSSer.
- It implements all callbacks so you will be safe ;)
-"""
-
 class XSSerReporter(object):
+    """
+    Base class for objects wanting to receive report information from XSSer.
+    It implements all callbacks so you will be safe ;)
+    """
     def start_attack(self):
         pass
     def end_attack(self):

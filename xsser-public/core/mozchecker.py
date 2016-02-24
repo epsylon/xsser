@@ -1,11 +1,12 @@
-#!/usr/bin/python
-# -*- coding: iso-8859-15 -*-
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-"
+# vim: set expandtab tabstop=4 shiftwidth=4:
 """
 $Id$
 
-This file is part of the xsser project, http://xsser.sourceforge.net.
+This file is part of the xsser project, http://xsser.03c8.net
 
-Copyright (c) 2011/2012 psy <root@lordepsylon.net> - <epsylon@riseup.net>
+Copyright (c) 2011/2016 psy <epsylon@riseup.net>
 
 xsser is free software; you can redistribute it and/or modify it under
 the terms of the GNU General Public License as published by the Free
@@ -53,28 +54,20 @@ class CheckerThread(Thread):
 
 class MozChecker(object):
     def __init__(self, parent):
-        #gtk.Window.__init__(self)
         self._busy = False
         self._urlqueue = []
         self._parent = parent
         self._armed = True
         if MozEmbed:
             pass
-            #self.init_mozembed()
         else:
             self.open = self.open_webbrowser
-            #self.show()
-        #self.realize()
-        #self.hide()
-        #self.set_no_show_all(True)
-        #self.show_all()
 
     def remaining(self):
         return len(self._urlqueue)
 
     def init_mozembed(self):
         self.moz = MozEmbed()
-        #self.moz.connect('js-status', self.mozembed_js_status)a
         self.moz.connect('net-stop', self.on_net_stop)
         self.moz.connect('net-state', self.on_net_state)
         self.moz.connect('new-window', self.on_new_window)
@@ -125,8 +118,6 @@ class MozChecker(object):
         else:
             self._busy = False
 
-
-
 if __name__ == '__main__':
     win = gtk.Window()
     def finished(widget):
@@ -171,5 +162,3 @@ if __name__ == '__main__':
     win.add(moz)
     win.show_all()
     gtk.main()
-
-

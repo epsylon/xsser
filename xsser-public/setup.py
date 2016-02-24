@@ -1,3 +1,26 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-"
+# vim: set expandtab tabstop=4 shiftwidth=4:
+"""
+$Id$
+
+This file is part of the xsser project, http://xsser.03c8.net
+
+Copyright (c) 2011/2016 psy <epsylon@riseup.net>
+
+xsser is free software; you can redistribute it and/or modify it under
+the terms of the GNU General Public License as published by the Free
+Software Foundation version 3 of the License.
+
+xsser is distributed in the hope that it will be useful, but WITHOUT ANY
+WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
+details.
+
+You should have received a copy of the GNU General Public License along
+with xsser; if not, write to the Free Software Foundation, Inc., 51
+Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+"""
 from setuptools import setup
 import os
 
@@ -7,11 +30,9 @@ image_files = []
 doc_files = []
 gtk_doc_files = []
 for afile in os.listdir('doc'):
-    #doc_files.append('doc/' + afile)
     if afile != '.svn':
         doc_files.append('doc/' + afile)
 for afile in os.listdir('gtk/docs'):
-    #gtk_doc_files.append('gtk/docs/' + afile)
     if afile != '.svn':
         gtk_doc_files.append('gtk/docs/' + afile)
 
@@ -33,6 +54,4 @@ setup(
     scripts = ['xsser'],
     test_suite = "tests"
 )
-
-
 

@@ -3,15 +3,15 @@
 
     ==========
 
-    Time to exploit!. If you want, you can decide your final code injection(s), to exploit each vulnerability founded:
+    Time to exploit!. If you want, you can decide your final code injection(s):
 
         
-        1)- I want to inject a classic "alert" message box with a "md5 Hash" to certificate the vulnerability.
+        1)- I want to inject a classic "Alert" message box.
 
 
-        2)- I want to inject some scripts on my vulnerable target(s), that I will write -manually-.
+        2)- I want to inject my own scripts.
 
 
-        3)- I dont want to inject final code. I only want to discover vulnerabilities. :-)
+        3)- I don't want to inject a final code... I just want to discover vulnerabilities! :-)
 
     ==========

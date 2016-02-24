@@ -1,11 +1,12 @@
-#!/usr/bin/python
-# -*- coding: iso-8859-15 -*-
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-"
+# vim: set expandtab tabstop=4 shiftwidth=4:
 """
 $Id$
 
-This file is part of the xsser project, http://xsser.sourceforge.net.
+This file is part of the xsser project, http://xsser.03c8.net
 
-Copyright (c) 2011/2012 psy <root@lordepsylon.net> - <epsylon@riseup.net>
+Copyright (c) 2011/2016 psy <epsylon@riseup.net>
 
 xsser is free software; you can redistribute it and/or modify it under
 the terms of the GNU General Public License as published by the Free
@@ -68,8 +69,6 @@ class Controller(XSSerReporter):
         self._window = window
         self.output = wTree.get_object('textview_main')
         self.status = wTree.get_object('status_bar')
-        self.output_expert = wTree.get_object('textview_swarm')
-        self.output_expert.set_buffer(self.output.get_buffer())
         self.output_wizard = wTree.get_object('textview_w_start')
         self._wizard_buffer = self.output_wizard.get_buffer()
         self.counters_label = wTree.get_object('counters_label')
@@ -80,7 +79,7 @@ class Controller(XSSerReporter):
         self._report_errors = wTree.get_object('report_errors').get_buffer()
         self._report_crawling = wTree.get_object('report_crawling').get_buffer()
 
-        # GUI spinners inits
+        # GUI spinner inits
         threads_spin = self.wTree.get_object('threads')
         threads_spin.set_range(0,100)
         threads_spin.set_value(5)
@@ -116,7 +115,6 @@ class Controller(XSSerReporter):
         self.text_ascii = ""
         # step 1
         self.target_option = ""
-        self.file_option = None
         self.dork_option = ""
         self.dorkengine_option = ""
         self.combo_step1_choose = ""
@@ -193,14 +191,6 @@ class Controller(XSSerReporter):
         file.close()
         buffer.set_text(text_ascii)
 
-        # text buffered on documentation tab
-        help_output = wTree.get_object('textview_help')
-        buffer = help_output.get_buffer()
-        file = self.open_wizard_file("documentation")
-        text_ascii = file.read()
-        file.close()
-        buffer.set_text(text_ascii)
-        
         # text buffered on wizard about
         index_output = wTree.get_object('textview_about')
         buffer = index_output.get_buffer()
@@ -271,10 +261,8 @@ class Controller(XSSerReporter):
         dorker2_options_w = self.wTree.get_object('combobox4')
         dorker3_options_w = self.wTree.get_object('combobox6')
         crawlerdeep_options_w = self.wTree.get_object('combobox_deep1')
-        shorter_options_w = self.wTree.get_object('combobox3')
         connect_geomap_w = self.wTree.get_object('combobox7')
         checkmethod_options_w = self.wTree.get_object('combobox1')
-        swarm_options_w = self.wTree.get_object('combobox2')
         # wizard steps comboboxes
         step1_options_w = self.wTree.get_object('combobox_step1')
         step2_options_w = self.wTree.get_object('combobox_step2')
@@ -282,15 +270,12 @@ class Controller(XSSerReporter):
         step4_options_w = self.wTree.get_object('combobox_step4')
         step5_options_w = self.wTree.get_object('combobox_step5')
         # ui comboboxes content
-        dorker_options = [ 'bing', 'altavista', 'yahoo', 'baidu', 'yandex',
-                           'youdao', 'webcrawler', 'google']
-        shorter_options = ['is.gd', 'tinyurl']
+        dorker_options = [ 'duck', 'bing', 'google', 'yahoo', 'yandex']
         crawlerdeep_options = ['1', '2', '3', '4', '5']
         checkmethod_options = ['GET', 'POST']
-        swarm_options = ['OFF', 'ON']
         connect_geomap = ['OFF', 'ON']
         # wizard comboboxes content
-        step1_options = ['0', '1', '2', '3']
+        step1_options = ['0', '1', '2']
         step2_options = ['0', '1', '2', '3', '4']
         step3_options = ['0', '1', '2', '3', '4']
         step4_options = ['0', '1', '2', '3', '4', '5']
@@ -299,10 +284,8 @@ class Controller(XSSerReporter):
         self.fill_with_options(dorker2_options_w, dorker_options)
         self.fill_with_options(dorker3_options_w, dorker_options)
         self.fill_with_options(crawlerdeep_options_w, crawlerdeep_options)
-        self.fill_with_options(shorter_options_w, shorter_options)
         self.fill_with_options(connect_geomap_w, connect_geomap)
         self.fill_with_options(checkmethod_options_w, checkmethod_options)
-        self.fill_with_options(swarm_options_w, swarm_options)
         self.fill_with_options(step1_options_w, step1_options)
         self.fill_with_options(step2_options_w, step2_options)
         self.fill_with_options(step3_options_w, step3_options)
@@ -409,7 +392,6 @@ class Controller(XSSerReporter):
         self.counters_label.set_tooltip_text('crawled during last attack: %s\nremaining checks: %s\nalive threads: %s %s' % tuple(pars))
         gtk.gdk.threads_leave()
 
-
     def report_state(self, state, val=-1):
         if not gtk:
             # exiting..
@@ -434,11 +416,6 @@ class Controller(XSSerReporter):
             fly_button.set_sensitive(False)
             return
         self.output.get_buffer().set_property("text", "")
-        self._report_errors.set_text('')
-        self._report_vulnerables.set_text('')
-        self._report_success.set_text('')
-        self._report_failed.set_text('')
-        self._report_crawling.set_text('')
         auth_none = self.wTree.get_object('auth_none')
         auth_cred = self.wTree.get_object('auth_cred')
         if auth_cred.get_property('text') == "":
@@ -458,11 +435,10 @@ class Controller(XSSerReporter):
 
         targetenter = self.wTree.get_object('targetenter')
         explorer_enter = self.wTree.get_object('explorer_enter')
-        targetfromfile = self.wTree.get_object('targetfromfile1')
 
-        if t.app.options == "":
+        if t.app.options == None:
             pass
-        elif targetenter.get_text() == "" and explorer_enter.get_text() == "" and targetfromfile.get_filename() == None:
+        elif targetenter.get_text() == None and explorer_enter.get_text() == None:
             pass
         else:
             t.start()
@@ -484,41 +460,20 @@ class Controller(XSSerReporter):
         """
         intruder = self.wTree.get_object('intruder')
         targetenter = self.wTree.get_object('targetenter')
+        targetall = self.wTree.get_object('targetall')
         explorer_enter = self.wTree.get_object('explorer_enter')
         combobox4 = self.wTree.get_object('combobox4')
-        loadfromfile = self.wTree.get_object('loadfromfile')
-        targetfromfile1 = self.wTree.get_object('targetfromfile1')
         if intruder.get_property('active') == True:
             targetenter.set_property('visible', True)
+            targetall.set_property('visible', True)
             explorer_enter.set_property('visible', False)
             combobox4.set_property('visible', False)
-            loadfromfile.set_property('visible', True)
-            targetfromfile1.set_property('visible', False)
-            targetfromfile1.set_filename('None')
         else:
             targetenter.set_property("text", "")
             targetenter.set_property('visible', False)
+            targetall.set_property('visible', False)
             explorer_enter.set_property('visible', True)
             combobox4.set_property('visible', True)
-            loadfromfile.set_property('visible', False)
-            targetfromfile1.set_property('visible', False)
-
-    def on_fromfile_toggled(self, widget):
-        """
-        Active target(s) from file on intruder mode
-        """
-        targetenter = self.wTree.get_object('targetenter')
-        targetfromfile1 = self.wTree.get_object('targetfromfile1')
-        loadfromfile = self.wTree.get_object('loadfromfile')
-        intruder = self.wTree.get_object('intruder')
-        if loadfromfile.get_property('active') == True:
-            targetenter.set_property('visible', False)
-            targetfromfile1.set_property('visible', True)
-        else:
-            targetfromfile1.set_property('visible', False)
-            targetfromfile1.set_filename('None')
-            if intruder.get_property('active') == True:
-                targetenter.set_property('visible', True)
 
     def on_explorer_toggled(self, widget):
         """
@@ -526,23 +481,88 @@ class Controller(XSSerReporter):
         """
         explorer = self.wTree.get_object('explorer')
         targetenter = self.wTree.get_object('targetenter')
+        targetall = self.wTree.get_object('targetall')
         explorer_enter = self.wTree.get_object('explorer_enter')
         combobox4 = self.wTree.get_object('combobox4')
-        targetfromfile1 = self.wTree.get_object('targetfromfile1')
-        loadfromfile = self.wTree.get_object('loadfromfile')
         if explorer.get_property('active') == True: 
             explorer_enter.set_property('visible', True)
             targetenter.set_property('visible', False)
+            targetall.set_property('visible', False)
             combobox4.set_property('visible', True)
-            targetfromfile1.set_property('visible', False)
-            loadfromfile.set_property('active', False)
         else:
             explorer_enter.set_property("text", "")
             explorer_enter.set_property("visible", False)
             targetenter.set_property('visible', True)
+            targetall.set_property('visible', True)
             combobox4.set_property('visible', False)
-            loadfromfile.set_property('active', False)
-            targetfromfile1.set_property('visible', False)
+
+    def on_targetall_toggled(self, widget):
+        """
+        Autoconfigure XSSer options to perform an automatic XSS pentesting
+        """
+        targetall = self.wTree.get_object('targetall')
+        crawler = self.wTree.get_object('crawler')
+        crawler2_spin = self.wTree.get_object('combobox5')
+        localonly1 = self.wTree.get_object('localonly1')
+        statistics = self.wTree.get_object('statistics')
+        threads_spin = self.wTree.get_object('threads')
+        timeout_spin = self.wTree.get_object('timeout')
+        retries_spin = self.wTree.get_object('retries')
+        delay_spin = self.wTree.get_object('delay')
+        followredirects = self.wTree.get_object('followredirects')
+        no_head = self.wTree.get_object('no-head')
+        reverse_check = self.wTree.get_object('reverse-check')
+        automatic_payload = self.wTree.get_object('automatic_payload')
+        cookie_injection = self.wTree.get_object('cookie_injection')
+        xas = self.wTree.get_object('xas')
+        xsr = self.wTree.get_object('xsr')
+        dom = self.wTree.get_object('dom')
+        dcp = self.wTree.get_object('dcp')
+        induced = self.wTree.get_object('induced')
+        save = self.wTree.get_object('save')
+        exportxml = self.wTree.get_object('exportxml')
+        if targetall.get_property('active') == True:
+            crawler.set_property("active", True)
+            localonly1.set_property("active", True)
+            crawler2_spin.set_value(99999)
+            statistics.set_property("active", True)
+            threads_spin.set_value(10)
+            timeout_spin.set_value(60)
+            retries_spin.set_value(2)
+            delay_spin.set_value(5)
+            followredirects.set_property("active", True)
+            no_head.set_property("active", True)
+            reverse_check.set_property("active", True)
+            automatic_payload.set_property("active", True)
+            cookie_injection.set_property("active", True)
+            xas.set_property("active", True)
+            xsr.set_property("active", True)
+            dom.set_property("active", True)
+            dcp.set_property("active", True)
+            induced.set_property("active", True)
+            save.set_property("active", True)
+            exportxml.set_property("active", True)
+        else:
+            crawler.set_property("active", False)
+            localonly1.set_property("active", True)
+            crawler2_spin.set_value(50)
+            statistics.set_property("active", True)
+            threads_spin.set_value(5)
+            timeout_spin.set_value(30)
+            retries_spin.set_value(1)
+            delay_spin.set_value(0)
+            followredirects.set_property("active", False)
+            no_head.set_property("active", False)
+            reverse_check.set_property("active", False)
+            automatic_payload.set_property("active", False)
+            cookie_injection.set_property("active", False)
+            xas.set_property("active", False)
+            xsr.set_property("active", False)
+            dom.set_property("active", False)
+            dcp.set_property("active", False)
+            induced.set_property("active", False)
+            save.set_property("active", False)
+            exportxml.set_property("active", False)
 
     def on_torproxy_toggled(self, widget):
         """
@@ -577,31 +597,6 @@ class Controller(XSSerReporter):
         else:
             automatic.set_property('active', False)
 
-    def on_disclosure_toggled(self, widget):
-        """ 
-        Sync Swarm publisher with expert visor
-        """ 
-        disclosure = self.wTree.get_object('disclosure')
-        publish_identica = self.wTree.get_object('publish_identica')
-        if disclosure.get_property('active') == True:
-            publish_identica.set_property('active', True)
-        else:
-            publish_identica.set_property('active', False)
-
-    def on_publish_identica_toggled(self, widget):
-        """
-        Sync Swarm publisher with other publisher switches
-        """
-        disclosure = self.wTree.get_object('disclosure')
-        publish_identica = self.wTree.get_object('publish_identica')
-        hbox79 = self.wTree.get_object('hbox79')
-        if publish_identica.get_property('active') == True:
-            disclosure.set_property('active', True)
-            hbox79.set_property('visible', True)
-        else:
-            disclosure.set_property('active', False)
-            hbox79.set_property('visible', False)
-
     def on_crawler_toggled(self, widget):
         """
         Toggle ON/OFF crawling on main visor
@@ -620,17 +615,6 @@ class Controller(XSSerReporter):
             combobox5.set_property("visible", False)
             combobox_deep1.set_property('visible', False)
             localonly1.set_property('visible', False)
-
-    def on_shorters_toggled(self, widget):
-        """
-        Toggle ON/OFF shorters combobox
-        """
-        shorters = self.wTree.get_object('shorters')
-        combobox3 = self.wTree.get_object('combobox3')
-        if shorters.get_property('active') == True: 
-            combobox3.set_property('sensitive', True)
-        else:
-            combobox3.set_property("sensitive", False)
 
     def on_get_toggled(self, widget):
         """
@@ -754,15 +738,13 @@ class Controller(XSSerReporter):
         target_enter.set_property("text", "")
         explorer_enter = self.wTree.get_object('explorer_enter')
         explorer_enter.set_property("text", "")
-        targetfromfile = self.wTree.get_object('targetfromfile1')
-        targetfromfile.set_filename("None")
         combo_choose1 = self.wTree.get_object('combobox_step1')
         combo_choose2 = self.wTree.get_object('combobox_step2')
         combo_choose3 = self.wTree.get_object('combobox_step3')
         combo_choose4 = self.wTree.get_object('combobox_step4')
         combo_choose5 = self.wTree.get_object('combobox_step5')
         #wizard auto-way options
-        combo_choose1.set_active(3)
+        combo_choose1.set_active(2)
         combo_choose2.set_active(4)
         combo_choose3.set_active(3)
         combo_choose4.set_active(5)
@@ -771,20 +753,12 @@ class Controller(XSSerReporter):
         combobox6.set_active(0)
         combobox_deep1 = self.wTree.get_object('combobox_deep1')
         combobox_deep1.set_active(0)
-        combobox3 = self.wTree.get_object('combobox3')
-        combobox3.set_active(0)
-        disclosure = self.wTree.get_object('disclosure')
         verbose = self.wTree.get_object('verbose')
-        launchbrowser = self.wTree.get_object('launchbrowser')
-        shorters = self.wTree.get_object('shorters')
         automatic = self.wTree.get_object('automatic')
         explorer = self.wTree.get_object('explorer')
         crawler = self.wTree.get_object('crawler')
         torproxy = self.wTree.get_object('torproxy')
-        disclosure.set_property("active", False)
         verbose.set_property("active", False)
-        launchbrowser.set_property("active", False)
-        shorters.set_property("active", False)
         automatic.set_property("active", False)
         explorer.set_property("active", False)
         crawler.set_property("active", False)
@@ -799,7 +773,6 @@ class Controller(XSSerReporter):
         combo_choose = self.wTree.get_object('combobox_step1')
         vbox_step = self.wTree.get_object('vbox_step')
         hboxurl = self.wTree.get_object('hboxurl')
-        hboxfile = self.wTree.get_object('hboxfile')
         vboxdork = self.wTree.get_object('vboxdork')
         next1 = self.wTree.get_object('next1')
         if combo_choose.get_active_text() == '0':
@@ -808,19 +781,11 @@ class Controller(XSSerReporter):
         if combo_choose.get_active_text() == '1':
             vbox_step.set_property("visible", True)
             hboxurl.set_property("visible", True)
-            hboxfile.set_property("visible", False)
             vboxdork.set_property("visible", False)
             next1.set_property("visible", True)
         elif combo_choose.get_active_text() == '2':
             vbox_step.set_property("visible", True)
             hboxurl.set_property("visible", False)
-            hboxfile.set_property("visible", True)
-            vboxdork.set_property("visible", False)
-            next1.set_property("visible", True)
-        elif combo_choose.get_active_text() == '3':
-            vbox_step.set_property("visible", True)
-            hboxurl.set_property("visible", False)
-            hboxfile.set_property("visible", False)
             vboxdork.set_property("visible", True)
             next1.set_property("visible", True)
 
@@ -831,20 +796,15 @@ class Controller(XSSerReporter):
         step_view_start.set_property("visible", True)
         alert_step1_url = self.wTree.get_object('alert_step1_url')
         alert_step1_url.set_property("visible", False)
-        alert_step1_file = self.wTree.get_object('alert_step1_file')
-        alert_step1_file.set_property("visible", False)
         alert_step1_dork = self.wTree.get_object('alert_step1_dork')
         alert_step1_dork.set_property("visible", False)
         combo_choose = self.wTree.get_object('combobox_step1')
         step1_entry_url = self.wTree.get_object('step1_entry_url')
-        step1_entry_file = self.wTree.get_object('step1_entry_file')
         step1_entry_dork = self.wTree.get_object('step1_entry_dork')
         step1_entry_url.set_property("text", "")
-        step1_entry_file.set_filename("None")
         step1_entry_dork.set_property("text", "")
         self.combo_step1_choose = ""
         self.target_option = ""
-        self.file_option = None
         self.dork_option = ""
 
     def on_next1_clicked(self, widget):
@@ -852,11 +812,9 @@ class Controller(XSSerReporter):
         step_view2 = self.wTree.get_object('vbox_step2')
         combo_choose = self.wTree.get_object('combobox_step1')
         step1_entry_url = self.wTree.get_object('step1_entry_url')
-        step1_entry_file = self.wTree.get_object('step1_entry_file')
         step1_entry_dork = self.wTree.get_object('step1_entry_dork')
         step1_entry_dorkengine = self.wTree.get_object('combobox6')
         alert_step1_url = self.wTree.get_object('alert_step1_url')
-        alert_step1_file = self.wTree.get_object('alert_step1_file')
         alert_step1_dork = self.wTree.get_object('alert_step1_dork')
 
         if step1_entry_url.get_text() == '' and (combo_choose.get_active_text() == '1'):
@@ -864,25 +822,18 @@ class Controller(XSSerReporter):
             step_view1.set_property("visible", True)
             step_view2.set_property("visible", False)
 
-        elif step1_entry_file.get_filename() == None and (combo_choose.get_active_text() == '2'):
-            alert_step1_file.set_property("visible", True)
-            step_view1.set_property("visible", True)
-            step_view2.set_property("visible", False)
-
-        elif step1_entry_dork.get_text() == '' and (combo_choose.get_active_text() == '3'):
+        elif step1_entry_dork.get_text() == '' and (combo_choose.get_active_text() == '2'):
             alert_step1_dork.set_property("visible", True)
             step_view1.set_property("visible", True)
             step_view2.set_property("visible", False)
         else:
             alert_step1_url.set_property("visible", False)
-            alert_step1_file.set_property("visible", False)
             alert_step1_dork.set_property("visible", False)
             step_view1.set_property("visible", False)
             step_view2.set_property("visible", True)
 
         self.combo_step1_choose = combo_choose.get_active_text()
         self.target_option = step1_entry_url.get_text()
-        self.file_option = step1_entry_file.get_filename()
         self.dork_option = step1_entry_dork.get_text()
         self.dorkengine_option = step1_entry_dorkengine.get_active_text()
 
@@ -923,8 +874,6 @@ class Controller(XSSerReporter):
         step_view1.set_property("visible", True)
         alert_step2 = self.wTree.get_object('alert_step2')
         alert_step2.set_property("visible", False)
-        step1_entry_file = self.wTree.get_object('step1_entry_file')
-        step1_entry_file.set_filename("None")
         step1_entry_url = self.wTree.get_object('step1_entry_url')
         step1_entry_url.set_property("text", "")
         step1_entry_dork = self.wTree.get_object('step1_entry_dork')
@@ -932,7 +881,6 @@ class Controller(XSSerReporter):
 
         self.combo_step2_choose = ""
         self.target_option = ""
-        self.file_option = None
         self.dork_option = ""
 
         combo_choose = self.wTree.get_object('combobox_step2')
@@ -1153,9 +1101,6 @@ class Controller(XSSerReporter):
             end_entry_target.set_property("text", "URL: " + self.target_option)
         
         if self.combo_step1_choose == "2":
-            end_entry_target.set_property("text", "File: " + self.file_option)
-        
-        if self.combo_step1_choose == "3":
             end_entry_target.set_property("text", ("Dork: " + self.dork_option + "  //  Engine: " + self.dorkengine_option))
         # step 2
         if self.combo_step2_choose == "1":
@@ -1243,7 +1188,6 @@ class Controller(XSSerReporter):
         step_view_end.set_property("visible", False)
         step_view_start = self.wTree.get_object('vbox_start')
         step1_entry_url = self.wTree.get_object('step1_entry_url')
-        step1_entry_file = self.wTree.get_object('step1_entry_file')
         step1_entry_dork = self.wTree.get_object('step1_entry_dork')
         step2_entry_payload = self.wTree.get_object('step2_entry_payload')
         step3_entry_proxy = self.wTree.get_object('step3_entry_proxy')
@@ -1253,12 +1197,10 @@ class Controller(XSSerReporter):
         # reseting wizard options 
         # step 1
         self.target_option = ""
-        self.file_option = None
         self.dork_option = ""
         self.dorkengine_option = ""
         self.combo_step1_choose = ""
         step1_entry_url.set_property("text", "")
-        step1_entry_file.set_filename("None")
         step1_entry_dork.set_property("text", "")
         # step 2
         self.payload_option = ""
@@ -1327,7 +1269,6 @@ class Controller(XSSerReporter):
         fly_button.set_label('LAND!!!')
 
         step1_entry_url = self.wTree.get_object('step1_entry_url')
-        step1_entry_file = self.wTree.get_object('step1_entry_file')
         step1_entry_dork = self.wTree.get_object('step1_entry_dork')
         step2_entry_payload = self.wTree.get_object('step2_entry_payload')
         step3_entry_proxy = self.wTree.get_object('step3_entry_proxy')
@@ -1337,12 +1278,10 @@ class Controller(XSSerReporter):
         # reseting wizard options 
         # step 1
         self.target_option = ""
-        self.file_option = None
         self.dork_option = ""
         self.dorkengine_option = ""
         self.combo_step1_choose = ""
         step1_entry_url.set_property("text", "")
-        step1_entry_file.set_filename("None")
         step1_entry_dork.set_property("text", "")
         # step 2
         self.payload_option = ""
@@ -1368,7 +1307,7 @@ class Controller(XSSerReporter):
 
     def on_combobox7_changed(self, widget):
         """
-        Generate Geoip + Geomapping to locate swarm(s)
+        Generate Geoip
         """
         combo_choose = self.wTree.get_object('combobox7')
         image_geomap = self.wTree.get_object('image_geomap')
@@ -1399,50 +1338,11 @@ class Controller(XSSerReporter):
                 self._flying.add_reporter(self.map)
             self.map.set_property("visible", True)
 
-    def on_combobox2_changed(self, widget):
-        """
-        Generate Swarm visor and connect real time data
-        """
-        combo_choose = self.wTree.get_object('combobox2')
-        vbox25 = self.wTree.get_object('vbox25')
-        swarmurl = self.wTree.get_object('swarmurl')
-        swarmusers = self.wTree.get_object('swarmusers')
-        swarmlist = self.wTree.get_object('swarmlist')
-        buffer = swarmlist.get_buffer()
-        
-        if combo_choose.get_active_text() == 'OFF':
-            vbox25.set_property("visible", False)
-
-        elif combo_choose.get_active_text() == 'ON':
-            vbox25.set_property("visible", True)
-            swarmurl.set_property("label", self.xsser.sn_service + "/" + self.xsser.sn_username)
-            
-            # retrieving data from identi.ca sources
-            import urllib
-            # json available since python>=2.6
-            try:
-                import json
-            except ImportError:
-                import simplejson as json # pip install simplejson
-            url_ = urllib.urlopen('http://identi.ca/api/statuses/followers/xsserbot01.json')
-            data_ = url_.read()
-            number_of_followers = len(json.loads(data_))
-            url_ = urllib.urlopen('http://identi.ca/api/statuses/user_timeline/xsserbot01.json')
-            data_ = url_.read()
-            updates_with_targets = []
-            for update in json.loads(data_):
-                if 'vulnerable target' in update['text']:
-                    updates_with_targets.append("%s --> %s" % (update['created_at'], 
-                                                       update['text']))
-
-            swarmusers.set_property("label", number_of_followers)
-            buffer.set_text('\n'.join(updates_with_targets))
-
     def on_update_clicked(self, widget):
         """
         Search for latest XSSer version
         """
-        webbrowser.open("http://sourceforge.net/projects/xsser/files/")
+        webbrowser.open("https://github.com/epsylon/xsser-public")
 
     def on_reportbug_clicked(self, widget):
         """
@@ -1454,24 +1354,33 @@ class Controller(XSSerReporter):
         """
         Donate something
         """
-        webbrowser.open("http://sourceforge.net/donate/index.php?group_id=310700")
+        webbrowser.open("http://03c8.net")
 
     def generate_command(self):
         command = ["xsser"]
+        # set automatic audit a entire target
+        # get target from url
+        target_all = self.wTree.get_object('targetall')
+        target_entry = self.wTree.get_object('targetenter')
+        if target_all.get_active() == False:
+            pass
+        else:
+            if target_entry.get_text() == "":
+                pass
+            else:
+                command.append("--all")
+                command.append(target_entry.get_text())
+
         # get target from url
         target_entry = self.wTree.get_object('targetenter')
-        if target_entry.get_text() == "":
+        if target_all.get_active() == True:
             pass
         else:
-            command.append("-u")
-            command.append(target_entry.get_text())
-        # get target from file
-        target_entry = self.wTree.get_object('targetfromfile1')
-        if target_entry.get_filename() == None:
-            pass
-        else:
-            command.append("-i")
-            command.append(target_entry.get_filename())
+            if target_entry.get_text() == "":
+                pass
+            else:
+                command.append("-u")
+                command.append(target_entry.get_text())
         # get explorer test mode
         explorer = self.wTree.get_object('explorer')
         if explorer.get_active() == False:
@@ -1515,21 +1424,6 @@ class Controller(XSSerReporter):
             pass
         else:
             command.append("-v")
-        # get launch browser on positive results
-        target_entry = self.wTree.get_object('launchbrowser')
-        if target_entry.get_active() == False:
-            pass
-        else:
-            command.append("--launch")
-        # get shorterers engines
-        target_entry = self.wTree.get_object('shorters')
-        if target_entry.get_active() == False:
-            pass
-        else:
-            target_entry = self.wTree.get_object('combobox3')
-            command.append("--short")
-            iter = target_entry.get_active_iter()
-            command.append(target_entry.get_model().get_value(iter, 0))       
         # use GET connections
         target_entry = self.wTree.get_object('get')
         if target_entry.get_active() == False:
@@ -1671,6 +1565,13 @@ class Controller(XSSerReporter):
             pass
         else:
             command.append("--reverse-check")
+        # get DISCARD CODE
+        target_entry = self.wTree.get_object('discode')
+        if target_entry.get_text() == "":
+            pass
+        else:
+            command.append("--discode")
+            command.append(target_entry.get_text())
        # get FOLLOWREDIRECTS
         target_entry = self.wTree.get_object('followredirects')
         if target_entry.get_active() == False:
@@ -1842,7 +1743,49 @@ class Controller(XSSerReporter):
         if target_entry.get_active() == False:
             pass
         else:
-            command.append("--Phpids")
+            command.append("--Phpids0.6.5")
+        # get Technique: PHP IDS bug (0.7.0)
+        target_entry = self.wTree.get_object('phpids070')
+        if target_entry.get_active() == False:
+            pass
+        else:
+            command.append("--Phpids0.7")
+        # get Technique: Imperva 
+        target_entry = self.wTree.get_object('imperva')
+        if target_entry.get_active() == False:
+            pass
+        else:
+            command.append("--Imperva")
+        # get Technique: WebKnight (4.1)
+        target_entry = self.wTree.get_object('webknight')
+        if target_entry.get_active() == False:
+            pass
+        else:
+            command.append("--Webknight")
+        # get Technique: F5 Big Ip
+        target_entry = self.wTree.get_object('f5bigip')
+        if target_entry.get_active() == False:
+            pass
+        else:
+            command.append("--F5bigip")
+        # get Technique: Barracuda
+        target_entry = self.wTree.get_object('barracuda')
+        if target_entry.get_active() == False:
+            pass
+        else:
+            command.append("--Barracuda")
+        # get Technique: Apache modsec
+        target_entry = self.wTree.get_object('modsec')
+        if target_entry.get_active() == False:
+            pass
+        else:
+            command.append("--Modsec")
+        # get Technique: QuickDefense
+        target_entry = self.wTree.get_object('quickdefense')
+        if target_entry.get_active() == False:
+            pass
+        else:
+            command.append("--Quickdefense")
         # get Final code: Normal Payload
         target_entry = self.wTree.get_object('normalfinal')
         if target_entry.get_active() == False:
@@ -1908,27 +1851,11 @@ class Controller(XSSerReporter):
         else:
             command.append("--xml") 
             command.append("xsser-test:" + str(datetime.datetime.now()) + ".xml")
-        # get Publish option
-        target_entry = self.wTree.get_object('publish_identica')
-        tweettags = self.wTree.get_object('tweettags')
-        if target_entry.get_active() == False:
-            pass
-        else:
-            command.append("--tweet")
-            if tweettags.get_text() == "":
-                pass
-            else:
-                command.append("--tweet-tags")
-                command.append(tweettags.get_text())
         # generate wizard commands
         # step 1
         if self.target_option != "":
             command.append("-u")
             command.append(self.target_option)
-
-        elif self.file_option != None:
-            command.append("-i")
-            command.append(self.file_option)
         elif self.dork_option != "":
             command.append("-d")
             command.append(self.dork_option)

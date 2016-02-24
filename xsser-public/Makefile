@@ -1,11 +1,10 @@
 # $Id: Makefile,v 1.6 2008/10/29 01:01:35 ghantoos Exp $
 #
-
 PYTHON=`which python`
 DESTDIR=/
 BUILDIR=$(CURDIR)/debian/xsser
 PROJECT=xsser
-VERSION=0.4.0
+VERSION=0.6.0
 
 all:
 	@echo "make source - Create source package"
@@ -24,11 +23,8 @@ buildrpm:
 	$(PYTHON) setup.py bdist_rpm --post-install=rpm/postinstall --pre-uninstall=rpm/preuninstall
 
 builddeb:
-	# build the source package in the parent directory
-	# then rename it to project_version.orig.tar.gz
 	$(PYTHON) setup.py sdist $(COMPILE) --dist-dir=../
 	rename -f 's/$(PROJECT)-(.*)\.tar\.gz/$(PROJECT)_$$1\.orig\.tar\.gz/' ../*
-	# build the package
 	dpkg-buildpackage -i -I -rfakeroot
 
 clean:

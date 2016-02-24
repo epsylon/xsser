@@ -1,6 +1,28 @@
 ================================================================
-Changelog: XSSer v1.6 (beta) (xsser.sf.net)
+Changelog: XSSer v1.7 (beta) (xsser.03c8.net)
 ==============================
+
+=================
+February 24, 2011:
+=================
+
+- Removed deprecated features
+- Updated Automatic XSS vectors list (Total: 578 = XSS: 558 + DCP: 4 + DOM: 5 + HTTPsr: 11)
+- Added XST (Cross Site Tracing)
+- Advanced XSA (Cross Site Agent), XSR (Cross Site Referer) and Cookie Injection
+- Updated/Fixed Dorkering system (Search engines supported: duck, bing, google, yahoo, yandex)
+- Added Dorking from file (30 potential 'XSS dorks' provided)
+- Added Mass-Dorking (search with all search engines provided)
+- Added Discarding response method to evade false positives
+- Added Anti-antiXSS Firewall rules (Bypassers provided for: PHPIDS, Imperva, WebKnight, F5BigIP, Barracuda, Apache-Modsec, QuickDefense)
+- Added 'Wizard Helper' to shell mode
+- Updated XSSer tool updater
+- Updated 'Mana' system
+- Fixed Crawlering system
+- Added feature: 'Automatically audit an entire target" 
+- Modified/Updated GTK+
+- Added Requirements
+- Updated Documentation
 
 =================
 November 28, 2011:

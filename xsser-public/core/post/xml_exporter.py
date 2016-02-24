@@ -1,11 +1,12 @@
-#!/usr/bin/python
-# -*- coding: iso-8859-15 -*-
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-"
+# vim: set expandtab tabstop=4 shiftwidth=4:
 """
 $Id$
 
-This file is part of the xsser project, http://xsser.sourceforge.net.
+This file is part of the xsser project, http://xsser.03c8.net
 
-Copyright (c) 2011/2012 psy <root@lordepsylon.net> - <epsylon@riseup.net>
+Copyright (c) 2011/2016 psy <epsylon@riseup.net>
 
 xsser is free software; you can redistribute it and/or modify it under
 the terms of the GNU General Public License as published by the Free
@@ -32,12 +33,12 @@ class xml_reporting(object):
         self.instance = xsser
 
 	# some counters
-        self.xsr_founded = 0
-        self.xsa_founded = 0
-        self.coo_founded = 0
-        self.dcp_founded = 0
-        self.dom_founded = 0
-        self.ind_founded = 0
+        self.xsr_found = 0
+        self.xsa_found = 0
+        self.coo_found = 0
+        self.dcp_found = 0
+        self.dom_found = 0
+        self.ind_found = 0
 
     def print_xml_results(self, filename):
         root = ET.Element("report")
@@ -110,44 +111,44 @@ class xml_reporting(object):
             else:
                 aurl = None
             if line[2] == "xsr":
-                self.xsr_founded = self.xsr_founded +1
+                self.xsr_found = self.xsr_found +1
                 xsr_vulnerable_host = [{"payload":str(line[4]), "target":str(line[6])}]
-                if xsr_vulnerable_host[0]["payload"] == line[4] and xsr_vulnerable_host[0]["target"] == line[6] and self.xsr_founded > 1:
+                if xsr_vulnerable_host[0]["payload"] == line[4] and xsr_vulnerable_host[0]["target"] == line[6] and self.xsr_found > 1:
                     pass
                 else:
                     aurl.text = "Cross Site Referer Scripting!! " + str(line[6]) + "/"+str(line[4])
             elif line[2] == "xsa":
-                self.xsa_founded = self.xsa_founded +1
+                self.xsa_found = self.xsa_found +1
                 xsa_vulnerable_host = [{"payload":str(line[4]), "target":str(line[6])}]
-                if xsa_vulnerable_host[0]["payload"] == line[4] and xsa_vulnerable_host[0]["target"] == line[6] and self.xsa_founded > 1:
+                if xsa_vulnerable_host[0]["payload"] == line[4] and xsa_vulnerable_host[0]["target"] == line[6] and self.xsa_found > 1:
                     pass
                 else:
                     aurl.text = "Cross Site Agent Scripting!! " + str(line[6]) + "/"+str(line[4])
             elif line[2] == "coo":
-                self.coo_founded = self.coo_founded +1
+                self.coo_found = self.coo_found +1
                 coo_vulnerable_host = [{"payload":str(line[4]), "target":str(line[6])}]
-                if coo_vulnerable_host[0]["payload"] == line[4] and coo_vulnerable_host[0]["target"] == line[6] and self.coo_founded > 1:
+                if coo_vulnerable_host[0]["payload"] == line[4] and coo_vulnerable_host[0]["target"] == line[6] and self.coo_found > 1:
                     pass
                 else:
                     aurl.text = "Cross Site Cookie Scripting!! " + str(line[6]) + "/"+str(line[4])
             elif line[2] == "dcp":
-                self.dcp_founded = self.dcp_founded +1
+                self.dcp_found = self.dcp_found +1
                 dcp_vulnerable_host = [{"payload":str(line[4]), "target":str(line[6])}]
-                if dcp_vulnerable_host[0]["payload"] == line[4] and dcp_vulnerable_host[0]["target"] == line[6] and self.dcp_founded > 1:
+                if dcp_vulnerable_host[0]["payload"] == line[4] and dcp_vulnerable_host[0]["target"] == line[6] and self.dcp_found > 1:
                     pass
                 else:
                     aurl.text = "Data Control Protocol injections!! " + str(line[6]) + "/"+str(line[4])
             elif line[2] == "dom":
-                self.dom_founded = self.dom_founded +1
+                self.dom_found = self.dom_found +1
                 dom_vulnerable_host = [{"payload":str(line[4]), "target":str(line[6])}]
-                if dom_vulnerable_host[0]["payload"] == line[4] and dom_vulnerable_host[0]["target"] == line[6] and self.dom_founded > 1:
+                if dom_vulnerable_host[0]["payload"] == line[4] and dom_vulnerable_host[0]["target"] == line[6] and self.dom_found > 1:
                     pass
                 else:
                     aurl.text = "Document Object Model injections!! " + str(line[6]) + "/"+str(line[4])
             elif line[2] == "ind":
-                self.ind_founded = self.ind_founded +1
+                self.ind_found = self.ind_found +1
                 ind_vulnerable_host = [{"payload":str(line[4]), "target":str(line[6])}]
-                if ind_vulnerable_host[0]["payload"] == line[4] and ind_vulnerable_host[0]["target"] == line[6] and self.ind_founded > 1:
+                if ind_vulnerable_host[0]["payload"] == line[4] and ind_vulnerable_host[0]["target"] == line[6] and self.ind_found > 1:
                     pass
                 else:
                     aurl.text = "HTTP Response Splitting Induced code!! " + str(line[6]) + "/"+str(line[4])

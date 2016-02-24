@@ -1,11 +1,12 @@
-#!/usr/bin/python
-# -*- coding: iso-8859-15 -*-
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-"
+# vim: set expandtab tabstop=4 shiftwidth=4:
 """
 $Id$
 
-This file is part of the xsser project, http://xsser.sourceforge.net.
+This file is part of the xsser project, http://xsser.03c8.net
 
-Copyright (c) 2011/2012 psy <root@lordepsylon.net> - <epsylon@riseup.net>
+Copyright (c) 2011/2016 psy <epsylon@riseup.net>
 
 xsser is free software; you can redistribute it and/or modify it under
 the terms of the GNU General Public License as published by the Free
@@ -34,7 +35,7 @@ except:
     orbited_main = None
     traceback.print_exc()
 
-print "\nXSSer v1.6b: The Mosquito 'Grey Swarm'\n"
+print "\nXSSer v1.7b: The Mosquito 'Zika Swarm'\n"
 print "Daemon(s): ready!", "//" , "Interfaz: ready!\n"
 print "Connect to http://127.0.0.1:19084/static/ via Web or Telnet to manage your swarm\n"
 print "Listening..."
@@ -62,11 +63,10 @@ class XSSerCheckerResource(resource.Resource):
     def render_GET(self, request):
         print "SUCCESS!!", request
         self.parent.xsser.final_attack_callback(request)
-        response = "thx for use XSSer (http://xsser.sf.net) !!"
+        response = "thx for use XSSer (http://xsser.03c8.net) !!"
         return response
     def render_POST(self, request):
         return self.render_GET(request)
-
 
 class XSSerMainResource(script.ResourceScriptDirectory):
     def __init__(self, name, xsser):
@@ -78,7 +78,6 @@ class XSSerMainResource(script.ResourceScriptDirectory):
         app = self.xsser()
         options = app.create_options(["-d","http://Bla.com"])
         app.set_options(options)
-
         response += "<br><br>&gt; <a href='/static'>Static</a>"
         response += "<br>&gt; <a href='/system/monitor'>Orbited.system.monitor</a><br><br>"
         response += "<h2>Options</h2>"
@@ -87,15 +86,14 @@ class XSSerMainResource(script.ResourceScriptDirectory):
                 response += "<b>"+str(opt) + "</b> " + str(app.options.__dict__[opt]) + "<br/>"
         return response
     def do_attack(self, request):
-        response = "<h2>Lets go attack</h2>"
+        response = "<h2>Let's go attack</h2>"
         return response
     def do_success(self, request):
-        response = "not implemented"
-        # TODO ;)
+        response = "not implemented!"
         if False:
             print "SUCCESS!!", data.split('HTTP')[0].split('/')[-1]
             self.factory.xsser.final_attack_callback(data.split('HTTP')[0].split('/')[-1].strip())
-            self.sendHTTP("thx for use XSSer (http://xsser.sf.net) !!\n")
+            self.sendHTTP("thx for use XSSer (http://xsser.03c8.net) !!\n")
         return response
     def do_evangelion(self, request):
         response = "Start Swarm Attack"
@@ -121,7 +119,6 @@ class XSSerProtocol(Protocol):
         if (data.startswith("GET") and "evangelion" in data) or "evangelion" in data:
             print "EVAngelion swarm mode!\n"
             self.sendHTTP("Start Swarm Attack\n")
-            #self.transport.loseConnection()
             app = xsser()
             app.set_reporter(self.factory)
             self.factory.xsser = app
@@ -138,12 +135,10 @@ class XSSerProtocol(Protocol):
         elif data.startswith("GET /success"):
             print "SUCCESS!!", data.split('HTTP')[0].split('/')[-1]
             self.factory.xsser.final_attack_callback(data.split('HTTP')[0].split('/')[-1].strip())
-            self.sendHTTP("thx for use XSSer (http://xsser.sf.net) !!\n")
+            self.sendHTTP("thx for use XSSer (http://xsser.03c8.net) !!\n")
             self.transport.loseConnection()
-            #self.factory.post('SUCCESS XDD LOL')
         elif data.startswith("GET"):
             self.sendHTTP("XSSer Web Interface <a href='evangelion'>Try it!</a>\n")
-            #self.transport.loseConnection()
         elif data.startswith("close"):
             reactor.stop()
         else:
@@ -157,7 +152,6 @@ class ServerFactory(Factory):
     def post(self, data):
         for c in self._clients:
             c.transport.write(cgi.escape(data)+'<br/>')
-            #c.transport.flush()
 
 if __name__ == '__main__':
     if orbited_main:
@@ -166,18 +160,11 @@ if __name__ == '__main__':
         import orbited.transports.base
         from orbited import cometsession
         tcpresource = resource.Resource()
-        #       root.putChild("tcp", tcpresource)
-        #site = server.Site(root)
-        #       reactor.listenTcp(site, 9999)
         reactor.listenWith(cometsession.Port, factory=ServerFactory(xsser),
                            resource=root, childName='xssertcp')
         root.putChild("xsser", XSSerMainResource("xsser", xsser))
-        root.putChild("checker", XSSerCheckerResource("checker", xsser))
-                        
-
+        root.putChild("checker", XSSerCheckerResource("checker", xsser))                        
     else:
         factory = ServerFactory(None)
         reactor.listenTCP(19084, factory)
     reactor.run()
-
-

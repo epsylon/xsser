@@ -1,11 +1,12 @@
-#!/usr/bin/python
-# -*- coding: iso-8859-15 -*-
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-"
+# vim: set expandtab tabstop=4 shiftwidth=4:
 """
 $Id$
 
-This file is part of the xsser project, http://xsser.sourceforge.net.
+This file is part of the xsser project, http://xsser.03c8.net
 
-Copyright (c) 2011/2012 psy <root@lordepsylon.net> - <epsylon@riseup.net>
+Copyright (c) 2011/2016 psy <epsylon@riseup.net>
 
 xsser is free software; you can redistribute it and/or modify it under
 the terms of the GNU General Public License as published by the Free
@@ -92,17 +93,16 @@ class DownloadThread(Thread):
         geo_db_path = self._map.get_geodb_path()
         def reportfunc(current, blocksize, filesize):
             percent = min(float(current)/(filesize/float(blocksize)),1.0)
-            #print(percent)
             self._parent.report_state('downloading map', percent)
         if not os.path.exists(os.path.dirname(geo_db_path)):
             os.makedirs(os.path.dirname(geo_db_path))
         self._parent.report_state('getting city database', 0.0)
         try:
-            urllib.urlretrieve('http://xsser.sf.net/map/GeoLiteCity.dat.gz',
+            urllib.urlretrieve('http://xsser.03c8.net/map/GeoLiteCity.dat.gz',
                            geo_db_path+'.gz', reportfunc)
         except:
             try:
-                urllib.urlretrieve('http://delcorp.dyne.org/xsser/GeoLiteCity.dat.gz',
+                urllib.urlretrieve('http://xsser.sf.net/map/GeoLiteCity.dat.gz',
                            geo_db_path+'.gz', reportfunc)
             except:
                 try:
@@ -176,7 +176,6 @@ class GlobalMap(gtk.DrawingArea, XSSerReporter):
         self._drawn_points = []
         self._lines = []
         self._frozenlines = []
-        # self.set_size_request(self.width, self.height)
         self._points = []
         self._crosses = []
         self.connect("expose_event", self.expose)
@@ -272,24 +271,10 @@ class GlobalMap(gtk.DrawingArea, XSSerReporter):
                                                self.height,
                                                self._pixbuf.get_rowstride())
             self.mapcontext = cairo.Context(self.mapsurface)
-            #self._mappixmap = gtk.gdk.Pixmap (self.window,
-                                              #                              self.width, self.height)
-            #self._mapcontext = self._mappixmap.cairo_create()
-            #self._mapcontext.set_source_pixbuf(self._pixbuf, 0, 0)
-            #self.context.set_source_surface(self.mapsurface)
-            #self._mapcontext.rectangle(event.area.x, event.area.y,
-                                       #                      event.area.width, event.area.height)
-            #self._mapcontext.clip()
-            #self._mapcontext.rectangle(event.area.x, event.area.y,
-            #                      event.area.width, event.area.height)
-            #self._mapcontext.fill()
         self.draw_frozen_lines()
         self.context = self.window.cairo_create()
-
-        #self.context.set_source_surface(self._mapcontext.get_target(), 0, 0)
-        
+      
         self.context.set_source_surface(self.mapsurface)
-        #       self.context.set_source_pixbuf(self.mapsurface)
         self.context.rectangle(event.area.x, event.area.y,
                               event.area.width, event.area.height)
         self.context.clip()
@@ -304,14 +289,11 @@ class GlobalMap(gtk.DrawingArea, XSSerReporter):
         return False
 
     def add_point(self, lng, lat, point_type=PointType.crawled, desturl="testpoint"):
-        #col = list(map(lambda s: int(s*65535), col))
-        #self._points.append([lat, lng, col, 5.0, desturl])
         map_point = MapPoint(lat, lng, point_type, 5.0, desturl)
         map_point.x, map_point.y = self.plot_point(lat, lng)
         self._points.append(map_point)
 
     def add_cross(self, lng, lat, col=[0,0,0], desturl="testpoint"):
-        #col = list(map(lambda s: int(s*65535), col))
         for a in self._crosses:
             if a.latitude == lat and a.longitude == lng:
                 return
@@ -322,7 +304,6 @@ class GlobalMap(gtk.DrawingArea, XSSerReporter):
         self.queue_redraw()
 
     def insert_point(self, lng, lat, col=[0,0,0], desturl="testpoint"):
-        #col = list(map(lambda s: int(s*65535), col))
         self._points.insert(0, MapPoint(lat, lng, point_type, 5.0, desturl))
 
     def _preprocess_points(self):
@@ -375,8 +356,6 @@ class GlobalMap(gtk.DrawingArea, XSSerReporter):
             for line in reversed(self._lines[len(self._frozenlines):]):
                 if line[4] > 0.5:
                     line[4] -= timepassed*2
-                    #else:
-                        #self._lines.remove(line)
                 if line[4] > 0.5:
                     redraw = True
                 self.draw_line(self.context, line)
@@ -443,7 +422,6 @@ class GlobalMap(gtk.DrawingArea, XSSerReporter):
             self.context.save()
             x, y = self.plot_point(point[0], point[1])
             self.context.set_source_rgb(*point[2])
-            #self.context.translate(int(x), int(y))
             self.context.rectangle(x, y, 5, -(2.0+point[3]))
             self.context.fill()
             self.context.restore()
@@ -458,12 +436,9 @@ class GlobalMap(gtk.DrawingArea, XSSerReporter):
             self.adjust_bounds(x2, y2)
             context.set_line_width(1.0)
             context.set_source_rgba(0.0, 0.0, 0.0, float(line[4])/5.0)
-            #self.context.translate(int(x), int(y))
-
             context.move_to(x, y)
             context.rel_line_to(x2-x, y2-y)
             context.stroke()
-
             context.restore()
 
     def draw_point(self, point):
@@ -503,9 +478,7 @@ class GlobalMap(gtk.DrawingArea, XSSerReporter):
 
         if server_name in self._cache_geo:
             return self._cache_geo[server_name]
-        #for line in self.targeturls:
         Geodata = self.geo.record_by_name(server_name)
-        #Geodataip = Geo.record_by_addr(address)
         if Geodata:
             country_name = Geodata['country_name']
             longitude = Geodata['longitude']
@@ -572,18 +545,13 @@ class GlobalMap(gtk.DrawingArea, XSSerReporter):
         gtk.gdk.threads_leave()
 
     def add_link(self, orig_url, dest_url):
-        # doesnt work yet
         try:
             lat, lon = self.get_latlon_fromurl(orig_url)
         except:
-            print("cant find coords", orig_url)
-            traceback.print_exc()
             return
         try:
             d_lat, d_lon = self.get_latlon_fromurl(dest_url)
         except:
-            traceback.print_exc()
-            print("cant find coords", dest_url)
             return
         if lat == d_lat and lon == d_lon:
             return
@@ -617,7 +585,6 @@ class GlobalMap(gtk.DrawingArea, XSSerReporter):
         return x, y
 
     def plot_point_mercatormiller(self, lat, lng):
-        # XXX not tested yet but the formula should be ok
         longitude_shift = 0
         map_width = self.width
         map_height = self.height
