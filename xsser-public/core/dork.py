@@ -106,6 +106,8 @@ class Dorker(object):
                     link = link.rsplit('" h=',1)[0]
                 if self._engine == "google":
                     link = link.rsplit('&amp;sa',1)[0]
+                    if link.startswith("?q="):
+                        link.replace("?q=","")
                 if self._engine == "yahoo":
                     link = link.rsplit('" target=',1)[0]
                 found_links.append(link)

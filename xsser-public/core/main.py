@@ -1311,45 +1311,28 @@ class xsser(EncoderDecoder, XSSerReporter):
             self.report("  1- Output with detailed statistics\n")
             self.report("  2- Export results to files: [XSSreport.raw] - [XSSer_<target>_<datetime>.xml]\n")
             self.report("-"*22)
-            if options.xsser_gtk == False:
-                ans1=True
-                while ans1:
-                    print("""\n[Attention!] This test can takes longer (hours, days, weeks...). Are you sure?\n
-                 *[Y]- Yes!
-                  [N]- No
-                     """)
-                    ans1 = raw_input("Your choice: [Y] or [N]\n")
-                    if (ans1 == "y" or ans1 == "Y"): # YES
-                        print '[Info] Good fly... and happy "Cross" hacking !!! :-)'
-                        ans1 = None
-                        self.options.crawling = "99999" # set max num of urls to crawl
-                        self.options.crawler_width = "5" # set max num of deeping levels
-                        self.options.statistics = True # detailed output
-                        self.options.timeout = "60" # timeout
-                        self.options.retries = "2" # retries  
-                        self.options.delay = "5" # delay
-                        self.options.threads = "10" # threads
-                        self.options.followred = True # follow redirs
-                        self.options.nohead = True # no HEAD check
-                        self.options.reversecheck = True # establish reverse connection 
-                        self.options.fuzz = True # autofuzzing 
-                        self.options.coo = True # COO
-                        self.options.xsa = True # XSA
-                        self.options.xsr = True # XSR
-                        self.options.dcp = True # DCP
-                        self.options.dom = True # DOM
-                        self.options.inducedcode = True # Induced
-                        self.options.fileoutput = True # Important: export results to file (.raw)
-                        self.options.filexml = "XSSer_" + str(self.options.target) + "_" + str(datetime.datetime.now())+".xml" # export results to .xml
-                        self.check_trace() # XST
-                        urls = [options.target]
-                    elif (ans1 == "n" or ans1 == "N"): # NO
-                        ans1 = None
-                        return
-                    else:
-                        print "\nNot valid choice. Try again!"
-            else: # options provided at GTK level
-                urls = [options.target]
+            print '[Info] Good fly... and happy "Cross" hacking !!! :-)'
+            self.options.crawling = "99999" # set max num of urls to crawl
+            self.options.crawler_width = "5" # set max num of deeping levels
+            self.options.statistics = True # detailed output
+            self.options.timeout = "60" # timeout
+            self.options.retries = "2" # retries  
+            self.options.delay = "5" # delay
+            self.options.threads = "10" # threads
+            self.options.followred = True # follow redirs
+            self.options.nohead = True # no HEAD check
+            self.options.reversecheck = True # establish reverse connection 
+            self.options.fuzz = True # autofuzzing 
+            self.options.coo = True # COO
+            self.options.xsa = True # XSA
+            self.options.xsr = True # XSR
+            self.options.dcp = True # DCP
+            self.options.dom = True # DOM
+            self.options.inducedcode = True # Induced
+            self.options.fileoutput = True # Important: export results to file (.raw)
+            self.options.filexml = "XSSer_" + str(self.options.target) + "_" + str(datetime.datetime.now())+".xml" # export xml
+            self.check_trace() # XST
+            urls = [options.target]
 
         if options.url:
             self.report('='*75)
