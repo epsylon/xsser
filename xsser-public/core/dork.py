@@ -51,7 +51,7 @@ class Dorker(object):
         elif self._engine == 'bing': # works at 20-02-2011 -> 19-02-2016
             search_url = "https://www.bing.com/search?q=" + 'instreamset:(url):"' + urllib2.quote(search) + '"'
 
-        elif self._engine == 'google': # works at 11/11/2011 -> 19-02-2016
+        elif self._engine == 'google': # works at 11/11/2011 -> 26-02-2016
             search_url = "https://www.google.com/xhtml?q=" + 'inurl:"' + urllib2.quote(search) + '"'
 
         elif self._engine == 'yahoo': # works at 20-02-2011 -> 19-02-2016
@@ -85,7 +85,6 @@ class Dorker(object):
             print "\n[Error] Cannot connect!"
             return
         html_data = url.read()
-        #print html_data
         if self._engine == 'duck':
             regex = '<a rel="nofollow" class="large" href="(.+?)"' # regex magics 20-02/2016
         if self._engine == 'bing':
@@ -102,12 +101,13 @@ class Dorker(object):
         found_links = []
         if links:
             for link in links:
+                link = urllib2.unquote(link)
                 if self._engine == 'bing':
                     link = link.rsplit('" h=',1)[0]
                 if self._engine == "google":
                     link = link.rsplit('&amp;sa',1)[0]
                     if link.startswith("?q="):
-                        link.replace("?q=","")
+                        link = link.replace("?q=","")
                 if self._engine == "yahoo":
                     link = link.rsplit('" target=',1)[0]
                 found_links.append(link)
