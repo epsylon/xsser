@@ -1,0 +1,5 @@
+*.pyc*
+build
+build/*
+xsser.egg-info
+xsser.egg-info/*
