@@ -8,7 +8,7 @@ Cross Site "Scripter" is an automatic -framework- to detect, exploit and report 
 How-to INSTALL:
 ===================
 
-XSSer runs on many platforms.  It requires Python and the following libraries:
+XSSer runs on many platforms. It requires Python and the following libraries:
 
     - python-pycurl - Python bindings to libcurl
     - python-xmlbuilder - create xml/(x)html files - Python 2.x
@@ -18,6 +18,17 @@ XSSer runs on many platforms.  It requires Python and the following libraries:
 On Debian-based systems (ex: Ubuntu), run: 
 
     sudo apt-get install python-pycurl python-xmlbuilder python-beautifulsoup python-geoip
+
+On other systems such as: Kali, Ubuntu, ArchLinux, ParrotSec, Fedora, etc... also run:
+
+    pip install geoip 
+
+####  Source libs:
+
+       * Python: https://www.python.org/downloads/
+       * PyCurl: http://pycurl.sourceforge.net/
+       * PyBeautifulSoup: https://pypi.python.org/pypi/BeautifulSoup
+       * PyGeoIP: https://pypi.python.org/pypi/GeoIP
 
 =========
 
