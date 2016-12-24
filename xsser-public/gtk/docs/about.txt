@@ -102,7 +102,7 @@
 
       You can also clone the latest development version from the XSSer repository:
 
-            $ git clone https://github.com/epsylon/xsser-public
+            $ git clone https://github.com/epsylon/xsser
 
       For more details, check the main website: 
 

@@ -30,7 +30,7 @@ class Updater(object):
     Update XSSer automatically from a .git repository
     """     
     def __init__(self):
-        GIT_REPOSITORY = "https://github.com/epsylon/xsser-public"
+        GIT_REPOSITORY = "https://github.com/epsylon/xsser"
         rootDir = os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..', ''))
         if not os.path.exists(os.path.join(rootDir, ".git")):
             print "Not any .git repository found!\n"

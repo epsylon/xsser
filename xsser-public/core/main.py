@@ -1249,7 +1249,7 @@ class xsser(EncoderDecoder, XSSerReporter):
                 Updater() 
             except:
                 print("\nSomething was wrong!. You should clone XSSer manually with:\n")
-                print("$ git clone https://github.com/epsylon/xsser-public\n")
+                print("$ git clone https://github.com/epsylon/xsser\n")
             return []
         
         if options.wizard: # processing wizard template

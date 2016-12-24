@@ -1342,7 +1342,7 @@ class Controller(XSSerReporter):
         """
         Search for latest XSSer version
         """
-        webbrowser.open("https://github.com/epsylon/xsser-public")
+        webbrowser.open("https://github.com/epsylon/xsser")
 
     def on_reportbug_clicked(self, widget):
         """
