@@ -1194,7 +1194,7 @@ class xsser(EncoderDecoder, XSSerReporter):
         elif str(curl_handle.info()["http-code"]) == "504":
             self.report("\n504 Gateway Timeout: The server did not receive a timely response specified by the URI (try: --ignore-proxy)\n")
         elif str(curl_handle.info()["http-code"]) == "0":
-            self.report("\nXSSer is not working propertly!:\n - Is something blocking connection(s)?\n - Is target url ok?: (" + orig_url + ")\n")
+            self.report("\nXSSer is not working properly!:\n - Is something blocking connection(s)?\n - Is target url ok?: (" + orig_url + ")\n")
         else:
             self.report("\nNot injected!. Server responses with http-code different to: 200 OK (" + str(curl_handle.info()["http-code"]) + ")")
 
@@ -2137,7 +2137,7 @@ class xsser(EncoderDecoder, XSSerReporter):
             self.report('='*75 + '\n')
             self.report("- Injections:", total_injections)
             self.report("- Failed:", len(self.hash_notfound))
-            self.report("- Sucessfull:", len(self.hash_found))
+            self.report("- Successful:", len(self.hash_found))
             try:
                 _accur = len(self.hash_found) * 100 / total_injections
             except ZeroDivisionError:
@@ -2480,7 +2480,7 @@ class xsser(EncoderDecoder, XSSerReporter):
                             len(self.hash_notfound) + len(self.hash_found))
                 self.report('-'*25)
                 self.report("Failed:" , len(self.hash_notfound), "|",
-                            "Sucessfull:" , len(self.hash_found))
+                            "Successful:" , len(self.hash_found))
                 try:
                     _accur = len(self.hash_found) * 100 / total_injections
                 except ZeroDivisionError:
