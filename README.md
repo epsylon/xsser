@@ -2,8 +2,7 @@
 
 =================================================================== 
 
- Cross Site "Scripter" (aka XSSer) is an automatic -framework- to detect, exploit and report XSS vulnerabilities 
-in web-based applications.
+ Cross Site "Scripter" (aka XSSer) is an automatic -framework- to detect, exploit and report XSS vulnerabilities.
 
 ----------
 
@@ -46,7 +45,9 @@ in the [COPYING](./xsser-public/doc/COPYING) file.
 
 ####  Screenshots:
 
-  ![XSSer](http://xsser.03c8.net/xsser/zika4.png "XSSerGeoMap")
-
   ![XSSer](http://xsser.03c8.net/xsser/url_generation.png "XSSerSchema")
+
+  ![XSSer](http://xsser.03c8.net/xsser/zika3.png "XSSerAdvanced")
+
+  ![XSSer](http://xsser.03c8.net/xsser/zika4.png "XSSerGeoMap")
 
