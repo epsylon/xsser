@@ -7,7 +7,7 @@
 ----------
 
  XSSer is released under the GPLv3. You can find the full license text
-in the [COPYING](./xsser-public/doc/COPYING) file.
+in the [COPYING](./xsser/doc/COPYING) file.
 
 ----------
 

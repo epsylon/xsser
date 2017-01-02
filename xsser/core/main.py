@@ -2170,7 +2170,7 @@ class xsser(EncoderDecoder, XSSerReporter):
                         fout.write("\n" + "XSSer Security Report: " + str(datetime.datetime.now()) + "\n")
                         fout.write("---------------------" + "\n")
                         fout.write("[I] Target: " + line[6] + "\n")
-                        fout.write("[+] Injection: " + str(line[6])+"/"+str(line[4]) + "[" + Curl.referer + "]" + "\n")
+                        fout.write("[+] Injection: " + str(line[6])+"/"+str(line[4]) + "[" + str(Curl.referer) + "]" + "\n")
                         fout.write("[!] Special: " + "This injections looks like a Cross Site Referer Scripting" + "\n")
                         fout.write("[-] Method: " + line[2] + "\n" + '-'*50 +"\n")
             elif line[2] == "xsa":
@@ -2190,7 +2190,7 @@ class xsser(EncoderDecoder, XSSerReporter):
                         fout.write("\n" + "XSSer Security Report: " + str(datetime.datetime.now()) + "\n")
                         fout.write("---------------------" + "\n")
                         fout.write("[I] Target: " + line[6] + "\n")
-                        fout.write("[+] Injection: "+ str(line[6])+"/"+str(line[4]) + "[" + Curl.agent + "]" + "\n")
+                        fout.write("[+] Injection: "+ str(line[6])+"/"+str(line[4]) + "[" + str(Curl.agent) + "]" + "\n")
                         fout.write("[!] Special: " + "This injection looks like a Cross Site Agent Scripting " + "\n")
                         fout.write("[-] Method: " + line[2] + "\n" + '-'*50 +"\n")
             elif line[2] == "coo":
@@ -2210,7 +2210,7 @@ class xsser(EncoderDecoder, XSSerReporter):
                         fout.write("\n" + "XSSer Security Report: " + str(datetime.datetime.now()) + "\n")
                         fout.write("---------------------" + "\n")
                         fout.write("[I] Target: " + line[6] + "\n")
-                        fout.write("[+] Injection: "+ str(line[6])+"/"+str(line[4]) + "[" + Curl.cookie + "]" + "\n")
+                        fout.write("[+] Injection: "+ str(line[6])+"/"+str(line[4]) + "[" + str(Curl.cookie) + "]" + "\n")
                         fout.write("[!] Special: " + "This injection looks like a Cross Site Cookie Scripting " + "\n")
                         fout.write("[-] Method: " + line[2] + "\n" + '-'*50 +"\n")
             elif line[1] == "[Data Control Protocol Injection]":
