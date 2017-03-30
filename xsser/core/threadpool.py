@@ -128,7 +128,7 @@ def makeRequests(callable_, args_list, callback=None,
             )
         else:
             requests.append(
-                WorkRequest(callable_, [item], None, callback=callback,
+                WorkRequest(callable_, item, None, callback=callback,
                     exc_callback=exc_callback)
             )
     return requests
