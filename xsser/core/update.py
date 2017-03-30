@@ -31,16 +31,15 @@ class Updater(object):
     """     
     def __init__(self):
         GIT_REPOSITORY = "https://github.com/epsylon/xsser"
-        rootDir = os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..', ''))
+        rootDir = os.path.abspath(os.path.join(os.path.dirname( __file__ ), '../../', ''))
         if not os.path.exists(os.path.join(rootDir, ".git")):
             print "Not any .git repository found!\n"
             print "="*30
             print "\nYou should clone XSSer manually with:\n"
             print "$ git clone %s" % GIT_REPOSITORY + "\n"
         else:
-            checkout = execute("git checkout .", shell=True, stdout=PIPE, stderr=PIPE).communicate()[0]
-            if "fast-forwarded" in checkout:
-                pull = execute("git pull %s HEAD" % GIT_REPOSITORY, shell=True, stdout=PIPE, stderr=PIPE).communicate()
-                print "Congratulations!! XSSer has been updated to latest version ;-)\n"
+            checkout = execute("git pull", shell=True, stdout=PIPE, stderr=PIPE).communicate()[0]
+            if "Fast-forward" in checkout:
+                print "Congratulations!! XSSer has been updated... ;-)\n"
             else:
-                print "You are updated! ;-)\n"
+                print "Your XSSer doesn't need to be updated... ;-)\n"
