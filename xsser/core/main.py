@@ -652,7 +652,7 @@ class xsser(EncoderDecoder, XSSerReporter):
                 c.agent = agent
                 c.referer = referer
                 c.cookie = cookie
-            pool.addRequest(c.get, [dest_url], _cb, _error_cb)
+            pool.addRequest(c.get, [[dest_url]], _cb, _error_cb)
             self._ongoing_requests += 1
 
         if self.options.postdata:
@@ -664,8 +664,7 @@ class xsser(EncoderDecoder, XSSerReporter):
                 c.agent = agent
                 c.referer = referer
                 c.cookie = cookie
-            data = c.post(url, dest_url)
-            pool.addRequest(c.get, [dest_url], _cb, _error_cb)
+            pool.addRequest(c.post, [[url, dest_url]], _cb, _error_cb)
             self._ongoing_requests += 1
 
     def error_attack_url_payload(self, c, url, request, error):
