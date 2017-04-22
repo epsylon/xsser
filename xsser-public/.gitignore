@@ -1,0 +1,11 @@
+*.pyc*
+build
+build/*
+xsser.egg-info
+xsser.egg-info/*
+core
+core/*
+core.fuzzing
+core.fuzzing/*
+core.post
+core.post/*
