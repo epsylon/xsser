@@ -1,4 +1,4 @@
-  ![XSSer](http://xsser.03c8.net/xsser/zika1.png "XSSerBanner")
+  ![XSSer](https://xsser.03c8.net/xsser/zika1.png "XSSerBanner")
 
 =================================================================== 
 
@@ -15,7 +15,7 @@ in the [COPYING](./xsser/doc/COPYING) file.
 
 ----------
 
-  ![XSSer](http://xsser.03c8.net/xsser/zika2.png "XSSerManifesto")
+  ![XSSer](https://xsser.03c8.net/xsser/zika2.png "XSSerManifesto")
 
 #### Installing:
 
@@ -45,9 +45,9 @@ in the [COPYING](./xsser/doc/COPYING) file.
 
 ####  Screenshots:
 
-  ![XSSer](http://xsser.03c8.net/xsser/url_generation.png "XSSerSchema")
+  ![XSSer](https://xsser.03c8.net/xsser/url_generation.png "XSSerSchema")
 
-  ![XSSer](http://xsser.03c8.net/xsser/zika3.png "XSSerAdvanced")
+  ![XSSer](https://xsser.03c8.net/xsser/zika3.png "XSSerAdvanced")
 
-  ![XSSer](http://xsser.03c8.net/xsser/zika4.png "XSSerGeoMap")
+  ![XSSer](https://xsser.03c8.net/xsser/zika4.png "XSSerGeoMap")
 
