@@ -30,6 +30,7 @@ import core.fuzzing.HTTPsr
 import core.fuzzing.heuristic
 from collections import defaultdict
 from itertools import islice, chain
+from urlparse import parse_qs, urlparse
 from core.curlcontrol import Curl
 from core.encdec import EncoderDecoder
 from core.options import XSSerOptions
@@ -621,15 +622,47 @@ class xsser(EncoderDecoder, XSSerReporter):
 
         self._ongoing_attacks['url'] = url_orig_hash
 
-        if 'VECTOR' in url:
-            # this url comes with vector included
-            dest_url = url.strip().replace('VECTOR', hashed_vector_url)
+        if not options.getdata: # using GET as a single input (-u)
+            target_url = url
         else:
+            if not options.postdata: # using GET provided by parameter (-g)
+                if not url.endswith("/") and not options.getdata.startswith("/"):
+                    url = url + "/"
+                target_url = url + options.getdata
+        p_uri = urlparse(target_url)
+        uri = p_uri.netloc
+        path = p_uri.path
+        if not uri.endswith('/') and not path.startswith('/'):
+            uri = uri + "/"
+        target_params = parse_qs(urlparse(target_url).query, keep_blank_values=True)
+        if not target_params: # just an url pased (ex: -u 'http://example.com')
             payload_url = query_string.strip() + hashed_vector_url
-            if not query_string and not url.strip().endswith("/"):
-                dest_url = url.strip() + '/' + payload_url
-            else:
-                dest_url = url.strip() + payload_url
+            dest_url = p_uri.scheme + "://" + uri + path + payload_url
+        else:
+            for key, value in target_params.iteritems(): # parse params searching for keywords
+                for v in value:
+                    if v == '' or v == 'XSS' or v == 'VECTOR': # input keywords to inject payload
+                        target_params[key] = hashed_vector_url
+                        url_orig_hash = self.generate_hash('url') # new hash for each parameter with an injection
+                        hashed_payload = payload_string.replace('XSS', url_orig_hash)
+                        hashed_vector_url = self.encoding_permutations(hashed_payload)
+                    else:
+                        target_params[key] = v
+            target_url_params = urllib.urlencode(target_params)
+            dest_url = p_uri.scheme + "://" + uri + path + "?" + target_url_params
+        if options.postdata: # using POST provided by parameter (-p)
+            target_params = parse_qs(query_string, keep_blank_values=True)
+            for key, value in target_params.iteritems(): # parse params searching for keywords
+                for v in value:
+                    if v == '' or v == 'XSS' or v == 'VECTOR': # input keywords to inject payload
+                        target_params[key] = hashed_vector_url
+                        url_orig_hash = self.generate_hash('url') # new hash for each parameter with an injection
+                        hashed_payload = payload_string.replace('XSS', url_orig_hash)
+                        hashed_vector_url = self.encoding_permutations(hashed_payload)
+                    else:
+                        target_params[key] = v
+            target_url_params = urllib.urlencode(target_params)
+            dest_url = target_url_params
         return dest_url, url_orig_hash
 
     def attack_url_payload(self, url, payload, query_string):
@@ -658,7 +691,7 @@ class xsser(EncoderDecoder, XSSerReporter):
         if self.options.postdata:
             dest_url, newhash = self.get_url_payload("", payload, query_string)
             dest_url = dest_url.strip().replace("/", "", 1)
-            self.report("\nSending POST:", query_string, "\n")
+            #self.report("\nSending POST:", urllib.unquote(dest_url), "\n")
             if (self.options.xsa or self.options.xsr or self.options.coo):
                 agent, referer, cookie = self._prepare_extra_attacks(payload)
                 c.agent = agent
@@ -884,7 +917,10 @@ class xsser(EncoderDecoder, XSSerReporter):
         if payload['browser'] == "[Heuristic test]":
             self.report("[+] Checking: " + str(payload['payload']).strip('XSS'))
         else:
-            self.report("[+] Trying: " + dest_url.strip())
+            if options.postdata:
+                self.report("[+] Trying: " + dest_url.strip(), "(POST:", query_string + ")")
+            else:
+                self.report("[+] Trying: " + urllib.unquote(dest_url.strip()))
         if payload['browser'] == "[Heuristic test]" or payload['browser'] == "[hashed_precheck_system]" or payload['browser'] == "[manual_injection]":
             pass
         else:
@@ -1146,7 +1182,13 @@ class xsser(EncoderDecoder, XSSerReporter):
         if payload['browser'] == "[Heuristic test]":
             self.report("[+] Trying: " + str(payload['payload']).strip('XSS'))
         else:
-            self.report("[+] Trying: " + dest_url.strip())
+            if options.postdata:
+                try:
+                    self.report("[+] Trying: " + dest_url.strip(), "(POST:", query_string + ")")
+                except:
+                    self.report("[+] Trying: " + dest_url.strip(), "(POST)")
+            else:
+                self.report("[+] Trying: " + urllib.unquote(dest_url.strip()))
         self.report("[+] Browser Support: " + payload['browser'])
  
 	# statistics injections counters
