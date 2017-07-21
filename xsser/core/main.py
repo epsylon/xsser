@@ -641,7 +641,7 @@ class xsser(EncoderDecoder, XSSerReporter):
         else:
             for key, value in target_params.iteritems(): # parse params searching for keywords
                 for v in value:
-                    if v == 'XSS' or v == 'VECTOR': # input keywords to inject payload
+                    if v == '' or v == 'XSS' or v == 'VECTOR': # input keywords to inject payload
                         target_params[key] = hashed_vector_url
                         url_orig_hash = self.generate_hash('url') # new hash for each parameter with an injection
                         hashed_payload = payload_string.replace('XSS', url_orig_hash)
@@ -1412,6 +1412,19 @@ class xsser(EncoderDecoder, XSSerReporter):
                     try:
                         dorker = Dorker(e)
                         urls = dorker.dork(options.dork)
+                        i = 0
+                        for u in urls: # replace original parameter for injection keyword (XSS)
+                            p_uri = urlparse(u)
+                            uri = p_uri.netloc
+                            path = p_uri.path
+                            target_params = parse_qs(urlparse(u).query, keep_blank_values=True)
+                            for key, value in target_params.iteritems(): # parse params to apply keywords
+                                for v in value:
+                                    target_params[key] = 'XSS'
+                            target_url_params = urllib.urlencode(target_params)
+                            u = p_uri.scheme + "://" + uri + path + "?" + target_url_params
+                            urls[i] = u
+                            i = i + 1
                     except Exception, e:
                         for reporter in self._reporters:
                             reporter.mosquito_crashed(dorker.search_url, str(e.message))
@@ -1424,6 +1437,19 @@ class xsser(EncoderDecoder, XSSerReporter):
                 dorker = Dorker(options.dork_engine)
                 try:
                     urls = dorker.dork(options.dork)
+                    i = 0
+                    for u in urls: # replace original parameter for injection keyword (XSS)
+                        p_uri = urlparse(u)
+                        uri = p_uri.netloc
+                        path = p_uri.path
+                        target_params = parse_qs(urlparse(u).query, keep_blank_values=True)
+                        for key, value in target_params.iteritems(): # parse params to apply keywords
+                            for v in value:
+                                target_params[key] = 'XSS'
+                        target_url_params = urllib.urlencode(target_params)
+                        u = p_uri.scheme + "://" + uri + path + "?" + target_url_params
+                        urls[i] = u
+                        i = i + 1
                 except Exception, e:
                     for reporter in self._reporters:
                         reporter.mosquito_crashed(dorker.search_url, str(e.message))
@@ -1462,6 +1488,19 @@ class xsser(EncoderDecoder, XSSerReporter):
                         dorker = Dorker(e)
                         for dork in dorks:
                             urls = dorker.dork(dork)
+                        i = 0
+                        for u in urls: # replace original parameter for injection keyword (XSS)
+                            p_uri = urlparse(u)
+                            uri = p_uri.netloc
+                            path = p_uri.path
+                            target_params = parse_qs(urlparse(u).query, keep_blank_values=True)
+                            for key, value in target_params.iteritems(): # parse params to apply keywords
+                                for v in value:
+                                    target_params[key] = 'XSS'
+                            target_url_params = urllib.urlencode(target_params)
+                            u = p_uri.scheme + "://" + uri + path + "?" + target_url_params
+                            urls[i] = u
+                            i = i + 1
                     except Exception, e:
                         for reporter in self._reporters:
                             reporter.mosquito_crashed(dorker.search_url, str(e.message))
@@ -1475,6 +1514,19 @@ class xsser(EncoderDecoder, XSSerReporter):
                 try:
                     for dork in dorks:
                         urls = dorker.dork(dork)
+                    i = 0
+                    for u in urls: # replace original parameter for injection keyword (XSS)
+                        p_uri = urlparse(u)
+                        uri = p_uri.netloc
+                        path = p_uri.path
+                        target_params = parse_qs(urlparse(u).query, keep_blank_values=True)
+                        for key, value in target_params.iteritems(): # parse params to apply keywords
+                            for v in value:
+                                target_params[key] = 'XSS'
+                        target_url_params = urllib.urlencode(target_params)
+                        u = p_uri.scheme + "://" + uri + path + "?" + target_url_params
+                        urls[i] = u
+                        i = i + 1
                 except Exception, e:
                     for reporter in self._reporters:
                         reporter.mosquito_crashed(dorker.search_url, str(e.message))
