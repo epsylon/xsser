@@ -68,9 +68,9 @@ class XSSerOptions(optparse.OptionParser):
         self.add_option_group(group2)
 
         group3 = optparse.OptionGroup(self, "*Select type of HTTP/HTTPS Connection(s)*",
-        "These options can be used to specify which parameter(s) we want to use as payload(s) to inject:")
-        group3.add_option("-g", action="store", dest="getdata", help="Send payload using GET (ex: '/menu.php?q=')")
-        group3.add_option("-p", action="store", dest="postdata", help="Send payload using POST (ex: 'foo=1&bar=')")
+        "These options can be used to specify which parameter(s) we want to use as payload(s). Set 'XSS' as keyword on the place(s) that you want to inject:")
+        group3.add_option("-g", action="store", dest="getdata", help="Send payload using GET (ex: '/menu.php?id=3&q=XSS')")
+        group3.add_option("-p", action="store", dest="postdata", help="Send payload using POST (ex: 'foo=1&bar=XSS')")
         group3.add_option("-c", action="store", dest="crawling", help="Number of urls to crawl on target(s): 1-99999")
         group3.add_option("--Cw", action="store", dest="crawler_width", help="Deeping level of crawler: 1-5 (default 3)")
         group3.add_option("--Cl", action="store_true", dest="crawler_local", help="Crawl only local target(s) urls (default TRUE)") 

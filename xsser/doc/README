@@ -47,10 +47,11 @@ Options:
 
   *Select type of HTTP/HTTPS Connection(s)*:
     These options can be used to specify which parameter(s) we want to use
-    as payload(s) to inject:
+    as payload(s). Set 'XSS' as keyword on the place(s) that you want to
+    inject:
 
-    -g GETDATA          Send payload using GET (ex: '/menu.php?q=')
-    -p POSTDATA         Send payload using POST (ex: 'foo=1&bar=')
+    -g GETDATA          Send payload using GET (ex: '/menu.php?id=3&q=XSS')
+    -p POSTDATA         Send payload using POST (ex: 'foo=1&bar=XSS')
     -c CRAWLING         Number of urls to crawl on target(s): 1-99999
     --Cw=CRAWLER_WIDTH  Deeping level of crawler: 1-5 (default 3)
     --Cl                Crawl only local target(s) urls (default TRUE)
