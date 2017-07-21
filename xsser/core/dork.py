@@ -87,7 +87,6 @@ class Dorker(object):
         html_data = url.read()
         if self._engine == 'duck':
             regex = ';uddg=(.+?)">' # regex magics 21-07/2017
-            print html_data
         if self._engine == 'bing':
             regex = '<li class="b_algo"><h2><a href="(.+?)">' # regex magics 20-02/2016
         if self._engine == 'google':
