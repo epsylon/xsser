@@ -641,7 +641,7 @@ class xsser(EncoderDecoder, XSSerReporter):
         else:
             for key, value in target_params.iteritems(): # parse params searching for keywords
                 for v in value:
-                    if v == '' or v == 'XSS' or v == 'VECTOR': # input keywords to inject payload
+                    if v == 'XSS' or v == 'VECTOR': # input keywords to inject payload
                         target_params[key] = hashed_vector_url
                         url_orig_hash = self.generate_hash('url') # new hash for each parameter with an injection
                         hashed_payload = payload_string.replace('XSS', url_orig_hash)
