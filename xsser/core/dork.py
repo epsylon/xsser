@@ -45,7 +45,7 @@ class Dorker(object):
         Perform a search and return links.
         Use -duck- engine by default.
         """
-        if self._engine == 'duck' or not self._engine: # seems hopeless at 20-02-2011 -> 19-02-2016
+        if self._engine == 'duck' or not self._engine: # seems hopeless at 20-02-2011 -> 19-02-2016 -> 21/07/2017
             search_url = "https://duckduckgo.com/html/?q=" + '"' + urllib2.quote(search) + '"'
 
         elif self._engine == 'bing': # works at 20-02-2011 -> 19-02-2016
@@ -86,7 +86,8 @@ class Dorker(object):
             return
         html_data = url.read()
         if self._engine == 'duck':
-            regex = '<a rel="nofollow" class="large" href="(.+?)"' # regex magics 20-02/2016
+            regex = ';uddg=(.+?)">' # regex magics 21-07/2017
+            print html_data
         if self._engine == 'bing':
             regex = '<li class="b_algo"><h2><a href="(.+?)">' # regex magics 20-02/2016
         if self._engine == 'google':
