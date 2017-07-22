@@ -76,21 +76,21 @@
 
       Slides XSSer -"The mosquito"- 2011 presented on THSF'11 (english): 
 
-            - http://xsser.03c8.net/xsser/XSSer_the_mosquito_2011.pdf
+            - https://xsser.03c8.net/xsser/XSSer_the_mosquito_2011.pdf
 
       Slides XSSer -"The Cross Site Scripting framework"- 2012 presented on RootedCon (spanish): 
  
-            - http://xsser.03c8.net/xsser/rooted2012_XSSer.pdf
+            - https://xsser.03c8.net/xsser/rooted2012_XSSer.pdf
  
       XSS for fun and profit - conference SCG/09 -PDF (184 pages)
 
-            + English Version: http://xsser.03c8.net/xsser/XSS_for_fun_and_profit_SCG09_(english).pdf
+            + English Version: https://xsser.03c8.net/xsser/XSS_for_fun_and_profit_SCG09_(english).pdf
 
-            + Spanish Version: http://xsser.03c8.net/xsser/XSS_for_fun_and_profit_SCG09_(spanish).pdf
+            + Spanish Version: https://xsser.03c8.net/xsser/XSS_for_fun_and_profit_SCG09_(spanish).pdf
 
       XSSer URL Generation Schema: 
 
-            - http://xsser.03c8.net/xsser/url_generation.png
+            - https://xsser.03c8.net/xsser/url_generation.png
 
     ====================================
     Downloads:
@@ -98,7 +98,7 @@
 
       XSSer can be downloaded from: 
 
-            - http://xsser.03c8.net/#download
+            - https://xsser.03c8.net/#download
 
       You can also clone the latest development version from the XSSer repository:
 
@@ -106,7 +106,7 @@
 
       For more details, check the main website: 
 
-            - http://xsser.03c8.net
+            - https://xsser.03c8.net
 
     ====================================
     License:

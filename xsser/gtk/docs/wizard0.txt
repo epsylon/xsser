@@ -6,9 +6,9 @@
     Welcome to the Wizard Helper!
 
 
-    You only need to reply some questions to create your pentesting attack. If you haven't time to read just press "Next". :-)
+    You only need to reply some questions to create your pentesting attack. If you haven't time to read, just press "Next". :-)
 
-    XSSer will takes your answers to build -automagically- all commands needed.
+    XSSer will take your answers to -automagically- build all the necessary commands.
 
 
     Press "Start Wizard" button (below) to start your configuration...

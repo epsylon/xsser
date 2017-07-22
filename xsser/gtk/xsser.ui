@@ -13,7 +13,7 @@
     <property name="can_default">True</property>
     <property name="has_tooltip">True</property>
     <property name="border_width">1</property>
-    <property name="title" translatable="yes">XSSer v1.7b: "ZiKA-47 Swarm!" - (http://xsser.03c8.net)</property>
+    <property name="title" translatable="yes">XSSer v1.7b: "ZiKA-47 Swarm!" - (https://xsser.03c8.net)</property>
     <property name="window_position">center-always</property>
     <property name="destroy_with_parent">True</property>
     <property name="icon">images/xssericon_24x24.png</property>
@@ -136,7 +136,7 @@
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
                                     <property name="receives_default">False</property>
-                                    <property name="tooltip_text" translatable="yes">Enter payload to audit using GET (ex: '/menu.php?q=')</property>
+                                    <property name="tooltip_text" translatable="yes">Enter payload to audit using GET (ex: '/menu.php?q=XSS')</property>
                                     <property name="xalign">0</property>
                                     <property name="draw_indicator">True</property>
                                     <property name="group">connection_none</property>
@@ -155,7 +155,7 @@
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
                                     <property name="receives_default">False</property>
-                                    <property name="tooltip_text" translatable="yes">Enter payload to audit using POST (ex: 'foo=1&amp;bar=')</property>
+                                    <property name="tooltip_text" translatable="yes">Enter payload to audit using POST (ex: 'foo=1&amp;bar=XSS')</property>
                                     <property name="xalign">0</property>
                                     <property name="draw_indicator">True</property>
                                     <property name="group">connection_none</property>

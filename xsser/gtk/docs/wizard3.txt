@@ -6,13 +6,13 @@
     Do you want to be as much 'anonymous' as possible?:
 
  
-        1)- Yes. I want to use my proxy and apply automatic spoofing methods.
+        1)- Yes. I want to use my own proxy and apply automatic spoofing methods.
 
 
-        2)- Anonymous?. Yes!!!. I have a TOR proxy listening on: http://127.0.0.1:8118. 
+        2)- Anonymous?. Yes!!!. I have a -transparent- TOR proxy listening on: http://127.0.0.1:8118. 
    
 
-        3)- Yes. But I haven't any proxy. :-)
+        3)- Yes. But, I haven't any proxy. :-)
 
    
         4)- No. It's not a problem to connect directly to the target(s).

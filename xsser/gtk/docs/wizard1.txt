@@ -6,7 +6,7 @@
     OK!, so now is time to -fly your mosquito(es)-. You need to set some parameters: 
 
 
-        1)- I want to enter the url of my target directly.
+        1)- I want to enter the url of my target, directly.
    
         2)- I don't know where are my targets... I just want to explore! :-)
 
