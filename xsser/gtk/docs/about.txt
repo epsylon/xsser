@@ -4,7 +4,7 @@
                                                                     `.`                   ..              
             Welcome to XSSer ....                       `-:`              .-`               
                                                                         `/-     -      +`                                        
-                                                                          o     +      /                                  v1.7b -> ZiKA-47 Swarm!
+                                                                          o     +      /                                  v1.7.2b -> ZiKA-47 Swarm!
                                                                           ./   -Ny    /.                                         
                                                              `::-`       :--yMN:--.      `.....                      
                                          `mMMMMMmdhysoooosMyoo+oyhdmNMMMMMMMs       
@@ -16,7 +16,7 @@
                                                                   .::`     h`  o-  o.    :+.                       
                        GPLv3                                .--.        :o      y       :/.          
                                                                ``            h      .s         -:.        
-                                                                              :/       o.          ``                2011/2016 - by psy
+                                                                              :/       o.          ``                2011/2018 - by psy
                                                                             .o         o                   
                                                                              o          ./                  
                                                                             +`           :.                 

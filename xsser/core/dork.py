@@ -2,11 +2,9 @@
 # -*- coding: utf-8 -*-"
 # vim: set expandtab tabstop=4 shiftwidth=4:
 """
-$Id$
+This file is part of the xsser project, https://xsser.03c8.net
 
-This file is part of the xsser project, http://xsser.03c8.net
-
-Copyright (c) 2011/2016 psy <epsylon@riseup.net>
+Copyright (c) 2011/2016/2018 psy <epsylon@riseup.net>
 
 xsser is free software; you can redistribute it and/or modify it under
 the terms of the GNU General Public License as published by the Free
@@ -20,45 +18,38 @@ details.
 You should have received a copy of the GNU General Public License along
 with xsser; if not, write to the Free Software Foundation, Inc., 51
 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+........
+
+List of search engines: http://en.wikipedia.org/wiki/List_of_search_engines
+
 """
-"""
-List fo search engines: http://en.wikipedia.org/wiki/List_of_search_engines
-XSSer supported: duck (default), google, bing, yahoo, yandex- [19/02/2016]
-"""
-import urlparse, urllib2, traceback, re
+import urllib2, traceback, re, random
 urllib2.socket.setdefaulttimeout(5.0)
 
 DEBUG = 0
 
 class Dorker(object):
-    def __init__(self, engine='duck'):
+    def __init__(self, engine='yahoo'):
         self._engine = engine
         self.search_engines = [] # available dorking search engines
-        self.search_engines.append('duck')
         self.search_engines.append('bing')
-        self.search_engines.append('google')
         self.search_engines.append('yahoo')
-        self.search_engines.append('yandex')
+        self.agents = [] # user-agents
+        try:
+            f = open("core/fuzzing/user-agents.txt").readlines() # set path for user-agents
+        except:
+            f = open("fuzzing/user-agents.txt").readlines() # set path for user-agents when testing
+        for line in f:
+            self.agents.append(line)
 
     def dork(self, search):
         """
         Perform a search and return links.
-        Use -duck- engine by default.
         """
-        if self._engine == 'duck' or not self._engine: # seems hopeless at 20-02-2011 -> 19-02-2016 -> 21/07/2017
-            search_url = "https://duckduckgo.com/html/?q=" + '"' + urllib2.quote(search) + '"'
-
-        elif self._engine == 'bing': # works at 20-02-2011 -> 19-02-2016
-            search_url = "https://www.bing.com/search?q=" + 'instreamset:(url):"' + urllib2.quote(search) + '"'
-
-        elif self._engine == 'google': # works at 11/11/2011 -> 26-02-2016
-            search_url = "https://www.google.com/xhtml?q=" + 'inurl:"' + urllib2.quote(search) + '"'
-
-        elif self._engine == 'yahoo': # works at 20-02-2011 -> 19-02-2016
-            search_url = "https://search.yahoo.com/search?q=" + 'instreamset:(url):"' + urllib2.quote(search) + '"'
-
-        elif self._engine == 'yandex': # works at 20-02-2011 -> 19-02-2016
-            search_url = "https://yandex.ru/search/?text=" + 'inurl:"' + urllib2.quote(search) + '"'
+        if self._engine == 'bing': # works at 20-02-2011 -> 19-02-2016 -> 09-04-2018
+            search_url = 'https://www.bing.com/search?q="' + search + '"'
+        elif self._engine == 'yahoo': # works at 20-02-2011 -> 19-02-2016 -> -> 09-04-2018
+            search_url = 'https://search.yahoo.com/search?q="' + search + '"'
         else:
             print "\n[Error] This search engine is not supported!\n" 
             print "[Info] List of available:"
@@ -68,58 +59,45 @@ class Dorker(object):
             print ""
         try:
             self.search_url = search_url
-            print "\n[Info] Search query:", search_url
-            if search_url.startswith("https"):
-                proxy = urllib2.ProxyHandler({'http': '127.0.0.1'})
-                opener = urllib2.build_opener(proxy)
-                urllib2.install_opener(opener)
-                url = urllib2.urlopen(urllib2.Request(search_url,
-                                      headers={'User-Agent':"Googlebot/2.1b"}))
-            else:
-                url = urllib2.urlopen(urllib2.Request(search_url,
-                                      headers={'User-Agent':"Googlebot/2.1b"}))
+            print "\n[Info] Search query:", urllib2.unquote(search_url)
+            user_agent = random.choice(self.agents).strip() # set random user-agent
+            referer = '127.0.0.1' # set referer to localhost / WAF black magic!
+            headers = {'User-Agent' : user_agent, 'Referer' : referer}
+            req = urllib2.Request(search_url, None, headers)
+            html_data = urllib2.urlopen(req).read()
             print "\n[Info] Retrieving requested info..."
         except urllib2.URLError, e:
             if DEBUG:
                 traceback.print_exc()
             print "\n[Error] Cannot connect!"
             return
-        html_data = url.read()
-        if self._engine == 'duck':
-            regex = ';uddg=(.+?)">' # regex magics 21-07/2017
         if self._engine == 'bing':
-            regex = '<li class="b_algo"><h2><a href="(.+?)">' # regex magics 20-02/2016
-        if self._engine == 'google':
-            regex = '<h3 class="r"><a href="/url(.+?)">' # regex magics 20-02/2016
+            regex = '<h2><a href="(.+?)" h=' # regex magics 09-04/2018
         if self._engine == 'yahoo':
-            regex = '<h3 class="title"><a class=" ac-algo ac-21th lh-15" href="(.+?)">' # regex magics 20-02/2016
-        if self._engine == 'yandex':
-            regex = '<a class="link serp-item__title-link" target="_blank" href="(.+?)"' # regex magics 20-02/2016
+            regex = 'RU=(.+?)/RK=' # regex magics [09/04/2018]
         pattern = re.compile(regex)
         links = re.findall(pattern, html_data)
-
         found_links = []
         if links:
             for link in links:
                 link = urllib2.unquote(link)
-                if self._engine == 'bing':
-                    link = link.rsplit('" h=',1)[0]
-                if self._engine == "google":
-                    link = link.rsplit('&amp;sa',1)[0]
-                    if link.startswith("?q="):
-                        link = link.replace("?q=","")
                 if self._engine == "yahoo":
-                    link = link.rsplit('" target=',1)[0]
-                found_links.append(link)
+                    if "RU=https://www.yahoo.com/" in link:
+                        link = "" # invalid url
+                if search.upper() in link.upper(): # parse that search query is on url
+                    sep = search
+                    link2 = link.split(sep,1)[0]
+                    if link2 not in found_links: # parse that target is not duplicated
+                        found_links.append(link)
         else:
-            print "\n[Info] Not any link found with that query!"
+            print "\n[Info] Not any link found for that query!"
         return found_links
 
 if __name__ == '__main__':
-    for a in ['duck', 'bing', 'google', 'yahoo', 'yandex']:
+    for a in ['yahoo', 'bing']:
         dork = Dorker(a)
         res = dork.dork("news.php?id=")
         if res:
-            print a,len(res)
+            print "[+]", a, ":", len(res), "\n"
             for b in res:
                 print " *", b

@@ -75,7 +75,7 @@ class HubThread(Thread):
                 s.bind(('localhost', 19084))
                 self.running = True
             except socket.error as e:
-                print("socket busy, retry opening")
+                #print("socket busy, retry opening")
                 if e.errno == 98: # its in use wait a bit and retry
                     time.sleep(3)
         if not self._armed:

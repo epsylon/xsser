@@ -2,11 +2,9 @@
 # -*- coding: utf-8 -*-"
 # vim: set expandtab tabstop=4 shiftwidth=4:
 """
-$Id$
+This file is part of the xsser project, https://xsser.03c8.net
 
-This file is part of the xsser project, http://xsser.03c8.net
-
-Copyright (c) 2011/2016 psy <epsylon@riseup.net>
+Copyright (c) 2011/2016/2018 psy <epsylon@riseup.net>
 
 xsser is free software; you can redistribute it and/or modify it under
 the terms of the GNU General Public License as published by the Free
@@ -270,7 +268,7 @@ class Controller(XSSerReporter):
         step4_options_w = self.wTree.get_object('combobox_step4')
         step5_options_w = self.wTree.get_object('combobox_step5')
         # ui comboboxes content
-        dorker_options = [ 'duck', 'bing', 'google', 'yahoo', 'yandex']
+        dorker_options = [ 'yahoo', 'bing']
         crawlerdeep_options = ['1', '2', '3', '4', '5']
         checkmethod_options = ['GET', 'POST']
         connect_geomap = ['OFF', 'ON']

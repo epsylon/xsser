@@ -42,7 +42,7 @@ Options:
     -i READFILE         Read target(s) urls from file
     -d DORK             Search target(s) using a query (ex: 'news.php?id=')
     -l                  Search from a list of 'dorks'
-    --De=DORK_ENGINE    Use this search engine (default: duck)
+    --De=DORK_ENGINE    Use this search engine (default: yahoo)
     --Da                Search massively using all search engines
 
   *Select type of HTTP/HTTPS Connection(s)*:

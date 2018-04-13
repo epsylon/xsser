@@ -1,6 +1,14 @@
 ================================================================
-Changelog: XSSer v1.7 (beta) (xsser.03c8.net)
+Changelog: XSSer v1.7.2 (xsser.03c8.net)
 ==============================
+
+
+=================
+April 12, 2018:
+=================
+
+- Removed deprecated features (search engines, SSLv3...)
+- Fixed auto-update option
 
 =================
 February 24, 2016:

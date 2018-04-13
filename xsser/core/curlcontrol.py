@@ -21,7 +21,7 @@ You should have received a copy of the GNU General Public License along
 with xsser; if not, write to the Free Software Foundation, Inc., 51
 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 """
-import os, urllib, mimetools, pycurl, re, time
+import os, urllib, mimetools, pycurl, re, time, random
 
 try:
     from cStringIO import StringIO
@@ -32,7 +32,6 @@ class Curl:
     """
     Class to control curl on behalf of the application.
     """
-    agent = 'Googlebot/2.1 (+http://www.google.com/bot.html)'
     cookie = None
     dropcookie = None
     referer = None
@@ -49,6 +48,14 @@ class Curl:
     delay = 0
     followred = 0
     fli = None
+    agents = [] # user-agents
+    try:
+        f = open("core/fuzzing/user-agents.txt").readlines() # set path for user-agents
+    except:
+        f = open("fuzzing/user-agents.txt").readlines() # set path for user-agents when testing
+    for line in f:
+        agents.append(line)
+    agent = random.choice(agents).strip() # set random user-agent
 
     def __init__(self, base_url="", fakeheaders=[ 'Accept: image/gif, image/x-bitmap, image/jpeg, image/pjpeg', 'Connection: Keep-Alive', 'Content-type: application/x-www-form-urlencoded; charset=UTF-8']):
         self.handle = pycurl.Curl()
@@ -62,7 +69,11 @@ class Curl:
         self.headers = None
         self.set_option(pycurl.SSL_VERIFYHOST, 0)
         self.set_option(pycurl.SSL_VERIFYPEER, 0)
-        self.set_option(pycurl.SSLVERSION, pycurl.SSLVERSION_SSLv3)
+        #self.set_option(pycurl.SSLVERSION, pycurl.SSLVERSION_SSLv3) # deprecated: SSLv3 Vulnerability (TA14-290A)
+        try:
+            self.set_option(pycurl.SSLVERSION, pycurl.SSLVERSION_TLSv1_3)
+        except:
+            self.set_option(pycurl.SSLVERSION, pycurl.SSLVERSION_TLSv1_0)
         self.set_option(pycurl.FOLLOWLOCATION, 0)
         self.set_option(pycurl.MAXREDIRS, 50)
         # this is 'black magic'

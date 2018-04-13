@@ -64,11 +64,11 @@ class xsser(EncoderDecoder, XSSerReporter):
         self.successfull_urls = []
         self.urlmalformed = False
         self.search_engines = [] # available dorking search engines
-        self.search_engines.append('duck')
+        #self.search_engines.append('duck')
         self.search_engines.append('bing')
-        self.search_engines.append('google')
+        #self.search_engines.append('google')
         self.search_engines.append('yahoo')
-        self.search_engines.append('yandex')
+        #self.search_engines.append('yandex')
         self.user_template = None # wizard user template
         self.user_template_conntype = "GET" # GET by default
 
@@ -547,14 +547,13 @@ class xsser(EncoderDecoder, XSSerReporter):
                     url = url + "/"
                     payload = ""
                     query_string = ""
-
-                print "[Info] HEAD alive check for the target: (" + url + ") is OK" + "(" + hc.info()["http-code"] + ") [AIMED]\n"
                 self.success_connection = self.success_connection + 1
+                print "[Info] HEAD alive check for the target: (" + url + ") is OK" + "(" + hc.info()["http-code"] + ") [AIMED]\n"
                 for payload in payloads:
                     self.attack_url_payload(url, payload, query_string)
             else:
-                print "\n[Info] HEAD alive check for the target: (" + url + ") is FAILED(" + hc.info()["http-code"] + ") [DISCARDED]" + "\n"
                 self.not_connection = self.not_connection + 1
+                print "\n[Info] HEAD alive check for the target: (" + url + ") is FAILED(" + hc.info()["http-code"] + ") [DISCARDED]" + "\n"
 
     def get_url_payload(self, url, payload, query_string, attack_payload=None):
         """
@@ -854,37 +853,6 @@ class xsser(EncoderDecoder, XSSerReporter):
  
         c.close()
         del c
-
-        # jumper system
-        #if self.options.jumper <= 0:
-        #    pass
-                
-        #elif self.options.jumper:
-        #    if self.options.jumper == 1:
-        #        self.report("This spell with 1 jumper requires special threading methods. Poll correctly reordered!?")
-        #    self.errors_jumper = self.errors_jumper + 1
-        #    if self.errors_jumper > self.options.jumper:
-        #        pass
-        #    else:
-        #        self.report("---------------------")
-        #        self.report("Jumps Checker for: " + url + " - [", self.errors_jumper, "/", self.options.jumper,  "]\n")
-        #    if self.next_jumper == True:
-        #        try:
-        #            del self.urlspoll[0]
-        #            self.report("Next target: [Ready!]")
-        #            self.next_jumper = False
-        #            self.errors_jumper = 0
-        #        except:
-        #            self.report("Next target: [Not Found!]... [Finishing test]")
-        #            self.land()
-        #    else:
-        #        if self.errors_jumper >= self.options.jumper:
-        #            self.report("---------------------")
-        #            self.report("[Jumping...]\n")
-        #            self.next_jumper = True
-        #            self.errors_jumper = 0
-        #            if self.urlspoll[0] == url:
-        #                self.land()
 
     def encoding_permutations(self, enpayload_url):
         """
@@ -1237,7 +1205,7 @@ class xsser(EncoderDecoder, XSSerReporter):
         elif str(curl_handle.info()["http-code"]) == "0":
             self.report("\nXSSer is not working properly!:\n - Is something blocking connection(s)?\n - Is target url ok?: (" + orig_url + ")\n")
         else:
-            self.report("\nNot injected!. Server responses with http-code different to: 200 OK (" + str(curl_handle.info()["http-code"]) + ")")
+            self.report("\nNot injected!. Server responses with http-code different to: 200 OK (" + str(curl_handle.info()["http-code"]) + ")\n")
 
         if self.options.statistics:
             if str(curl_handle.info()["http-code"]) == "404":
@@ -1434,6 +1402,8 @@ class xsser(EncoderDecoder, XSSerReporter):
                                 for reporter in self._reporters:
                                     reporter.add_link(dorker.search_url, url)
             else:
+                if not options.dork_engine:
+                    options.dork_engine = 'yahoo' # default search engine [09-04/2018]
                 dorker = Dorker(options.dork_engine)
                 try:
                     urls = dorker.dork(options.dork)
@@ -1481,7 +1451,7 @@ class xsser(EncoderDecoder, XSSerReporter):
                     print '[Error] - Cannot found:', 'dorks.txt', "\n"
                     return
             if not options.dork_engine:
-                options.dork_engine = 'duck'
+                options.dork_engine = 'yahoo' # default search engine [09-04/2018]
             if options.dork_mass: # massive dorkering
                 for e in self.search_engines:
                     try:
@@ -1967,12 +1937,12 @@ class xsser(EncoderDecoder, XSSerReporter):
             reporter.report_state('scanning')
         
         # step 1: get urls
-        urls = self.try_running(self._get_attack_urls, "\nInternal error getting -targets-. look at the end of this Traceback to see whats wrong")
+        urls = self.try_running(self._get_attack_urls, "\n[Error] Internal error getting -targets-")
         for reporter in self._reporters:
             reporter.report_state('arming')
         
         # step 2: get payloads
-        payloads = self.try_running(self.get_payloads, "\nInternal error getting -payloads-")
+        payloads = self.try_running(self.get_payloads, "\n[Error] Internal error getting -payloads-")
         for reporter in self._reporters:
             reporter.report_state('cloaking')
         if options.Dwo:
@@ -1984,7 +1954,7 @@ class xsser(EncoderDecoder, XSSerReporter):
             reporter.report_state('locking targets')
         
         # step 3: get query string
-        query_string = self.try_running(self.get_query_string, "\nInternal error getting query -string-")
+        query_string = self.try_running(self.get_query_string, "\n[Error] Internal error getting query -string-")
 
         # step 4: print curl options if requested
         if options.verbose:
@@ -1998,7 +1968,7 @@ class xsser(EncoderDecoder, XSSerReporter):
             reporter.report_state('attack')
 
         # step 5: perform attack
-        self.try_running(self.attack, "\nInternal problems running attack: ", (urls, payloads, query_string))
+        self.try_running(self.attack, "\n[Error] Internal problems running attack: ", (urls, payloads, query_string))
 
         for reporter in self._reporters:
             reporter.report_state('reporting')
@@ -2660,7 +2630,7 @@ class xsser(EncoderDecoder, XSSerReporter):
             if len(self.hash_found) + len(self.hash_notfound) == 0 and not Exception:
                 self.report("\nXSSer cannot send data :( ... maybe is -something- blocking our connections!?\n")
             if len(self.hash_found) + len(self.hash_notfound) == 0 and self.options.crawling:
-                self.report("\n[Error] Crawlering system is not receiving feedback... aborting! :(\n")
+                self.report("\n[Error] Crawlering system is not receiving feedback... Aborting! :(\n")
 
         # print results to xml file
         if self.options.filexml:

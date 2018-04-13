@@ -1,6 +1,6 @@
-========================================================
-XSSer - Cross Site Scripter - "The Mosquito" - 2011/2016
-========================================================
+============================================
+XSSer - Cross Site Scripter - 2011/2018
+============================================
 
 Cross Site "Scripter" is an automatic -framework- to detect, exploit and report XSS vulnerabilities in web-based applications.
 
@@ -42,7 +42,7 @@ Or write directly to:
 
 Website: 
 
-    - http://xsser.03c8.net
+    - https://xsser.03c8.net
 
 =========
 

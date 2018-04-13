@@ -47,7 +47,7 @@ class Crawler(object):
     """
     def __init__(self, parent, curlwrapper=None, crawled=None, pool=None):
         # verbose: 0-no printing, 1-prints dots, 2-prints full output
-        self.verbose = 0
+        self.verbose = 1
         self._parent = parent
         self._to_crawl = []
         self._parse_external = True
@@ -178,27 +178,30 @@ class Crawler(object):
         self._get_done(basepath, depth, width, path, res, c_info)
 
     def _get_error(self, request, error):
-        path, depth, width, basepath = request.args[0]
-        e_type, e_value, e_tb = error
-        if e_type == pycurl.error:
-            errno, message = e_value.args
-            if errno == 28:
-                print("requests pyerror -1")
-                self.enqueue_jobs()
-                self._requests.remove(path)
-                return # timeout
+        try:
+            path, depth, width, basepath = request.args[0]
+            e_type, e_value, e_tb = error
+            if e_type == pycurl.error:
+                errno, message = e_value.args
+                if errno == 28:
+                    print("requests pyerror -1")
+                    self.enqueue_jobs()
+                    self._requests.remove(path)
+                    return # timeout
+                else:
+                    self.report('crawler curl error: '+message+' ('+str(errno)+')')
+            elif e_type == EmergencyLanding:
+                pass
             else:
-                self.report('crawler curl error: '+message+' ('+str(errno)+')')
-        elif e_type == EmergencyLanding:
-            pass
-        else:
-            traceback.print_tb(e_tb)
-            self.report('crawler error: '+str(e_value)+' '+path)
-        if not e_type == EmergencyLanding:
-            for reporter in self._parent._reporters:
-                reporter.mosquito_crashed(path, str(e_value))
-        self.enqueue_jobs()
-        self._requests.remove(path)
+                traceback.print_tb(e_tb)
+                self.report('crawler error: '+str(e_value)+' '+path)
+            if not e_type == EmergencyLanding:
+                for reporter in self._parent._reporters:
+                    reporter.mosquito_crashed(path, str(e_value))
+            self.enqueue_jobs()
+            self._requests.remove(path)
+        except:
+            return
 
     def _emergency_parse(self, html_data, start=0):
         links = set()

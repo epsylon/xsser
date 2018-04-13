@@ -11,7 +11,7 @@ in the [COPYING](./xsser/doc/COPYING) file.
 
 ----------
 
- + Web:  http://xsser.03c8.net
+ + Web:  https://xsser.03c8.net
 
 ----------
 
