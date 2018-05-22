@@ -6,7 +6,7 @@ $Id$
 
 This file is part of the xsser project, https://xsser.03c8.net
 
-Copyright (c) 2011/2016/2018 psy <epsylon@riseup.net>
+Copyright (c) 2011/2018 psy <epsylon@riseup.net>
 
 xsser is free software; you can redistribute it and/or modify it under
 the terms of the GNU General Public License as published by the Free
@@ -32,7 +32,7 @@ class XSSerOptions(optparse.OptionParser):
         optparse.OptionParser.__init__(self, 
                            description='Cross Site "Scripter" is an automatic -framework- to detect, exploit and\nreport XSS vulnerabilities in web-based applications.',
                            prog='XSSer.py',
-			   version='\nXSSer v1.7b: "ZiKA-47 Swarm!" - 2011/2016 - (GPLv3.0) -> by psy\n',
+			   version='\nXSSer v1.7b: "ZiKA-47 Swarm!" - 2011/2018 - (GPLv3.0) -> by psy\n',
                            usage= '\n\nxsser [OPTIONS] [--all <url> |-u <url> |-i <file> |-d <dork> (options)|-l ] [-g <get> |-p <post> |-c <crawl> (options)]\n[Request(s)] [Checker(s)] [Vector(s)] [Anti-antiXSS/IDS] [Bypasser(s)] [Technique(s)] [Final Injection(s)] [Reporting] {Miscellaneous}')
         self.set_defaults(verbose=False, threads=5, retries=1, delay=0, timeout=30,
                           silent=False)
@@ -165,7 +165,6 @@ class XSSerOptions(optparse.OptionParser):
         "These options can be used to execute some 'special' injection(s) on vulnerable target(s). You can select multiple and combine them with your final code (except with DCP code):")
         group10.add_option("--Onm", action="store_true", dest="onm", help="ONM - Use onMouseMove() event")
         group10.add_option("--Ifr", action="store_true", dest="ifr", help="IFR - Use <iframe> source tag")
-
         self.add_option_group(group10)
 
         group11 = optparse.OptionGroup(self, "*Reporting*")

