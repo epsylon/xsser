@@ -6,7 +6,7 @@ $Id$
 
 This file is part of the xsser project, http://xsser.03c8.net
 
-Copyright (c) 2011/2016 psy <epsylon@riseup.net>
+Copyright (c) 2011/2018 psy <epsylon@riseup.net>
 
 xsser is free software; you can redistribute it and/or modify it under
 the terms of the GNU General Public License as published by the Free
@@ -69,11 +69,19 @@ class Curl:
         self.headers = None
         self.set_option(pycurl.SSL_VERIFYHOST, 0)
         self.set_option(pycurl.SSL_VERIFYPEER, 0)
-        #self.set_option(pycurl.SSLVERSION, pycurl.SSLVERSION_SSLv3) # deprecated: SSLv3 Vulnerability (TA14-290A)
         try:
-            self.set_option(pycurl.SSLVERSION, pycurl.SSLVERSION_TLSv1_3)
+            self.set_option(pycurl.SSLVERSION, pycurl.SSLVERSION_TLSv1_2) # max supported version by pycurl
         except:
-            self.set_option(pycurl.SSLVERSION, pycurl.SSLVERSION_TLSv1_0)
+            try:
+                self.set_option(pycurl.SSLVERSION, pycurl.SSLVERSION_TLSv1_1)
+            except: # use vulnerable TLS/SSL versions (TLS1_0 -> weak enc | SSLv2 + SSLv3 -> deprecated)
+                try:
+                    self.set_option(pycurl.SSLVERSION, pycurl.SSLVERSION_TLSv1_0)
+                except:
+                    try:
+                        self.set_option(pycurl.SSLVERSION, pycurl.SSLVERSION_SSLv3)
+                    except:
+                        self.set_option(pycurl.SSLVERSION, pycurl.SSLVERSION_SSLv2)
         self.set_option(pycurl.FOLLOWLOCATION, 0)
         self.set_option(pycurl.MAXREDIRS, 50)
         # this is 'black magic'

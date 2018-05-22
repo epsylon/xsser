@@ -1981,7 +1981,7 @@ class xsser(EncoderDecoder, XSSerReporter):
             time.sleep(0.2)
             for reporter in self._reporters:
                 reporter.report_state('final sweep..')
-        print("\n" + "="*75 + "\n")
+        print("="*75 + "\n")
         if self.pool:
             self.pool.dismissWorkers(len(self.pool.workers))
             self.pool.joinAllDismissedWorkers()
