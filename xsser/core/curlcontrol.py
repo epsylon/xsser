@@ -221,10 +221,23 @@ class Curl:
         for u in urls:
             self.set_option(pycurl.URL, u) 
             self.set_option(pycurl.NOBODY,1)
-            self.set_option(pycurl.FOLLOWLOCATION, 0)
+            self.set_option(pycurl.FOLLOWLOCATION, 1)
             self.set_option(pycurl.MAXREDIRS, 50)
             self.set_option(pycurl.SSL_VERIFYHOST, 0)
             self.set_option(pycurl.SSL_VERIFYPEER, 0)
+            try:
+                self.set_option(pycurl.SSLVERSION, pycurl.SSLVERSION_TLSv1_2) # max supported version by pycurl
+            except:
+                try:
+                    self.set_option(pycurl.SSLVERSION, pycurl.SSLVERSION_TLSv1_1)
+                except: # use vulnerable TLS/SSL versions (TLS1_0 -> weak enc | SSLv2 + SSLv3 -> deprecated)
+                    try:
+                        self.set_option(pycurl.SSLVERSION, pycurl.SSLVERSION_TLSv1_0)
+                    except:
+                        try:
+                            self.set_option(pycurl.SSLVERSION, pycurl.SSLVERSION_SSLv3)
+                        except:
+                            self.set_option(pycurl.SSLVERSION, pycurl.SSLVERSION_SSLv2)
             if self.fakeheaders:
                 from core.randomip import RandomIP
                 if self.xforw:
@@ -280,7 +293,6 @@ class Curl:
                 """
                 generate_random_xforw = RandomIP()
                 xforwip = generate_random_xforw._generateip('')
-                #xforwip = '127.0.0.1'
                 xforwfakevalue = ['X-Forwarded-For: ' + str(xforwip)]
             if self.xclient:
                 """ 
@@ -288,7 +300,6 @@ class Curl:
                 """
                 generate_random_xclient = RandomIP()
                 xclientip = generate_random_xclient._generateip('')
-                #xclientip = '127.0.0.1'
                 xclientfakevalue = ['X-Client-IP: ' + str(xclientip)]
             if self.xforw:
                 self.set_option(pycurl.HTTPHEADER, self.fakeheaders + xforwfakevalue)
@@ -297,10 +308,8 @@ class Curl:
             elif self.xclient:
                 self.set_option(pycurl.HTTPHEADER, self.fakeheaders + xclientfakevalue)
         if self.headers:
-            # XXX sanitize user input
             self.fakeheaders = self.fakeheaders + self.headers
         self.set_option(pycurl.HTTPHEADER, self.fakeheaders)
-
         if self.agent:
             self.set_option(pycurl.USERAGENT, self.agent)
         if self.referer:
@@ -345,7 +354,6 @@ class Curl:
             user = acredregexp.group(1)
             password = acredregexp.group(2)
             self.set_option(pycurl.USERPWD, "%s:%s" % (user,password))
-
             if atypelower == "basic":
                 self.set_option(pycurl.HTTPAUTH, pycurl.HTTPAUTH_BASIC)
             elif atypelower == "digest":
@@ -356,9 +364,7 @@ class Curl:
                 self.set_option(pycurl.HTTPAUTH, pycurl.HTTPAUTH_GSSNEGOTIATE)
             else:
                 self.set_option(pycurl.HTTPAUTH, None)
-
             self.set_option(pycurl.HTTPHEADER, ["Accept:"])
-
         elif self.atype and not self.acred:
             print "\n[E] You specified the HTTP authentication type, but did not provide the credentials\n"
             return
@@ -386,13 +392,10 @@ class Curl:
         #        if not os.path.exists(file):
         #            print "\n[E] File '%s' doesn't exist\n" % file
         #            return
-        
         self.set_option(pycurl.SSL_VERIFYHOST, 0)
         self.set_option(pycurl.SSL_VERIFYPEER, 0)
-
         self.header.seek(0,0)
         self.payload = ""
-
         for count in range(0, self.retries):
             time.sleep(self.delay)
             if self.dropcookie:

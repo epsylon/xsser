@@ -548,12 +548,18 @@ class xsser(EncoderDecoder, XSSerReporter):
                     payload = ""
                     query_string = ""
                 self.success_connection = self.success_connection + 1
-                print "[Info] HEAD alive check for the target: (" + url + ") is OK" + "(" + hc.info()["http-code"] + ") [AIMED]\n"
+                print "\n[Info] HEAD alive check for the target: (" + url + ") is OK " + "(" + hc.info()["http-code"] + ") [AIMED]\n"
                 for payload in payloads:
                     self.attack_url_payload(url, payload, query_string)
             else:
-                self.not_connection = self.not_connection + 1
-                print "\n[Info] HEAD alive check for the target: (" + url + ") is FAILED(" + hc.info()["http-code"] + ") [DISCARDED]" + "\n"
+                if str(hc.info()["http-code"]) in ["405"]:
+                    print "\n[Info] HEAD alive check for the target: (" + url + ") is NOT ALLOWED (" + hc.info()["http-code"] + ") [PASSING]" + "\n"                
+                    self.success_connection = self.success_connection + 1
+                    for payload in payloads:
+                        self.attack_url_payload(url, payload, query_string)
+                else:
+                    self.not_connection = self.not_connection + 1
+                    print "\n[Info] HEAD alive check for the target: (" + url + ") is FAILED (" + hc.info()["http-code"] + ") [DISCARDED]" + "\n"
 
     def get_url_payload(self, url, payload, query_string, attack_payload=None):
         """
