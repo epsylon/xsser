@@ -1,0 +1,16 @@
+
+    
+
+    ==========
+
+    OK!, so now it is time to try to -fly- your mosquitoes-. For that, you need first to set some parameters: 
+
+
+        1)- I want to enter urls of my target, directly.
+   
+        2)- I don't know where are my targets... I just want to explore! :-)
+
+    ==========
+
+    Choose a number below and press button "Next" to follow this Wizard, 
+    "Previous" to return to your last step or press "FLY!!" to start directly.

@@ -1,0 +1,16 @@
+         
+         
+          
+    ==========
+
+    Welcome to the Wizard Helper!
+
+
+    You only need to reply some questions to create your pentesting. If you haven't time to read, just press "Next". :-)
+
+    XSSer will take your answers to -automagically- build commands.
+
+
+    Press "Start Wizard" button (below) to begin with your configuration...
+
+    ==========

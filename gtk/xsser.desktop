@@ -1,0 +1,9 @@
+[Desktop Entry]
+Version=1.8
+Type=Application
+Name=XSSer
+Comment=XSSer Framework
+TryExec=/usr/bin/xsser
+Categories=Application;Network;System;Security;GTK;Pentesting;
+Exec=/usr/bin/xsser --gtk --silent
+Icon=/usr/share/xsser/gtk/images/xssericon_24x24.png
