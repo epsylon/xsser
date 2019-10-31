@@ -1444,12 +1444,12 @@ class Controller(XSSerReporter):
             else:
                 command.append("-p")
                 command.append(target_entry.get_text())
-        # use checker system No-HEAD
+        # use checker system HEAD
         target_entry = self.wTree.get_object('no-head')
         if target_entry.get_active() == False:
             pass
         else:
-            command.append("--no-head")
+            command.append("--head")
         # use checker system HASH
         target_entry = self.wTree.get_object('hashing')
         if target_entry.get_active() == False:

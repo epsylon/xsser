@@ -913,11 +913,11 @@
                                         <property name="can_focus">False</property>
                                         <child>
                                           <object class="GtkCheckButton" id="no-head">
-                                            <property name="label" translatable="yes">No-HEAD</property>
+                                            <property name="label" translatable="yes">HEAD</property>
                                             <property name="visible">True</property>
                                             <property name="can_focus">True</property>
                                             <property name="receives_default">False</property>
-                                            <property name="tooltip_text" translatable="yes">NOT verify the stability of the url (codes: 200|302) with a HEAD pre-check request</property>
+                                            <property name="tooltip_text" translatable="yes">Verify the stability of the url (codes: 200|302) with a HEAD pre-check request</property>
                                             <property name="xalign">0</property>
                                             <property name="draw_indicator">True</property>
                                           </object>
@@ -932,7 +932,7 @@
                                           <object class="GtkLabel" id="label26">
                                             <property name="visible">True</property>
                                             <property name="can_focus">False</property>
-                                            <property name="label" translatable="yes">NOT send a HEAD request before start a test</property>
+                                            <property name="label" translatable="yes">Send a HEAD request before to start a test</property>
                                           </object>
                                           <packing>
                                             <property name="expand">False</property>
