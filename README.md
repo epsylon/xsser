@@ -41,7 +41,7 @@
 
   On Debian-based systems (ex: Ubuntu), run: 
 
-      sudo apt-get install python-pycurl python-xmlbuilder python-beautifulsoup python-geoip
+      sudo apt-get install python-pycurl python-xmlbuilder python-bs4 python-geoip
 
   On other systems such as: Kali, Ubuntu, ArchLinux, ParrotSec, Fedora, etc... also run:
 
