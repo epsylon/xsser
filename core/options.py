@@ -30,7 +30,7 @@ class XSSerOptions(optparse.OptionParser):
         optparse.OptionParser.__init__(self, 
                            description='Cross Site "Scripter" is an automatic -framework- to detect, exploit and\nreport XSS vulnerabilities in web-based applications.',
                            prog='XSSer.py',
-			   version='\nXSSer v1.8[1]: "The Hive!" - (https://xsser.03c8.net) - 2010/2019 -> by psy\n',
+			   version='\nXSSer v1.8[2]: "The Hiv3!" - (https://xsser.03c8.net) - 2010/2019 -> by psy\n',
                            usage= '\n\nxsser [OPTIONS] [--all <url> |-u <url> |-i <file> |-d <dork> (options)|-l ] [-g <get> |-p <post> |-c <crawl> (options)]\n[Request(s)] [Checker(s)] [Vector(s)] [Anti-antiXSS/IDS] [Bypasser(s)] [Technique(s)] [Final Injection(s)] [Reporting] {Miscellaneous}')
         self.set_defaults(verbose=False, threads=5, retries=1, delay=0, timeout=30,
                           silent=False)
@@ -134,6 +134,7 @@ class XSSerOptions(optparse.OptionParser):
         group13.add_option("--Barracuda", action="store_true", dest="barracuda", help="Barracuda WAF [ALL]")
         group13.add_option("--Modsec", action="store_true", dest="modsec", help="Mod-Security [ALL]")
         group13.add_option("--Quickdefense", action="store_true", dest="quickdefense", help="QuickDefense [Chrome]")
+        group13.add_option("--Sucuri", action="store_true", dest="sucuri", help="SucuriWAF [ALL]")
         group13.add_option("--Firefox", action="store_true", dest="firefox", help="Firefox 12 [& below]")
         group13.add_option("--Chrome", action="store_true", dest="chrome", help="Chrome 19 & Firefox 12 [& below]")
         group13.add_option("--Opera", action="store_true", dest="opera", help="Opera 10.5 [& below]")
@@ -193,26 +194,26 @@ class XSSerOptions(optparse.OptionParser):
     def get_options(self, user_args=None):
         (options, args) = self.parse_args(user_args)
         if (not options.url and not options.readfile and not options.dork and not options.dork_file and not options.imx and not options.flash and not options.update and not options.xsser_gtk and not options.wizard and not options.xst and not options.target and not options.checktor):
-            print "\n", '='*75
-            print self.version
-            print "-----------", "\n"
-            print self.description, "\n"
-            print '='*75
-            print ""
-            print "                                \\ \\   LulZzzz!    /\                          "
-            print "Project site:","                && \\ \\            /\())\          %  %        "
-            print "https://xsser.03c8.net       &&&& \\_\\          (())\\))  %   %        %       " 
-            print "                              \/ ( \033[1;31m@\033[1;m.\033[1;31m@\033[1;m)      * //\\//\\%                 %  %"
-            print "                              || == < ==   * * \\//))//)  BBzzzzz!              "
-            print "Forum:                        ||]~~/ \~~[ *    (())//))                         "
-            print "irc.freenode.net -> #xsser    ||   (')          \/())/                          "
-            print "                              ||  /  /            \/                            "
-            print ""
-            print '='*75
-            print "Total vectors:", self.total_vectors + " = XSS: " + str(self.vectors_fuzz) + " + DCP: " + str(self.vectors_dcp) + " + DOM: " + str(self.vectors_dom) + " + HTTPsr: " + str(self.vectors_httpsr)
-            print '='*75
-            print "\n-> For HELP use: -h or --help"
-            print "\n-> For GTK interface use: --gtk\n"
-            print '='*55, "\n"
+            print("\n", '='*75)
+            print(self.version)
+            print("-----------", "\n")
+            print(self.description, "\n")
+            print('='*75)
+            print("")
+            print("                                \\ \\   LulZzzz!    /\                          ")
+            print("Project site:","                && \\ \\            /\())\          %  %        ")
+            print("https://xsser.03c8.net       &&&& \\_\\          (())\\))  %   %        %       ") 
+            print("                              \/ ( \033[1;31m@\033[1;m.\033[1;31m@\033[1;m)      * //\\//\\%                 %  %")
+            print("                              || == < ==   * * \\//))//)  BBzzzzz!              ")
+            print("Forum:                        ||]~~/ \~~[ *    (())//))                         ")
+            print("irc.freenode.net -> #xsser    ||   (')          \/())/                          ")
+            print("                              ||  /  /            \/                            ")
+            print("")
+            print('='*75)
+            print("Total vectors:", self.total_vectors + " = XSS: " + str(self.vectors_fuzz) + " + DCP: " + str(self.vectors_dcp) + " + DOM: " + str(self.vectors_dom) + " + HTTPsr: " + str(self.vectors_httpsr))
+            print('='*75)
+            print("\n-> For HELP use: -h or --help")
+            print("\n-> For GTK interface use: --gtk\n")
+            print('='*55, "\n")
             return False
         return options

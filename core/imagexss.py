@@ -58,4 +58,4 @@ class ImageInjections(object):
 
 if __name__ == '__main__':
     image_xss_injection = ImageInjections('')
-    print image_xss_injection.image_xss('ImageXSSpoison.png' , "<script>alert('XSS')</script>")
+    print(image_xss_injection.image_xss('ImageXSSpoison.png' , "<script>alert('XSS')</script>"))

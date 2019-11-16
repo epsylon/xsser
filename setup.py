@@ -33,7 +33,8 @@ for afile in os.listdir('gtk/docs'):
         gtk_doc_files.append('gtk/docs/' + afile)
 data_files = ['gtk/images/world.png', 'gtk/images/xsser.jpg',
               'gtk/images/xssericon_16x16.png',
-              'gtk/images/xssericon_24x24.png']
+              'gtk/images/xssericon_24x24.png',
+              'gtk/map/GeoIP.dat']
 gtk_files = ['gtk/xsser.ui']
 gtk_app_files = ['gtk/xsser.desktop']
 setup(

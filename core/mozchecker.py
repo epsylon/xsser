@@ -19,9 +19,14 @@ You should have received a copy of the GNU General Public License along
 with xsser; if not, write to the Free Software Foundation, Inc., 51
 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 """
-import gtk
+import gi
+gi.require_version('Gtk', '3.0')
+gi.require_version('Gdk', '3.0')
+from gi.repository import Gtk as gtk
+from gi.repository import Gdk as gdk
+gdk.threads_init()
 import sys
-import gobject
+from gi.repository import GObject as gobject
 import subprocess
 from threading import Thread
 try:
@@ -29,7 +34,6 @@ try:
 except:
     MozEmbed = None
     import webbrowser
-
 
 class CheckerThread(Thread):
     def __init__(self, parent, url):
@@ -105,9 +109,9 @@ class MozChecker(object):
         print("net_state", widget, flags, status)
 
     def on_net_stop(self, widget=None):
-        gtk.gdk.threads_enter()
+        gdk.threads_enter()
         gobject.timeout_add(0, self.process_next)
-        gtk.gdk.threads_leave()
+        gdk.threads_leave()
 
     def process_next(self):
         if self._urlqueue and self._armed:

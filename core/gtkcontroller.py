@@ -22,16 +22,19 @@ Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 import sys
 import os, datetime 
 import math
-import gtk
 import socket
-import urlparse
 import webbrowser
 import threading
-import gobject
+import gi
+gi.require_version('Gtk', '3.0')
+gi.require_version('Gdk', '3.0')
+from gi.repository import Gtk as gtk
+from gi.repository import Gdk as gdk
+from gi.repository import GLib as gobject
 from threading import Thread
 from xml.dom import minidom
 
-gtk.gdk.threads_init()
+gdk.threads_init()
 
 use_twisted = False
 
@@ -70,7 +73,6 @@ class Controller(XSSerReporter):
         self.output_wizard = wTree.get_object('textview_w_start')
         self._wizard_buffer = self.output_wizard.get_buffer()
         self.counters_label = wTree.get_object('counters_label')
-
         self._report_vulnerables = wTree.get_object('report_vulnerables').get_buffer()
         self._report_success = wTree.get_object('report_success').get_buffer()
         self._report_failed = wTree.get_object('report_failed').get_buffer()
@@ -214,10 +216,10 @@ class Controller(XSSerReporter):
         combobox.add_attribute(cell, 'text', 0)  
 
     def start_crawl(self, dest_url):
-        gtk.gdk.threads_enter()
+        gdk.threads_enter()
         self.status.set_text("scanning")
         self.status.pulse()
-        gtk.gdk.threads_leave()
+        gdk.threads_leave()
         self.add_report_text(self._report_crawling, dest_url)
 
     def add_checked(self, dest_url):
@@ -226,9 +228,9 @@ class Controller(XSSerReporter):
     def add_success(self, dest_url):
         self.add_report_text(self._report_vulnerables, dest_url)
         totalhits = self.wTree.get_object('totalhits')
-        totalhits.set_property("label", int(totalhits.get_property("label"))+1)
+        totalhits.set_property("label", str(int(totalhits.get_property("label"))+1))
         successhits = self.wTree.get_object('successhits')
-        successhits.set_property("label", int(successhits.get_property("label"))+1)
+        successhits.set_property("label", str(int(successhits.get_property("label"))+1))
 
     def report_error(self, error_msg):
         self.add_report_text(self._report_failed, error_msg)
@@ -239,20 +241,19 @@ class Controller(XSSerReporter):
     def add_failure(self, dest_url):
         self.add_report_text(self._report_failed, dest_url)
         totalhits = self.wTree.get_object('totalhits')
-        totalhits.set_property("label", int(totalhits.get_property("label"))+1)
+        totalhits.set_property("label", str(int(totalhits.get_property("label"))+1))
         failedhits = self.wTree.get_object('failedhits')
-        failedhits.set_property("label", int(failedhits.get_property("label"))+1)
+        failedhits.set_property("label", str(int(failedhits.get_property("label"))+1))
 
     def add_report_text(self, gtkbuffer, text):
-        gtk.gdk.threads_enter()
+        gdk.threads_enter()
         iter = gtkbuffer.get_end_iter()
         gtkbuffer.insert(iter, text+'\n')
-        gtk.gdk.threads_leave()
+        gdk.threads_leave()
 
     def setup_mozembed(self):
         self.moz = MozChecker(self)
         self.mothership.set_webbrowser(self.moz)
-        #self.moz.hide()
 
     def fill_combos(self):
         # ui comboboxes
@@ -301,27 +302,32 @@ class Controller(XSSerReporter):
             auth_none.set_property('active', True)
  
         commandsenter = self.wTree.get_object('commandsenter')
-        cmd = self.generate_command()
-        commandsenter.set_property("text"," ".join(cmd))
-    
-        app = xsser()
-        options = app.create_options(cmd)
-        app.set_options(options)
-        
-        app.set_reporter(self)
-        pass
 
-        # set visor counters to zero
-        totalhits = self.wTree.get_object('totalhits')
-        totalhits.set_property("label", "0")
-        failedhits = self.wTree.get_object('failedhits')
-        failedhits.set_property("label", "0")
-        successhits = self.wTree.get_object('successhits')
-        successhits.set_property("label", "0")
+        targetenter = self.wTree.get_object('targetenter')
+        explorer_enter = self.wTree.get_object('explorer_enter')
+        if targetenter.get_text() == "" and explorer_enter.get_text() == "":
+            pass
+        else:
+            cmd = self.generate_command()
+            commandsenter.set_property("text"," ".join(cmd))
+    
+            app = xsser()
+            options = app.create_options(cmd)
+            app.set_options(options)
+        
+            app.set_reporter(self)
+            pass
+
+            # set visor counters to zero
+            totalhits = self.wTree.get_object('totalhits')
+            totalhits.set_property("label", "0")
+            failedhits = self.wTree.get_object('failedhits')
+            failedhits.set_property("label", "0")
+            successhits = self.wTree.get_object('successhits')
+            successhits.set_property("label", "0")
 
     def end_attack(self):
-        #self._flying.join()
-        gtk.gdk.threads_enter()
+        gdk.threads_enter()
         self.status.set_text("idle")
         self.status.set_fraction(0.0)
         fly_button = self.wTree.get_object('fly')
@@ -329,10 +335,9 @@ class Controller(XSSerReporter):
         fly_button.set_sensitive(True)
         if self._quitting:
             pass
-            #self.do_quit()
         else:
             gobject.timeout_add(0, self.park_mosquito)
-        gtk.gdk.threads_leave()
+        gdk.threads_leave()
 
     def park_mosquito(self):
         self._flying.join()
@@ -383,24 +388,24 @@ class Controller(XSSerReporter):
             crawled = "X"
         pars = [crawled, rem, th_count, work_count]
 
-        gtk.gdk.threads_enter()
+        gdk.threads_enter()
         self.counters_label.set_text(" ".join(pars))
         if pars[3]:
             pars[3] = "\nworks in queue: %s"%(pars[3],)
         self.counters_label.set_tooltip_text('crawled during last attack: %s\nremaining checks: %s\nalive threads: %s %s' % tuple(pars))
-        gtk.gdk.threads_leave()
+        gdk.threads_leave()
 
     def report_state(self, state, val=-1):
         if not gtk:
             # exiting..
             return
-        gtk.gdk.threads_enter()
+        gdk.threads_enter()
         self.status.set_text(state)
         if val == -1:
             self.status.pulse()
         else:
             self.status.set_fraction(val)
-        gtk.gdk.threads_leave()
+        gdk.threads_leave()
         self.update_counters_label()
 
     def on_fly_clicked(self, widget):
@@ -436,7 +441,7 @@ class Controller(XSSerReporter):
 
         if t.app.options == None:
             pass
-        elif targetenter.get_text() == None and explorer_enter.get_text() == None:
+        elif targetenter.get_text() == "" and explorer_enter.get_text() == "":
             pass
         else:
             t.start()
@@ -773,15 +778,15 @@ class Controller(XSSerReporter):
         hboxurl = self.wTree.get_object('hboxurl')
         vboxdork = self.wTree.get_object('vboxdork')
         next1 = self.wTree.get_object('next1')
-        if combo_choose.get_active_text() == '0':
+        if combo_choose.get_model().get_value(combo_choose.get_active_iter(),0) == '0':
             vbox_step.set_property("visible", False)
             next1.set_property("visible", False)
-        if combo_choose.get_active_text() == '1':
+        if combo_choose.get_model().get_value(combo_choose.get_active_iter(),0) == '1':
             vbox_step.set_property("visible", True)
             hboxurl.set_property("visible", True)
             vboxdork.set_property("visible", False)
             next1.set_property("visible", True)
-        elif combo_choose.get_active_text() == '2':
+        elif combo_choose.get_model().get_value(combo_choose.get_active_iter(),0) == '2':
             vbox_step.set_property("visible", True)
             hboxurl.set_property("visible", False)
             vboxdork.set_property("visible", True)
@@ -815,12 +820,12 @@ class Controller(XSSerReporter):
         alert_step1_url = self.wTree.get_object('alert_step1_url')
         alert_step1_dork = self.wTree.get_object('alert_step1_dork')
 
-        if step1_entry_url.get_text() == '' and (combo_choose.get_active_text() == '1'):
+        if step1_entry_url.get_text() == '' and (combo_choose.get_model().get_value(combo_choose.get_active_iter(),0) == '1'):
             alert_step1_url.set_property("visible", True)
             step_view1.set_property("visible", True)
             step_view2.set_property("visible", False)
 
-        elif step1_entry_dork.get_text() == '' and (combo_choose.get_active_text() == '2'):
+        elif step1_entry_dork.get_text() == '' and (combo_choose.get_model().get_value(combo_choose.get_active_iter(),0) == '2'):
             alert_step1_dork.set_property("visible", True)
             step_view1.set_property("visible", True)
             step_view2.set_property("visible", False)
@@ -830,10 +835,10 @@ class Controller(XSSerReporter):
             step_view1.set_property("visible", False)
             step_view2.set_property("visible", True)
 
-        self.combo_step1_choose = combo_choose.get_active_text()
+        self.combo_step1_choose = combo_choose.get_model().get_value(combo_choose.get_active_iter(),0)
         self.target_option = step1_entry_url.get_text()
         self.dork_option = step1_entry_dork.get_text()
-        self.dorkengine_option = step1_entry_dorkengine.get_active_text()
+        self.dorkengine_option = step1_entry_dorkengine.get_model().get_value(step1_entry_dorkengine.get_active_iter(),0)
 
     def on_combobox_step2_changed(self, widget):
         combo_choose = self.wTree.get_object('combobox_step2')
@@ -841,26 +846,26 @@ class Controller(XSSerReporter):
         step2_entry_payload = self.wTree.get_object('step2_entry_payload')
         alert_step2 = self.wTree.get_object('alert_step2')
         next2 = self.wTree.get_object('next2')
-        if combo_choose.get_active_text() == '0':
+        if combo_choose.get_model().get_value(combo_choose.get_active_iter(),0) == '0':
             vbox_step2.set_property("visible", False)
             alert_step2.set_property("visible", False)
             next2.set_property("visible", False)
             step2_entry_payload.set_property("text", "")
-        if combo_choose.get_active_text() == '1':
+        if combo_choose.get_model().get_value(combo_choose.get_active_iter(),0) == '1':
             vbox_step2.set_property("visible", True)
             alert_step2.set_property("visible", False)
             next2.set_property("visible", True)
             step2_entry_payload.set_property("text", "")
-        elif combo_choose.get_active_text() == '2':
+        elif combo_choose.get_model().get_value(combo_choose.get_active_iter(),0) == '2':
             vbox_step2.set_property("visible", True)
             next2.set_property("visible", True)
             alert_step2.set_property("visible", False)
             step2_entry_payload.set_property("text", "")
-        elif combo_choose.get_active_text() == '3':
+        elif combo_choose.get_model().get_value(combo_choose.get_active_iter(),0) == '3':
             vbox_step2.set_property("visible", False)
             next2.set_property("visible", True)
             alert_step2.set_property("visible", False)
-        elif combo_choose.get_active_text() == '4':
+        elif combo_choose.get_model().get_value(combo_choose.get_active_iter(),0) == '4':
             vbox_step2.set_property("visible", False)
             next2.set_property("visible", True)
             alert_step2.set_property("visible", False)
@@ -893,7 +898,7 @@ class Controller(XSSerReporter):
         combo_choose = self.wTree.get_object('combobox_step2')
         step2_entry_payload = self.wTree.get_object('step2_entry_payload')
         alert_step2 = self.wTree.get_object('alert_step2')
-        if step2_entry_payload.get_text() == '' and (combo_choose.get_active_text() == '1' or combo_choose.get_active_text() == '2') :
+        if step2_entry_payload.get_text() == '' and (combo_choose.get_model().get_value(combo_choose.get_active_iter(),0) == '1' or combo_choose.get_model().get_value(combo_choose.get_active_iter(),0) == '2') :
             alert_step2.set_property("visible", True)
             step_view2.set_property("visible", True)
             step_view3.set_property("visible", False)
@@ -902,7 +907,7 @@ class Controller(XSSerReporter):
             step_view2.set_property("visible", False) 
             step_view3.set_property("visible", True)
 
-        self.combo_step2_choose = combo_choose.get_active_text()
+        self.combo_step2_choose = combo_choose.get_model().get_value(combo_choose.get_active_iter(),0)
         self.payload_option = step2_entry_payload.get_text()
 
     def on_combobox_step3_changed(self, widget):
@@ -911,25 +916,25 @@ class Controller(XSSerReporter):
         step3_entry_proxy = self.wTree.get_object('step3_entry_proxy')
         alert_step3 = self.wTree.get_object('alert_step3')
         next3 = self.wTree.get_object('next3')
-        if combo_choose.get_active_text() == '0':
+        if combo_choose.get_model().get_value(combo_choose.get_active_iter(),0) == '0':
             vbox_step3.set_property("visible", False)
             alert_step3.set_property("visible", False)
             next3.set_property("visible", False)
             step3_entry_proxy.set_property("text", "")
-        if combo_choose.get_active_text() == '1':
+        if combo_choose.get_model().get_value(combo_choose.get_active_iter(),0) == '1':
             vbox_step3.set_property("visible", True)
             alert_step3.set_property("visible", False)
             next3.set_property("visible", True)
             step3_entry_proxy.set_property("text", "")
-        elif combo_choose.get_active_text() == '2':
+        elif combo_choose.get_model().get_value(combo_choose.get_active_iter(),0) == '2':
             vbox_step3.set_property("visible", False)
             next3.set_property("visible", True)
             alert_step3.set_property("visible", False)
-        elif combo_choose.get_active_text() == '3':
+        elif combo_choose.get_model().get_value(combo_choose.get_active_iter(),0) == '3':
             vbox_step3.set_property("visible", False)
             next3.set_property("visible", True)
             alert_step3.set_property("visible", False)
-        elif combo_choose.get_active_text() == '4':
+        elif combo_choose.get_model().get_value(combo_choose.get_active_iter(),0) == '4':
             vbox_step3.set_property("visible", False)
             next3.set_property("visible", True)
             alert_step3.set_property("visible", False)
@@ -955,7 +960,7 @@ class Controller(XSSerReporter):
         combo_choose = self.wTree.get_object('combobox_step3')
         step3_entry_proxy = self.wTree.get_object('step3_entry_proxy')
         alert_step3 = self.wTree.get_object('alert_step3')
-        if step3_entry_proxy.get_text() == '' and combo_choose.get_active_text() == '1':
+        if step3_entry_proxy.get_text() == '' and combo_choose.get_model().get_value(combo_choose.get_active_iter(),0) == '1':
             alert_step3.set_property("visible", True)
             step_view3.set_property("visible", True)
             step_view4.set_property("visible", False)
@@ -964,9 +969,9 @@ class Controller(XSSerReporter):
             step_view3.set_property("visible", False)
             step_view4.set_property("visible", True)
 
-        self.combo_step3_choose = combo_choose.get_active_text()
+        self.combo_step3_choose = combo_choose.get_model().get_value(combo_choose.get_active_iter(),0)
         self.proxy_option = step3_entry_proxy.get_text()
-        if combo_choose.get_active_text() == '2':
+        if combo_choose.get_model().get_value(combo_choose.get_active_iter(),0) == '2':
             self.proxy_option = "http://127.0.0.1:8118"
 
     def on_combobox_step4_changed(self, widget):
@@ -975,27 +980,27 @@ class Controller(XSSerReporter):
         step4_entry_cem = self.wTree.get_object('step4_entry_cem')
         alert_step4 = self.wTree.get_object('alert_step4')
         next4 = self.wTree.get_object('next4')
-        if combo_choose.get_active_text() == '0':
+        if combo_choose.get_model().get_value(combo_choose.get_active_iter(),0) == '0':
             vbox_step4.set_property("visible", False)
             alert_step4.set_property("visible", False)
             next4.set_property("visible", False)
             step4_entry_cem.set_property("text", "")
-        elif combo_choose.get_active_text() == '1':
+        elif combo_choose.get_model().get_value(combo_choose.get_active_iter(),0) == '1':
             vbox_step4.set_property("visible", False)
             alert_step4.set_property("visible", False)
             next4.set_property("visible", True)
-        elif combo_choose.get_active_text() == '2':
+        elif combo_choose.get_model().get_value(combo_choose.get_active_iter(),0) == '2':
             vbox_step4.set_property("visible", False)
             alert_step4.set_property("visible", False)
             next4.set_property("visible", True)
-        elif combo_choose.get_active_text() == '3':
+        elif combo_choose.get_model().get_value(combo_choose.get_active_iter(),0) == '3':
             vbox_step4.set_property("visible", False)
             alert_step4.set_property("visible", False)
             next4.set_property("visible", True)
-        elif combo_choose.get_active_text() == '4':
+        elif combo_choose.get_model().get_value(combo_choose.get_active_iter(),0) == '4':
             vbox_step4.set_property("visible", True)
             next4.set_property("visible", True)
-        elif combo_choose.get_active_text() == '5':
+        elif combo_choose.get_model().get_value(combo_choose.get_active_iter(),0) == '5':
             vbox_step4.set_property("visible", False)
             next4.set_property("visible", True)
             alert_step4.set_property("visible", False)
@@ -1019,7 +1024,7 @@ class Controller(XSSerReporter):
         combo_choose = self.wTree.get_object('combobox_step4')
         step4_entry_cem = self.wTree.get_object('step4_entry_cem')
         alert_step4 = self.wTree.get_object('alert_step4')
-        if step4_entry_cem.get_text() == '' and combo_choose.get_active_text() == '4':
+        if step4_entry_cem.get_text() == '' and combo_choose.get_model().get_value(combo_choose.get_active_iter(),0) == '4':
             alert_step4.set_property("visible", True)
             step_view4.set_property("visible", True)
             step_view5.set_property("visible", False)
@@ -1028,7 +1033,7 @@ class Controller(XSSerReporter):
             step_view4.set_property("visible", False)
             step_view5.set_property("visible", True)
 
-        self.combo_step4_choose = combo_choose.get_active_text()
+        self.combo_step4_choose = combo_choose.get_model().get_value(combo_choose.get_active_iter(),0)
         self.cem_option = step4_entry_cem.get_text()
 
     def on_combobox_step5_changed(self, widget):
@@ -1037,20 +1042,20 @@ class Controller(XSSerReporter):
         step5_entry_scripts = self.wTree.get_object('step5_entry_scripts')
         alert_step5 = self.wTree.get_object('alert_step5')
         next5 = self.wTree.get_object('next5')
-        if combo_choose.get_active_text() == '0':
+        if combo_choose.get_model().get_value(combo_choose.get_active_iter(),0) == '0':
             vbox_step5.set_property("visible", False)
             alert_step5.set_property("visible", False)
             next5.set_property("visible", False)
             step5_entry_scripts.set_property("text", "")
-        elif combo_choose.get_active_text() == '1':
+        elif combo_choose.get_model().get_value(combo_choose.get_active_iter(),0) == '1':
             vbox_step5.set_property("visible", False)
             alert_step5.set_property("visible", False)
             next5.set_property("visible", True)
-        elif combo_choose.get_active_text() == '2':
+        elif combo_choose.get_model().get_value(combo_choose.get_active_iter(),0) == '2':
             vbox_step5.set_property("visible", True)
             alert_step5.set_property("visible", False)
             next5.set_property("visible", True)
-        elif combo_choose.get_active_text() == '3':
+        elif combo_choose.get_model().get_value(combo_choose.get_active_iter(),0) == '3':
             vbox_step5.set_property("visible", False)
             alert_step5.set_property("visible", False)
             next5.set_property("visible", True)
@@ -1076,7 +1081,7 @@ class Controller(XSSerReporter):
         combo_choose = self.wTree.get_object('combobox_step5')
         step5_entry_scripts = self.wTree.get_object('step5_entry_scripts')
         alert_step5 = self.wTree.get_object('alert_step5')
-        if step5_entry_scripts.get_text() == '' and combo_choose.get_active_text() == '2':
+        if step5_entry_scripts.get_text() == '' and combo_choose.get_model().get_value(combo_choose.get_active_iter(),0) == '2':
             alert_step5.set_property("visible", True)
             step_view5.set_property("visible", True)
             step_view_end.set_property("visible", False)
@@ -1085,7 +1090,7 @@ class Controller(XSSerReporter):
             step_view5.set_property("visible", False)
             step_view_end.set_property("visible", True)
 
-        self.combo_step5_choose = combo_choose.get_active_text()
+        self.combo_step5_choose = combo_choose.get_model().get_value(combo_choose.get_active_iter(),0)
         self.scripts_option = step5_entry_scripts.get_text()
 
         # building end form
@@ -1311,23 +1316,23 @@ class Controller(XSSerReporter):
         image_geomap = self.wTree.get_object('image_geomap')
         vbox9 = self.wTree.get_object('vbox9')
 
-        if combo_choose.get_active_text() == 'OFF':
+        if combo_choose.get_model().get_value(combo_choose.get_active_iter(),0) == 'OFF':
             self.map.set_property("visible", False)
             vbox9.set_property("visible", False)
             if self._flying:
                 self._flying.remove_reporter(self.map)
                 self.mothership.remove_reporter(self.map)
 
-        elif combo_choose.get_active_text() == 'ON':
+        elif combo_choose.get_model().get_value(combo_choose.get_active_iter(),0) == 'ON':
             vbox9.set_property("visible", True)
             if not self.map:
                 image_geomap.realize()
                 drawarea = GlobalMap(self, image_geomap.get_pixbuf(), self._flying)
-                vbox = image_geomap.parent
+                vbox = image_geomap.get_parent()
                 vbox.remove(image_geomap)
                 eventbox = gtk.EventBox()
                 eventbox.add(drawarea)
-                vbox.pack_end(eventbox)
+                vbox.pack_end(eventbox, True, True, 0)
                 eventbox.show()
                 drawarea.show()
                 self.map = drawarea
@@ -1352,7 +1357,7 @@ class Controller(XSSerReporter):
         """
         Donate something
         """
-        webbrowser.open("http://03c8.net")
+        webbrowser.open("https://03c8.net")
 
     def generate_command(self):
         command = ["xsser"]
@@ -1392,7 +1397,7 @@ class Controller(XSSerReporter):
                 command.append("-d")
                 command.append(explorer_enter.get_text())
                 command.append("--De")
-                command.append(dork_engine.get_active_text())
+                command.append(dork_engine.get_model().get_value(dork_engine.get_active_iter(),0))
 
         # get crawler test mode (common crawling c=50 Cw=3)
         crawler = self.wTree.get_object('crawler')
@@ -1570,20 +1575,20 @@ class Controller(XSSerReporter):
         else:
             command.append("--discode")
             command.append(target_entry.get_text())
-       # get FOLLOWREDIRECTS
+        # get FOLLOWREDIRECTS
         target_entry = self.wTree.get_object('followredirects')
         if target_entry.get_active() == False:
             pass
         else:
             command.append("--follow-redirects")
-       # get FOLLOW-LIMIT
+        # get FOLLOW-LIMIT
         target_entry = self.wTree.get_object('follow-limit')
         if target_entry.get_value() == 0:
             pass
         else:
             command.append("--follow-limit")
             command.append(str(int(target_entry.get_value())))
-       # get ISALIVE
+        # get ISALIVE
         target_entry = self.wTree.get_object('alive-limit')
         if target_entry.get_value() == 0:
             pass
@@ -1600,7 +1605,7 @@ class Controller(XSSerReporter):
             command.append("--checkaturl")
             command.append(target_entry.get_text())
             command.append("--checkmethod")
-            command.append(check_method.get_active_text())
+            command.append(check_method.get_model().get_value(checkmethod.get_active_iter(),0))
             if check_data.get_text() == "":
                 pass
             else: 
@@ -1960,9 +1965,9 @@ class Controller(XSSerReporter):
         """
         Callback called by xsser when it has output for the user
         """
-        gtk.gdk.threads_enter()
+        gdk.threads_enter()
         self.post_ui(msg)
-        gtk.gdk.threads_leave()
+        gdk.threads_leave()
 
     def post_ui(self, msg):
         """

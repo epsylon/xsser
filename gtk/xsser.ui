@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- Generated with glade 3.20.0 -->
 <interface>
-  <requires lib="gtk+" version="2.14"/>
+  <requires lib="gtk+" version="3.20"/>
   <object class="GtkAdjustment" id="adjustment1">
     <property name="upper">100</property>
     <property name="step_increment">1</property>
@@ -13,7 +14,7 @@
     <property name="can_default">True</property>
     <property name="has_tooltip">True</property>
     <property name="border_width">1</property>
-    <property name="title" translatable="yes">XSSer v1.8[1]: "The Hive!" - (https://xsser.03c8.net)</property>
+    <property name="title" translatable="yes">XSSer v1.8[2]: "The Hiv3!" - (https://xsser.03c8.net)</property>
     <property name="window_position">center-always</property>
     <property name="destroy_with_parent">True</property>
     <property name="icon">images/xssericon_24x24.png</property>
@@ -1722,74 +1723,6 @@
                           <object class="GtkVBox" id="vbox27">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
-      			   <child>
-                              <object class="GtkCheckButton" id="firefox">
-                                <property name="label" translatable="yes">Firefox 12</property>
-                                <property name="visible">True</property>
-                                <property name="can_focus">True</property>
-                                <property name="receives_default">False</property>
-                                <property name="tooltip_text" translatable="yes">Browser: FF</property>
-                                <property name="xalign">0</property>
-                                <property name="draw_indicator">True</property>
-                              </object>
-                              <packing>
-                                <property name="expand">True</property>
-                                <property name="fill">False</property>
-                                <property name="padding">10</property>
-                                <property name="position">4</property>
-                              </packing>
-                            </child>
-                            <child>
-                              <object class="GtkCheckButton" id="chrome">
-                                <property name="label" translatable="yes">Chrome 19 &amp; Firefox 12</property>
-                                <property name="visible">True</property>
-                                <property name="can_focus">True</property>
-                                <property name="receives_default">False</property>
-                                <property name="tooltip_text" translatable="yes">Browser: Chrome + FF</property>
-                                <property name="xalign">0</property>
-                                <property name="draw_indicator">True</property>
-                              </object>
-                              <packing>
-                                <property name="expand">True</property>
-                                <property name="fill">False</property>
-                                <property name="padding">10</property>
-                                <property name="position">4</property>
-                              </packing>
-                            </child>
-                            <child>
-                              <object class="GtkCheckButton" id="iexplorer">
-                                <property name="label" translatable="yes">Internet Explorer 9</property>
-                                <property name="visible">True</property>
-                                <property name="can_focus">True</property>
-                                <property name="receives_default">False</property>
-                                <property name="tooltip_text" translatable="yes">Browser: IE</property>
-                                <property name="xalign">0</property>
-                                <property name="draw_indicator">True</property>
-                              </object>
-                              <packing>
-                                <property name="expand">True</property>
-                                <property name="fill">False</property>
-                                <property name="padding">10</property>
-                                <property name="position">4</property>
-                              </packing>
-                            </child>
-                            <child>
-                              <object class="GtkCheckButton" id="opera">
-                                <property name="label" translatable="yes">Opera 10.5 &amp; IE 6</property>
-                                <property name="visible">True</property>
-                                <property name="can_focus">True</property>
-                                <property name="receives_default">False</property>
-                                <property name="tooltip_text" translatable="yes">Browser: Opera + IE</property>
-                                <property name="xalign">0</property>
-                                <property name="draw_indicator">True</property>
-                              </object>
-                              <packing>
-                                <property name="expand">True</property>
-                                <property name="fill">False</property>
-                                <property name="padding">10</property>
-                                <property name="position">4</property>
-                              </packing>
-                            </child>
                             <child>
                               <object class="GtkCheckButton" id="phpids">
                                 <property name="label" translatable="yes">PHPIDS (&lt;0.6.5)</property>
@@ -1858,6 +1791,74 @@
                                 <property name="position">4</property>
                               </packing>
                             </child>
+                            <child>
+                              <object class="GtkCheckButton" id="opera">
+                                <property name="label" translatable="yes">Opera 10.5 &amp; IE 6</property>
+                                <property name="visible">True</property>
+                                <property name="can_focus">True</property>
+                                <property name="receives_default">False</property>
+                                <property name="tooltip_text" translatable="yes">Browser: Opera + IE</property>
+                                <property name="xalign">0</property>
+                                <property name="draw_indicator">True</property>
+                              </object>
+                              <packing>
+                                <property name="expand">True</property>
+                                <property name="fill">False</property>
+                                <property name="padding">10</property>
+                                <property name="position">4</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkCheckButton" id="iexplorer">
+                                <property name="label" translatable="yes">Internet Explorer 9</property>
+                                <property name="visible">True</property>
+                                <property name="can_focus">True</property>
+                                <property name="receives_default">False</property>
+                                <property name="tooltip_text" translatable="yes">Browser: IE</property>
+                                <property name="xalign">0</property>
+                                <property name="draw_indicator">True</property>
+                              </object>
+                              <packing>
+                                <property name="expand">True</property>
+                                <property name="fill">False</property>
+                                <property name="padding">10</property>
+                                <property name="position">4</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkCheckButton" id="chrome">
+                                <property name="label" translatable="yes">Chrome 19 &amp; Firefox 12</property>
+                                <property name="visible">True</property>
+                                <property name="can_focus">True</property>
+                                <property name="receives_default">False</property>
+                                <property name="tooltip_text" translatable="yes">Browser: Chrome + FF</property>
+                                <property name="xalign">0</property>
+                                <property name="draw_indicator">True</property>
+                              </object>
+                              <packing>
+                                <property name="expand">True</property>
+                                <property name="fill">False</property>
+                                <property name="padding">10</property>
+                                <property name="position">4</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkCheckButton" id="firefox">
+                                <property name="label" translatable="yes">Firefox 12</property>
+                                <property name="visible">True</property>
+                                <property name="can_focus">True</property>
+                                <property name="receives_default">False</property>
+                                <property name="tooltip_text" translatable="yes">Browser: FF</property>
+                                <property name="xalign">0</property>
+                                <property name="draw_indicator">True</property>
+                              </object>
+                              <packing>
+                                <property name="expand">True</property>
+                                <property name="fill">False</property>
+                                <property name="padding">10</property>
+                                <property name="position">4</property>
+                              </packing>
+                            </child>
                           </object>
                           <packing>
                             <property name="expand">True</property>
@@ -1901,6 +1902,23 @@
                                 <property name="fill">False</property>
                                 <property name="padding">10</property>
                                 <property name="position">2</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkCheckButton" id="sucuri">
+                                <property name="label" translatable="yes">SucuriWAF</property>
+                                <property name="visible">True</property>
+                                <property name="can_focus">True</property>
+                                <property name="receives_default">False</property>
+                                <property name="tooltip_text" translatable="yes">Browser: ALL</property>
+                                <property name="xalign">0</property>
+                                <property name="draw_indicator">True</property>
+                              </object>
+                              <packing>
+                                <property name="expand">True</property>
+                                <property name="fill">False</property>
+                                <property name="padding">10</property>
+                                <property name="position">3</property>
                               </packing>
                             </child>
                             <child>

@@ -19,12 +19,13 @@
      [Barracuda]: Barracuda WAF
      [ModSec]: Mod-Security
      [QuickDF]: QuickDefense
+     [Sucuri]: SucuriWAF 
      [Chrome]: Google Chrome
      [IE]: Internet Explorer
      [FF]: Mozilla's Gecko rendering engine, used by Firefox/Iceweasel
      [NS-IE]: Netscape in IE rendering engine mode
      [NS-G]: Netscape in the Gecko rendering engine mode
-     [Opera]: Opera 
+     [Opera]: Opera Browser
 
   ![XSSer](https://xsser.03c8.net/xsser/url_generation.png "XSSer URL Generation Schema")
 
@@ -32,27 +33,32 @@
 
 #### Installing:
 
-  XSSer runs on many platforms. It requires Python and the following libraries:
+XSSer runs on many platforms. It requires Python (3.x) and the following libraries:
 
-      python-pycurl - Python bindings to libcurl
-      python-xmlbuilder - create xml/(x)html files - Python 2.x
-      python-beautifulsoup - error-tolerant HTML parser for Python
-      python-geoip - Python bindings for the GeoIP IP-to-country resolver library
+    - python3-pycurl - Python bindings to libcurl (Python 3)
+    - python3-bs4 - error-tolerant HTML parser for Python 3
+    - python3-geoip - Python3 bindings for the GeoIP IP-to-country resolver library
+    - python3-geoip2 - Python geoip2 API for web services and databases - Python 3.x
+    - python3-gi - Python 3 bindings for gobject-introspection libraries
+    - python3-cairocffi - cffi-based cairo bindings for Python (Python3)
 
-  On Debian-based systems (ex: Ubuntu), run: 
+On Debian-based systems (ex: Ubuntu), run: 
 
-      sudo apt-get install python-pycurl python-xmlbuilder python-beautifulsoup python-geoip
+    sudo apt-get install python3-pycurl python3-bs4 python3-geoip python3-geoip2 python3-gi python3-cairocffi
 
-  On other systems such as: Kali, Ubuntu, ArchLinux, ParrotSec, Fedora, etc... also run:
+On other systems such as: Kali, Ubuntu, ArchLinux, ParrotSec, Fedora, etc... also run:
 
-      pip install geoip 
+    sudo pip3 install pycurl bs4 geoip2 gobject cairocffi
 
 ####  Source libs:
 
    * Python: https://www.python.org/downloads/
    * PyCurl: http://pycurl.sourceforge.net/
-   * PyBeautifulSoup: https://pypi.python.org/pypi/BeautifulSoup
-   * PyGeoIP: https://pypi.python.org/pypi/GeoIP
+   * PyBeautifulSoup4: https://pypi.org/project/beautifulsoup4/
+   * PyGeoIP: https://pypi.org/project/python-geoip-python3/
+   * PyGeoIP2: https://pypi.org/project/geoip2/
+   * PyGObject: https://pypi.org/project/gobject/
+   * PyCairocffi: https://pypi.org/project/cairocffi/
 
 ----------
 

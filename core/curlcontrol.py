@@ -19,12 +19,8 @@ You should have received a copy of the GNU General Public License along
 with xsser; if not, write to the Free Software Foundation, Inc., 51
 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 """
-import os, urllib, mimetools, pycurl, re, time, random
-
-try:
-    from cStringIO import StringIO
-except ImportError:
-    from StringIO import StringIO
+import os, urllib.request, urllib.parse, urllib.error, email, pycurl, re, time, random
+from io import StringIO as StringIO
 
 class Curl:
     """
@@ -90,10 +86,10 @@ class Curl:
         self.set_nosignals(1)
 
         def payload_callback(x):
-            self.payload += x
+            self.payload += str(x)
         self.set_option(pycurl.WRITEFUNCTION, payload_callback)
         def header_callback(x):
-            self.header.write(x)
+            self.header.write(str(x))
         self.set_option(pycurl.HEADERFUNCTION, header_callback)
 
     def set_url(self, url):
@@ -163,7 +159,7 @@ class Curl:
         """
         Set the given option.
         """
-        apply(self.handle.setopt, args)
+        self.handle.setopt(*args)
 
     def set_verbosity(self, level):
         """
@@ -335,7 +331,7 @@ class Curl:
         else:
             self.set_option(pycurl.FOLLOWLOCATION , 0)
             if self.fli:
-                print "\n[E] You must launch --follow-redirects command to set correctly this redirections limit\n"
+                print("\n[E] You must launch --follow-redirects command to set correctly this redirections limit\n")
                 return
         """ 
         Set the HTTP authentication method: Basic, Digest, GSS, NTLM or Certificate
@@ -343,11 +339,11 @@ class Curl:
         if self.atype and self.acred:
             atypelower = self.atype.lower()
             if atypelower not in ( "basic", "digest", "ntlm", "gss" ):
-                print "\n[E] HTTP authentication type value must be: Basic, Digest, GSS or NTLM\n"
+                print("\n[E] HTTP authentication type value must be: Basic, Digest, GSS or NTLM\n")
                 return
             acredregexp = re.search("^(.*?)\:(.*?)$", self.acred)
             if not acredregexp:
-                print "\n[E] HTTP authentication credentials value must be in format username:password\n"
+                print("\n[E] HTTP authentication credentials value must be in format username:password\n")
                 return
             user = acredregexp.group(1)
             password = acredregexp.group(2)
@@ -364,10 +360,10 @@ class Curl:
                 self.set_option(pycurl.HTTPAUTH, None)
             self.set_option(pycurl.HTTPHEADER, ["Accept:"])
         elif self.atype and not self.acred:
-            print "\n[E] You specified the HTTP authentication type, but did not provide the credentials\n"
+            print("\n[E] You specified the HTTP authentication type, but did not provide the credentials\n")
             return
         elif not self.atype and self.acred:
-            print "\n[E] You specified the HTTP authentication credentials, but did not provide the type\n"
+            print("\n[E] You specified the HTTP authentication credentials, but did not provide the type\n")
             return
         #if self.acert:
         #    acertregexp = re.search("^(.+?),\s*(.+?)$", self.acert)
@@ -411,7 +407,7 @@ class Curl:
         Get a url.
         """
         if params:
-            url += "?" + urllib.urlencode(params)
+            url += "?" + urllib.parse.urlencode(params)
         self.set_option(pycurl.HTTPGET, 1)
         return self.__request(url)
 
@@ -435,11 +431,11 @@ class Curl:
         """
         self.header.seek(0,0)
         url = self.handle.getinfo(pycurl.EFFECTIVE_URL)
-        if url[:5] == 'http:':
+        if url.startswith('http'):
             self.header.readline()
-            m = mimetools.Message(self.header)
+            m = email.message_from_string(str(self.header))
         else:
-            m = mimetools.Message(StringIO())
+            m = email.message_from_string(str(StringIO()))
         #m['effective-url'] = url
         m['http-code'] = str(self.handle.getinfo(pycurl.HTTP_CODE))
         m['total-time'] = str(self.handle.getinfo(pycurl.TOTAL_TIME))
@@ -467,37 +463,37 @@ class Curl:
         """
         Print selected options.
         """
-        print "\nCookie:", cls.cookie
-        print "User Agent:", cls.agent
-        print "Referer:", cls.referer
-        print "Extra Headers:", cls.headers
+        print("\nCookie:", cls.cookie)
+        print("User Agent:", cls.agent)
+        print("Referer:", cls.referer)
+        print("Extra Headers:", cls.headers)
         if cls.xforw == True:
-            print "X-Forwarded-For:", "Random IP"
+            print("X-Forwarded-For:", "Random IP")
         else:
-            print "X-Forwarded-For:", cls.xforw
+            print("X-Forwarded-For:", cls.xforw)
         if cls.xclient == True:
-            print "X-Client-IP:", "Random IP"
+            print("X-Client-IP:", "Random IP")
         else:
-            print "X-Client-IP:", cls.xclient
-        print "Authentication Type:", cls.atype
-        print "Authentication Credentials:", cls.acred
+            print("X-Client-IP:", cls.xclient)
+        print("Authentication Type:", cls.atype)
+        print("Authentication Credentials:", cls.acred)
         if cls.ignoreproxy == True:
-            print "Proxy:", "Ignoring system default HTTP proxy"
+            print("Proxy:", "Ignoring system default HTTP proxy")
         else:
-            print "Proxy:", cls.proxy
-        print "Timeout:", cls.timeout
+            print("Proxy:", cls.proxy)
+        print("Timeout:", cls.timeout)
         if cls.tcp_nodelay == True:
-            print "Delaying:", "TCP_NODELAY activate"
+            print("Delaying:", "TCP_NODELAY activate")
         else:
-            print "Delaying:", cls.delay, "seconds"
+            print("Delaying:", cls.delay, "seconds")
         if cls.followred == True:
-            print "Follow 302 code:", "active"
+            print("Follow 302 code:", "active")
             if cls.fli:
-                print"Limit to follow:", cls.fli
+                print("Limit to follow:", cls.fli)
         else:
-            print "Delaying:", cls.delay, "seconds"
+            print("Delaying:", cls.delay, "seconds")
 
-        print "Retries:", cls.retries, "\n"
+        print("Retries:", cls.retries, "\n")
 
     def answered(self, check):
         """

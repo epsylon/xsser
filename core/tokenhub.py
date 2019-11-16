@@ -86,7 +86,7 @@ class HubThread(Thread):
                 conn, addr = s.accept()
             except socket.timeout:
                 pass
-            except socket.error, e:
+            except socket.error as e:
                 if self.ready == False:
                     return
                 else:

@@ -38,4 +38,4 @@ class RandomIP(object):
 
 if __name__ == "__main__":
     randomip = RandomIP()
-    print randomip._generateip('')
+    print(randomip._generateip(''))

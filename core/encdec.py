@@ -19,7 +19,7 @@ You should have received a copy of the GNU General Public License along
 with xsser; if not, write to the Free Software Foundation, Inc., 51
 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 """
-import urllib
+import urllib.request, urllib.parse, urllib.error
 
 class EncoderDecoder(object):
     """
@@ -78,7 +78,7 @@ class EncoderDecoder(object):
         """
         encoded=''
         for char in string:
-            encoded=encoded+urllib.quote(char)
+            encoded=encoded+urllib.parse.quote(char)
         return encoded
 
     def _ipDwordEncode(self, string):
@@ -106,9 +106,9 @@ class EncoderDecoder(object):
         # In the case it's not an IP
         if len(tblIP)!=4:
             return 0
-        octIP = map(lambda s: oct(int(s)).zfill(4), tblIP)
+        octIP = [oct(int(s)).zfill(4) for s in tblIP]
         return ".".join(octIP)
 
 if __name__ == "__main__":
     encdec = EncoderDecoder()
-    print encdec._ipOctalEncode("127.0.0.1")
+    print(encdec._ipOctalEncode("127.0.0.1"))

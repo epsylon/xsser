@@ -20,22 +20,31 @@ with xsser; if not, write to the Free Software Foundation, Inc., 51
 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 """
 import os
-import gtk
-import user
-import gobject
+from pathlib import Path
+import gi
+gi.require_version('Gtk', '3.0')
+gi.require_version('Gdk', '3.0')
+gi.require_version('PangoCairo', '1.0')
+from gi.repository import Gtk as gtk
+from gi.repository import Gdk as gdk
+gdk.threads_init()
+from gi.repository import GObject as gobject
+from gi.repository import PangoCairo as pangocairo
+from gi.repository import GdkPixbuf
 from core.reporter import XSSerReporter
 from core.curlcontrol import Curl
-from glib import markup_escape_text
 from collections import defaultdict
 from threading import Thread
 import traceback
-import urllib
-import urlparse
+import urllib.request, urllib.parse, urllib.error
 import math
 import cairo
+import cairocffi
 import gzip
-import pangocairo
 import time
+from PIL import Image
+import array
+import GeoIP
 
 class PointType(object):
     checked = 15
@@ -96,19 +105,15 @@ class DownloadThread(Thread):
             os.makedirs(os.path.dirname(geo_db_path))
         self._parent.report_state('getting city database', 0.0)
         try:
-            urllib.urlretrieve('http://xsser.03c8.net/map/GeoLiteCity.dat.gz',
+            urllib.request.urlretrieve('https://xsser.03c8.net/map/GeoLite2-City.dat.gz',
                            geo_db_path+'.gz', reportfunc)
         except:
             try:
-                urllib.urlretrieve('http://xsser.sf.net/map/GeoLiteCity.dat.gz',
+                urllib.request.urlretrieve('https://xsser.sf.net/map/GeoLite2-City.dat.gz',
                            geo_db_path+'.gz', reportfunc)
             except:
-                try:
-                    urllib.urlretrieve('http://geolite.maxmind.com/download/geoip/database/GeoLiteCity.dat.gz',
-                           geo_db_path+'.gz', reportfunc)
-                except:
-                    self._parent.report_state('error downloading map', 0.0)
-                    self._map.geomap_failed()
+                self._parent.report_state('error downloading map', 0.0)
+                self._map.geomap_failed()
         else:
             self._parent.report_state('map downloaded (restart XSSer!!!!)', 0.0)
             f_in = gzip.open(geo_db_path+'.gz', 'rb')
@@ -135,14 +140,14 @@ class GlobalMap(gtk.DrawingArea, XSSerReporter):
             self.finish_init()
 
     def geomap_ready(self):
-        gtk.gdk.threads_enter()
+        gdk.threads_enter()
         gobject.timeout_add(0, self.finish_init)
-        gtk.gdk.threads_leave()
+        gdk.threads_leave()
 
     def geomap_failed(self):
-        gtk.gdk.threads_enter()
+        gdk.threads_enter()
         gobject.timeout_add(0, self.failed_init)
-        gtk.gdk.threads_leave()
+        gdk.threads_leave()
 
     def failed_init(self):
         if hasattr(self, '_t'):
@@ -150,7 +155,6 @@ class GlobalMap(gtk.DrawingArea, XSSerReporter):
             delattr(self, '_t')
 
     def finish_init(self):
-        import GeoIP
         if hasattr(self, '_t'):
             self._t.join()
             delattr(self, '_t')
@@ -176,20 +180,20 @@ class GlobalMap(gtk.DrawingArea, XSSerReporter):
         self._frozenlines = []
         self._points = []
         self._crosses = []
-        self.connect("expose_event", self.expose)
+        self.connect('draw', self.expose)
         self.connect("query-tooltip", self.on_query_tooltip)
-        if self.window:
-            self.window.invalidate_rect(self.allocation, True)
+        self.queue_draw()
         if not self._onattack:
             self.add_test_points()
 
     def get_geodb_path(self):
         ownpath = os.path.dirname(os.path.dirname(__file__))
         gtkpath = os.path.join(ownpath, 'gtk')
-        if os.path.exists(os.path.join(gtkpath, 'GeoLiteCity.dat')):
-            return os.path.join(gtkpath, 'GeoLiteCity.dat')
+        if os.path.exists(os.path.join(gtkpath, 'map/GeoIP.dat')):
+            return os.path.join(gtkpath, 'map/GeoIP.dat')
         else:
-            return os.path.join(user.home, '.xsser', 'GeoLiteCity.dat')
+            home = str(Path.home())
+            return os.path.join(home, '.xsser', 'GeoIP.dat')
 
     def find_points(self, x, y, distance=9.0):
         points = []
@@ -202,8 +206,8 @@ class GlobalMap(gtk.DrawingArea, XSSerReporter):
                 points.append(self._points[point[2]])
                 self._selected.append(point[2])
         if points:
-            rect = gtk.gdk.Rectangle(0,0,self.width, self.height)
-            self.window.invalidate_rect(rect, True)
+            rect = gdk.Rectangle()
+            self.queue_draw()
         return points
 
     def on_query_tooltip(self, widget, x, y, keyboard_mode, tooltip):
@@ -223,21 +227,21 @@ class GlobalMap(gtk.DrawingArea, XSSerReporter):
                 crawls.extend(point.reports[PointType.crawled])
             if finalsuccess:
                 text += "<b>browser checked sucesses:</b>\n"
-                text += "\n".join(map(lambda s: markup_escape_text(s), finalsuccess))
+                text += "\n".join(map(lambda s: gobject.markup_escape_text(s), finalsuccess))
                 if failures or success:
                     text += "\n"
 
             if success:
                 text += "<b>sucesses:</b>\n"
-                text += "\n".join(map(lambda s: markup_escape_text(s), success))
+                text += "\n".join(map(lambda s: gobject.markup_escape_text(s), success))
                 if failures:
                     text += "\n"
             if failures:
                 text += "<b>failures:</b>\n"
-                text += "\n".join(map(lambda s: markup_escape_text(s), failures))
+                text += "\n".join(map(lambda s: gobject.markup_escape_text(s), failures))
             if crawls and not failures and not success:
                 text += "<b>crawls:</b>\n"
-                text += "\n".join(map(lambda s: markup_escape_text(s), crawls))
+                text += "\n".join(map(lambda s: gobject.markup_escape_text(s), crawls))
 
             tooltip.set_markup(str(text))
             return True
@@ -260,26 +264,20 @@ class GlobalMap(gtk.DrawingArea, XSSerReporter):
         self._crosses = []
         self._stats = [0,0,0,0,0,0,0]
 
-    def expose(self, widget, event):
+    def expose(self, widget, cr):
         if not self.mapcontext:
             self._mappixbuf = self._pixbuf.copy()
-            self.mapsurface = cairo.ImageSurface.create_for_data(self._mappixbuf.get_pixels_array(), 
-                                               cairo.FORMAT_ARGB32,
-                                               self.width,
-                                               self.height,
-                                               self._pixbuf.get_rowstride())
+            self.mapsurface = cairo.ImageSurface.create_from_png('gtk/images/world.png')
             self.mapcontext = cairo.Context(self.mapsurface)
+        self.context = cr
         self.draw_frozen_lines()
-        self.context = self.window.cairo_create()
-      
         self.context.set_source_surface(self.mapsurface)
-        self.context.rectangle(event.area.x, event.area.y,
-                              event.area.width, event.area.height)
-        self.context.clip()
-        self.context.rectangle(event.area.x, event.area.y,
-                              event.area.width, event.area.height)
+        self.context.rectangle(self._min_x, self._max_x, self.width, self.height)
         self.context.fill()
-        self.context.set_source_color(gtk.gdk.Color(0,0,0))
+        self.context.rectangle(self._min_x, self._max_x, self.width, self.height)
+        self.context.fill()
+        self.context.paint()
+        self.context.set_source_rgb(0,0,0)
         self._min_x = 5 # we have the scale at the left for now
         self._max_x = 0
         if self.geo:
@@ -309,9 +307,8 @@ class GlobalMap(gtk.DrawingArea, XSSerReporter):
         for point in self._points:
             key = (point.latitude, point.longitude)
             newpoints[key].append(point)
-
         self._points = []
-        for points in newpoints.itervalues():
+        for points in newpoints.values():
             win_type = points[0]
             win_size = points[0]
             for point in points[1:]:
@@ -410,8 +407,8 @@ class GlobalMap(gtk.DrawingArea, XSSerReporter):
         self.context.move_to(x, y)
         v = (5.0-self._current_text[1])/5.0
         self.context.scale(0.1+max(v, 1.0), 0.1+max(v, 1.0))
-        self.context.set_source_color(gtk.gdk.Color(*gtkcol((v,)*3)))
-        u = urlparse.urlparse(text)
+        self.context.set_source_rgb(*gtkcol((v,)*3))
+        u = urllib.parse.urlparse(text)
         self.context.show_text(u.netloc)
         self.context.restore()
 
@@ -442,7 +439,7 @@ class GlobalMap(gtk.DrawingArea, XSSerReporter):
     def draw_point(self, point):
         if point.size:
             self.context.save()
-            self.context.set_source_color(gtk.gdk.Color(*point.gtkcolor))
+            self.context.set_source_rgb(*point.gtkcolor)
             self.context.translate(point.x, point.y)
             self.context.arc(0.0, 0.0, 2.4*point.size, 0, 2*math.pi)
             self.context.close_path()
@@ -455,7 +452,7 @@ class GlobalMap(gtk.DrawingArea, XSSerReporter):
             self.context.translate(point.x, point.y)
             self.context.rotate(point.size)
             self.context.set_line_width(0.8*point.size)
-            self.context.set_source_color(gtk.gdk.Color(*point.gtkcolor))
+            self.context.set_source_rgb(*point.gtkcolor)
             self.context.move_to(-3*point.size, -3*point.size)
             self.context.rel_line_to(6*point.size, 6*point.size)
             self.context.stroke()
@@ -488,11 +485,8 @@ class GlobalMap(gtk.DrawingArea, XSSerReporter):
         self.clear()
 
     def queue_redraw(self):
-        rect = gtk.gdk.region_rectangle((self._min_x,0,self._max_x-self._min_x,
-                                  self.height))
-        if self.window:
-            self.window.invalidate_region(rect, True)
-            del rect
+        rect = gdk.Rectangle()
+        self.queue_draw()
 
     def mosquito_crashed(self, dest_url, reason):
         self._current_text = [dest_url, 5.0]
@@ -502,9 +496,9 @@ class GlobalMap(gtk.DrawingArea, XSSerReporter):
         except:
             return
         self.add_cross(lon, lat, crash_color, dest_url)
-        gtk.gdk.threads_enter()
+        gdk.threads_enter()
         self.queue_redraw()
-        gtk.gdk.threads_leave()
+        gdk.threads_leave()
 
     def add_checked(self, dest_url):
         self._current_text = [dest_url, 5.0]
@@ -514,9 +508,9 @@ class GlobalMap(gtk.DrawingArea, XSSerReporter):
         except:
             return
         self.add_point(lon, lat, PointType.checked, dest_url)
-        gtk.gdk.threads_enter()
+        gdk.threads_enter()
         self.queue_redraw()
-        gtk.gdk.threads_leave()
+        gdk.threads_leave()
 
     def add_success(self, dest_url):
         self._current_text = [dest_url, 5.0]
@@ -526,9 +520,9 @@ class GlobalMap(gtk.DrawingArea, XSSerReporter):
         except:
             return
         self.add_point(lon, lat, PointType.success, dest_url)
-        gtk.gdk.threads_enter()
+        gdk.threads_enter()
         self.queue_redraw()
-        gtk.gdk.threads_leave()
+        gdk.threads_leave()
 
     def add_failure(self, dest_url):
         self._current_text = [dest_url, 5.0]
@@ -538,9 +532,9 @@ class GlobalMap(gtk.DrawingArea, XSSerReporter):
         except:
             return
         self.add_point(lon, lat, PointType.failed, dest_url)
-        gtk.gdk.threads_enter()
+        gdk.threads_enter()
         self.queue_redraw()
-        gtk.gdk.threads_leave()
+        gdk.threads_leave()
 
     def add_link(self, orig_url, dest_url):
         try:
@@ -566,9 +560,9 @@ class GlobalMap(gtk.DrawingArea, XSSerReporter):
         except:
             return
         self.add_point(lon, lat, PointType.crawled, dest_url)
-        gtk.gdk.threads_enter()
+        gdk.threads_enter()
         self.queue_redraw()
-        gtk.gdk.threads_leave()
+        gdk.threads_leave()
 
     def plot_point_mercator(self, lat, lng):
         longitude_shift = -23

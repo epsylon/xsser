@@ -29,14 +29,14 @@ import traceback
 try:
     from orbited.start import main as orbited_main
 except:
-    print "no orbited so not enabling rt swarm port"
+    print("no orbited so not enabling rt swarm port")
     orbited_main = None
     traceback.print_exc()
 
-print "\nXSSer v1.7b: The Mosquito 'Zika Swarm'\n"
-print "Daemon(s): ready!", "//" , "Interfaz: ready!\n"
-print "Connect to http://127.0.0.1:19084/static/ via Web or Telnet to manage your swarm\n"
-print "Listening..."
+print("\nXSSer v1.7b: The Mosquito 'Zika Swarm'\n")
+print("Daemon(s): ready!", "//" , "Interfaz: ready!\n")
+print("Connect to http://127.0.0.1:19084/static/ via Web or Telnet to manage your swarm\n")
+print("Listening...")
 
 from twisted.web import resource, error, script, server
 from orbited import __version__ as version
@@ -59,9 +59,9 @@ class XSSerCheckerResource(resource.Resource):
         self.name = str(name)
         self.parent = parent
     def render_GET(self, request):
-        print "SUCCESS!!", request
+        print("SUCCESS!!", request)
         self.parent.xsser.final_attack_callback(request)
-        response = "thx for use XSSer (http://xsser.03c8.net) !!"
+        response = "thx for use XSSer (https://xsser.03c8.net) !!"
         return response
     def render_POST(self, request):
         return self.render_GET(request)
@@ -89,9 +89,9 @@ class XSSerMainResource(script.ResourceScriptDirectory):
     def do_success(self, request):
         response = "not implemented!"
         if False:
-            print "SUCCESS!!", data.split('HTTP')[0].split('/')[-1]
+            print("SUCCESS!!", data.split('HTTP')[0].split('/')[-1])
             self.factory.xsser.final_attack_callback(data.split('HTTP')[0].split('/')[-1].strip())
-            self.sendHTTP("thx for use XSSer (http://xsser.03c8.net) !!\n")
+            self.sendHTTP("thx for use XSSer (https://xsser.03c8.net) !!\n")
         return response
     def do_evangelion(self, request):
         response = "Start Swarm Attack"
@@ -105,7 +105,7 @@ class XSSerProtocol(Protocol):
     factory = None
     def connectionMade(self):
         self.factory._clients.append(self)
-        print "new client connected..."
+        print("new client connected...")
     def connectionLost(self, reason):
         self.factory._clients.remove(self)
     def sendHTTP(self, data):
@@ -113,16 +113,16 @@ class XSSerProtocol(Protocol):
         self.transport.write("Content-Type: text/html; charset=UTF-8\n\n")
         self.transport.write(data)
     def dataReceived(self, data):
-        print "Mosquito network ready ;)",data
+        print("Mosquito network ready ;)",data)
         if (data.startswith("GET") and "evangelion" in data) or "evangelion" in data:
-            print "EVAngelion swarm mode!\n"
+            print("EVAngelion swarm mode!\n")
             self.sendHTTP("Start Swarm Attack\n")
             app = xsser()
             app.set_reporter(self.factory)
             self.factory.xsser = app
             data = data.split('\n')[0]
             options = data.replace('GET ', '').split()[1:]
-            print 'OPTIONS',options
+            print('OPTIONS',options)
             if len(options) > 1:
                 reactor.callInThread(self.factory.xsser.run, options)
             else:
@@ -131,9 +131,9 @@ class XSSerProtocol(Protocol):
             self.sendHTTP("Start Swarm Attack\n")
             reactor.callInThread(self.factory.xsser.run)
         elif data.startswith("GET /success"):
-            print "SUCCESS!!", data.split('HTTP')[0].split('/')[-1]
+            print("SUCCESS!!", data.split('HTTP')[0].split('/')[-1])
             self.factory.xsser.final_attack_callback(data.split('HTTP')[0].split('/')[-1].strip())
-            self.sendHTTP("thx for use XSSer (http://xsser.03c8.net) !!\n")
+            self.sendHTTP("thx for use XSSer (https://xsser.03c8.net) !!\n")
             self.transport.loseConnection()
         elif data.startswith("GET"):
             self.sendHTTP("XSSer Web Interface <a href='evangelion'>Try it!</a>\n")
@@ -153,7 +153,7 @@ class ServerFactory(Factory):
 
 if __name__ == '__main__':
     if orbited_main:
-        print "orbited!"
+        print("orbited!")
         root = orbited_main()
         import orbited.transports.base
         from orbited import cometsession

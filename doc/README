@@ -8,7 +8,7 @@ Cross Site "Scripter" is an automatic -framework- to detect, exploit and report 
 Current Version:
 ==============================
 
-XSSer v1.8[1]: "The Hive!" (2010/2019) // [https://xsser.03c8.net]
+XSSer v1.8[2]: "The Hiv3!" (2010/2019) // [https://xsser.03c8.net]
 
 ================================================================
 Options and features:
@@ -128,6 +128,7 @@ Options:
     --Barracuda         Barracuda WAF [ALL]
     --Modsec            Mod-Security [ALL]
     --Quickdefense      QuickDefense [Chrome]
+    --Sucuri            SucuriWAF [ALL]
     --Firefox           Firefox 12 [& below]
     --Chrome            Chrome 19 & Firefox 12 [& below]
     --Opera             Opera 10.5 [& below]

@@ -20,13 +20,13 @@ with xsser; if not, write to the Free Software Foundation, Inc., 51
 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ........
 
-List of search engines: http://en.wikipedia.org/wiki/List_of_search_engines
+List of search engines: https://en.wikipedia.org/wiki/List_of_search_engines
 
 Currently supported: duck(default), startpage, yahoo, bing
 
 """
-import urllib2, traceback, re, random, urllib
-urllib2.socket.setdefaulttimeout(5.0)
+import urllib.request, urllib.error, urllib.parse, traceback, re, random
+urllib.request.socket.setdefaulttimeout(5.0)
 
 DEBUG = 0
 
@@ -52,46 +52,46 @@ class Dorker(object):
         """
         if self._engine == 'bing': # works at 20-02-2011 -> 19-02-2016 -> 09-04-2018 -> 26-08-2019
             search_url = 'https://www.bing.com/search?q="' + str(search) + '"'
-            print "\nSearching query:", urllib2.unquote(search_url)
+            print("\nSearching query:", urllib.parse.unquote(search_url))
         elif self._engine == 'yahoo': # works at 20-02-2011 -> 19-02-2016 -> -> 09-04-2018 -> 26-08-2019
             search_url = 'https://search.yahoo.com/search?q="' + str(search) + '"'
-            print "\nSearching query:", urllib2.unquote(search_url)
+            print("\nSearching query:", urllib.parse.unquote(search_url))
         elif self._engine == 'duck': # works at 26-08-2019
             search_url = 'https://duckduckgo.com/html/' 
             q = 'instreamset:(url):"' + str(search) + '"' # set query to search literally on results
             query_string = { 'q':q }
-            print "\nSearching query:", urllib2.unquote(search_url) + " [POST: (" + q + ")]"
+            print("\nSearching query:", urllib.parse.unquote(search_url) + " [POST: (" + q + ")]")
         elif self._engine == 'startpage': # works at 26-08-2019
             search_url = 'https://www.startpage.com/do/asearch'
             q = 'url:"' + str(search) + '"' # set query to search literally on results
             query_string = { 'cmd':'process_search', 'query':q }
-            print "\nSearching query:", urllib2.unquote(search_url) + " [POST: (" + q + ")]"
+            print("\nSearching query:", urllib.parse.unquote(search_url) + " [POST: (" + q + ")]")
         else:
-            print "\n[Error] This search engine is not being supported!\n"
-            print '-'*25 
-            print "\n[Info] Use one from this list:\n"
+            print("\n[Error] This search engine is not being supported!\n")
+            print('-'*25) 
+            print("\n[Info] Use one from this list:\n")
             for e in self.search_engines:
-                print "+ "+e
-            print "\n ex: xsser -d 'profile.asp?num=' --De 'duck'"
-            print " ex: xsser -l --De 'startpage'"
-            print "\n[Info] Or try them all:\n\n ex: xsser -d 'news.php?id=' --Da\n"
+                print("+ "+e)
+            print("\n ex: xsser -d 'profile.asp?num=' --De 'duck'")
+            print(" ex: xsser -l --De 'startpage'")
+            print("\n[Info] Or try them all:\n\n ex: xsser -d 'news.php?id=' --Da\n")
         try:
             self.search_url = search_url
             user_agent = random.choice(self.agents).strip() # set random user-agent
             referer = '127.0.0.1' # set referer to localhost / WAF black magic!
             headers = {'User-Agent' : user_agent, 'Referer' : referer}
             if self._engine == 'bing' or self._engine == 'yahoo': # using GET
-                req = urllib2.Request(search_url, None, headers)
+                req = urllib.request.Request(search_url, None, headers)
             elif self._engine == 'duck' or self._engine == 'startpage': # using POST
-                data = urllib.urlencode(query_string)
-                req = urllib2.Request(search_url, data, headers)
-            html_data = urllib2.urlopen(req).read()
-            print "\n[Info] Retrieving requested info..."
-        except urllib2.URLError, e:
+                data = urllib.parse.urlencode(query_string)
+                req = urllib.request.Request(search_url, data, headers)
+            html_data = urllib.request.urlopen(req).read().decode('utf8')
+            print("\n[Info] Retrieving requested info...\n")
+        except urllib.error.URLError as e:
             if DEBUG:
                 traceback.print_exc()
-            print "\n[Error] Cannot connect!"
-            print "\n" + "-"*50
+            print("\n[Error] Cannot connect!")
+            print("\n" + "-"*50)
             return
         if self._engine == 'bing':
             regex = '<h2><a href="(.+?)" h=' # regex magics 08/2019
@@ -102,11 +102,11 @@ class Dorker(object):
         if self._engine == 'startpage':
             regex = 'target="_blank">(.+?)</a>' # regex magics 08/2019
         pattern = re.compile(regex)
-        links = re.findall(pattern, html_data)
+        links = re.findall(pattern, html_data, flags=0)
         found_links = []
         if links:
             for link in links:
-                link = urllib2.unquote(link)
+                link = urllib.parse.unquote(link)
                 if self._engine == "yahoo":
                     if "RU=https://www.yahoo.com/" in link:
                         link = "" # invalid url
@@ -116,7 +116,7 @@ class Dorker(object):
                     if link2 not in found_links: # parse that target is not duplicated
                         found_links.append(link)
         else:
-            print "\n[Error] Not any link found for that query!"
+            print("\n[Error] Not any link found for that query!")
         return found_links
 
 if __name__ == '__main__':
@@ -124,6 +124,6 @@ if __name__ == '__main__':
         dork = Dorker(a)
         res = dork.dork("news.php?id=")
         if res:
-            print "\n[+] Search Engine:", a, "| Found: ", len(res), "\n"
+            print("\n[+] Search Engine:", a, "| Found: ", len(res), "\n")
             for b in res:
-                print " *", b
+                print(" *", b)

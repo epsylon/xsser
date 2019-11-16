@@ -32,16 +32,16 @@ class Updater(object):
         GIT_REPOSITORY2 = "https://github.com/epsylon/xsser"
         rootDir = os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..', ''))
         if not os.path.exists(os.path.join(rootDir, ".git")):
-            print "[Error] Not any .git repository found!\n"
-            print "="*30
-            print "\nTo have working this feature, you should clone XSSer with:\n"
-            print "$ git clone %s" % GIT_REPOSITORY
-            print "\nAlso you can try this other mirror:\n"
-            print "$ git clone %s" % GIT_REPOSITORY2 + "\n"
+            print("[Error] Not any .git repository found!\n")
+            print("="*30)
+            print("\nTo have working this feature, you should clone XSSer with:\n")
+            print("$ git clone %s" % GIT_REPOSITORY)
+            print("\nAlso you can try this other mirror:\n")
+            print("$ git clone %s" % GIT_REPOSITORY2 + "\n")
         else:
             checkout = execute("git checkout . && git pull", shell=True, stdout=PIPE, stderr=PIPE).communicate()[0]
-            print checkout
+            print(checkout)
             if not "Already up-to-date" in checkout:
-                print "Congratulations!! XSSer has been updated... ;-)\n"
+                print("Congratulations!! XSSer has been updated... ;-)\n")
             else:
-                print "Your XSSer doesn't need to be updated... ;-)\n"
+                print("Your XSSer doesn't need to be updated... ;-)\n")

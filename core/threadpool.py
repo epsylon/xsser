@@ -72,10 +72,10 @@ __license__ = "MIT license"
 import sys
 import threading
 try:
-    import Queue
+    import queue
 except ImportError:
     import queue as Queue
-from Queue import Empty
+from queue import Empty
 import traceback
 
 
@@ -282,8 +282,8 @@ class ThreadPool:
             ``ThreadPool.putRequest()`` and catch ``Queue.Full`` exceptions.
 
         """
-        self._requests_queue = Queue.Queue(q_size)
-        self._results_queue = Queue.Queue(resq_size)
+        self._requests_queue = queue.Queue(q_size)
+        self._results_queue = queue.Queue(resq_size)
         self.workers = []
         self.dismissedWorkers = []
         self.workRequests = {}
@@ -388,7 +388,7 @@ if __name__ == '__main__':
 
     # this will be called each time a result is available
     def print_result(request, result):
-        print("**** Result from request #%s: %r" % (request.requestID, result))
+        print(("**** Result from request #%s: %r" % (request.requestID, result)))
 
     # this will be called when an exception occurs within a thread
     # this example exception handler does little more than the default handler
@@ -398,8 +398,8 @@ if __name__ == '__main__':
             print(request)
             print(exc_info)
             raise SystemExit
-        print("**** Exception occured in request #%s: %s" % \
-          (request.requestID, exc_info))
+        print(("**** Exception occured in request #%s: %s" % \
+          (request.requestID, exc_info)))
 
     # assemble the arguments for each job to a list...
     data = [random.randint(1,10) for i in range(20)]
@@ -425,7 +425,7 @@ if __name__ == '__main__':
     # then we put the work requests in the queue...
     for req in requests:
         main.putRequest(req)
-        print("Work request #%s added." % req.requestID)
+        print(("Work request #%s added." % req.requestID))
     # or shorter:
     # [main.putRequest(req) for req in requests]
 
@@ -440,8 +440,8 @@ if __name__ == '__main__':
         try:
             time.sleep(0.5)
             main.poll()
-            print("Main thread working...",)
-            print("(active worker threads: %i)" % (threading.activeCount()-1, ))
+            print(("Main thread working...",))
+            print(("(active worker threads: %i)" % (threading.activeCount()-1, )))
             if i == 10:
                 print("**** Adding 3 more worker threads...")
                 main.createWorkers(3)

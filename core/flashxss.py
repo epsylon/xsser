@@ -47,4 +47,4 @@ class FlashInjections(object):
 
 if __name__ == '__main__':
     flash_xss_injection = FlashInjections('')
-    print flash_xss_injection.flash_xss('FlashXSSpoison.swf' , "<script>alert('XSS')</script>")
+    print(flash_xss_injection.flash_xss('FlashXSSpoison.swf' , "<script>alert('XSS')</script>"))

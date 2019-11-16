@@ -1,6 +1,18 @@
 ================================================================
-Changelog: XSSer v1.8.1 (https://xsser.03c8.net)
+Changelog: XSSer v1.8.2 (https://xsser.03c8.net)
 ==============================
+
+=================
+November 16, 2019:
+=================
+
+- Ported to: Python3.x
+- Bugfixing
+- Added: Anti-antiXSS Firewall rules (Bypassers provided: SucuriWAF)
+- Modified/Updated GTK+
+- Added Requirements
+- Updated Documentation
+- Updated Website
 
 =================
 September 20, 2019:

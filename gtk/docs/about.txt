@@ -4,7 +4,7 @@
                                                                     `.`                   ..              
             Welcome to XSSer ....                       `-:`              .-`               
                                                                         `/-     -      +`                                        
-                                                                          o     +      /                                  v1.8[1] -> "The Hive!"
+                                                                          o     +      /                                  v1.8[2] -> "The Hiv3!"
                                                                           ./   -Ny    /.                                         
                                                              `::-`       :--yMN:--.      `.....                      
                                          `mMMMMMmdhysoooosMyoo+oyhdmNMMMMMMMs       
@@ -66,12 +66,13 @@
         - [Barracuda]: Barracuda WAF
         - [ModSec]: Mod-Security
         - [QuickDF]: QuickDefense
+        - [Sucuri]: SucuriWAF
         - [Chrome]: Google Chrome
         - [IE]: Internet Explorer
         - [FF]: Mozilla's Gecko rendering engine, used by Firefox/Iceweasel
         - [NS-IE]: Netscape in IE rendering engine mode   
         - [NS-G]: Netscape in the Gecko rendering engine mode
-        - [Opera]: Opera
+        - [Opera]: Opera Browser
 
     ====================================
     Documentation:
