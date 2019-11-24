@@ -259,24 +259,24 @@ class Crawler(object):
             forms = soup.findAll('form')
             for form in forms:
                 pars = {}
-                if "action" in form:
+                if "action" in form.attrs:
                     action_path = urllib.parse.urljoin(path, form["action"])
                 else:
                     action_path = path
                 for input_par in form.findAll('input'):
-                    if "name" not in input_par:
+                    if "name" not in input_par.attrs:
                         continue
                     value = "foo"
-                    if "value" in input_par and input_par["value"]:
+                    if "value" in input_par.attrs and input_par["value"]:
                         value = input_par["value"]
                     pars[input_par["name"]] = value
                 for input_par in form.findAll('select'):
                     pars[input_par["name"]] = "1"
                 if pars:
-                    links.append({"url":action_path + '?' + urllib.parse.urlencode(pars)})
+                    links.append({"href":action_path + '?' + urllib.parse.urlencode(pars)})
                 else:
                     self.report("form with no pars")
-                    links.append({"url":action_path})
+                    links.append({"href":action_path})
             links += self._emergency_parse(html_data, len(links))
         if self.verbose == 2:
             self.report(" "*(self._depth-depth) + path +" "+ str(len(links)))
