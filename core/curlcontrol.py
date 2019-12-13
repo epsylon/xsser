@@ -451,7 +451,10 @@ class Curl:
         m['request-size'] = str(self.handle.getinfo(pycurl.REQUEST_SIZE))
         m['response-code'] = str(self.handle.getinfo(pycurl.RESPONSE_CODE))
         m['ssl-verifyresult'] = str(self.handle.getinfo(pycurl.SSL_VERIFYRESULT))
-        m['content-type'] = (self.handle.getinfo(pycurl.CONTENT_TYPE) or '').strip(';')
+        try:
+            m['content-type'] = (self.handle.getinfo(pycurl.CONTENT_TYPE) or '').strip(';')
+        except:
+            m['content-type'] = None
         m['cookielist'] = str(self.handle.getinfo(pycurl.INFO_COOKIELIST))
         #m['content-length-download'] = str(self.handle.getinfo(pycurl.CONTENT_LENGTH_DOWNLOAD))
         #m['content-length-upload'] = str(self.handle.getinfo(pycurl.CONTENT_LENGTH_UPLOAD))

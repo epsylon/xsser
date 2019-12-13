@@ -213,7 +213,7 @@ Commands and examples:
 
 ----------------------------------------
 
-* Simple injection from URL:<br><br>
+* Simple injection from URL:
 
   xsser -u "https://target.com/XSS"
 
