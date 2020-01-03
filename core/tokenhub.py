@@ -60,9 +60,12 @@ class HubThread(Thread):
     def client_finished(self, _thread):
         self._clients.remove(_thread)
     def shutdown(self):
-        if self.ready:
-            self.socket.shutdown(socket.SHUT_RDWR)
-            self.socket.close()
+        try:
+            if self.ready:
+                self.socket.shutdown(socket.SHUT_RDWR)
+                self.socket.close()
+        except OSError:
+            pass
         self.running = False
         self._armed = False
         self.ready = False
