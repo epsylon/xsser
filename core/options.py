@@ -120,7 +120,7 @@ class XSSerOptions(optparse.OptionParser):
         group14 = optparse.OptionGroup(self, "*Select Payload(s)*",
         "These options can be used to set the list of vectors provided by XSSer. Choose only if required:")
         group14.add_option("--auto-set", action="store", dest="fzz_num", help="ASET  - Limit of vectors to inject (default: "+str(self.vectors_fuzz)+")")
-        group14.add_option("--auto-info", action="store_true", dest="fzz_info", help="AINFO - Select ONLY vectors with INFO (defaul: FALSE)")
+        group14.add_option("--auto-info", action="store_true", dest="fzz_info", help="AINFO - Select ONLY vectors with INFO (default: FALSE)")
         group14.add_option("--auto-random", action="store_true", dest="fzz_rand", help="ARAND - Set random to order (default: FALSE)")
         self.add_option_group(group14)
 
