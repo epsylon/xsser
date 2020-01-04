@@ -113,7 +113,7 @@ Options:
     XSSer. Choose only if required:
 
     --auto-set=FZZ_NUM  ASET  - Limit of vectors to inject (default: 1293)
-    --auto-info         AINFO - Select ONLY vectors with INFO (defaul: FALSE)
+    --auto-info         AINFO - Select ONLY vectors with INFO (default: FALSE)
     --auto-random       ARAND - Set random to order (default: FALSE)
 
   *Anti-antiXSS Firewall rules*:
