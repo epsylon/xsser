@@ -61,7 +61,7 @@ class XSSerOptions(optparse.OptionParser):
         group2.add_option("-i", action="store", dest="readfile", help="Read target(s) urls from file")
         group2.add_option("-d", action="store", dest="dork", help="Search target(s) using a query (ex: 'news.php?id=')")
         group2.add_option("-l", action="store_true", dest="dork_file", help="Search from a list of 'dorks'")
-        group2.add_option("--De", action="store", dest="dork_engine", help="Use this search engine (default: yahoo)")
+        group2.add_option("--De", action="store", dest="dork_engine", help="Use this search engine (default: DuckDuckGo)")
         group2.add_option("--Da", action="store_true", dest="dork_mass", help="Search massively using all search engines")
         self.add_option_group(group2)
 
