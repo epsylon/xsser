@@ -1425,7 +1425,7 @@ class xsser(EncoderDecoder, XSSerReporter):
             if str('/&gt;' + hashing) in c_body or str('href=' + dest_url + hashing) in c_body or str('content=' + dest_url + hashing) in c_body:
                 self.report("[Info] Reply looks like a 'false positive' -> [DISCARDING!]\n")
                 self.add_failure(dest_url, payload, hashing, query_string, orig_url, method) # failed!
-            elif str(hashing+","):
+            elif str(hashing+",") in c_body or str(hashing+'","') in c_body:
                 self.report("[Info] Reply looks like a 'false positive' -> [DISCARDING!]\n")
                 self.add_failure(dest_url, payload, hashing, query_string, orig_url, method) # failed!
             else:
