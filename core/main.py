@@ -1411,21 +1411,27 @@ class xsser(EncoderDecoder, XSSerReporter):
             if b64_string.startswith("="):
                 b64_string = b64_string.replace("=", "")
             hashing = b64_string
-        if str(hashing) in c_body and "http-code: 200" in c_info: # only add a success if hashing is on body and we have HTTP 200-OK [XSS CHECKPOINT!]
-            # some anti false positives checkers
-            if str(options.discode) in curl_handle.body(): # provided by user
-                self.report("[Info] Reply contains code [ --discode ] provided to be discarded... forcing failure!\n")
-                self.add_failure(dest_url, payload, hashing, query_string, orig_url, method) # failed!
-            else:
-                if str('/&gt;' + hashing) in curl_handle.body() or str('href=' + dest_url + hashing) in curl_handle.body() or str('content=' + dest_url + hashing) in curl_handle.body():
-                    self.report("[Info] Reply looks like a -false positive- from here. Check it, manually... forcing discard!\n")
-                    self.add_failure(dest_url, payload, hashing, query_string, orig_url, method) # failed!
-                else:
-                    if options.discode:
-                        self.report("[Info] Reply does NOT contain code [ --discode ] provided to be discarded... adding! ;-)\n")
-                    self.add_success(dest_url, payload, hashing, query_string, orig_url, method) # success!       
+        if str(hashing) in c_body and "http-code: 200" in c_info: # [XSS CHECKPOINT: anti-false positives]
+            self.check_false_positives(hashing, c_body, dest_url, payload, query_string, orig_url, method)
         else:
             self.add_failure(dest_url, payload, hashing, query_string, orig_url, method) # failed!
+
+    def check_false_positives(self, hashing, c_body, dest_url, payload, query_string, orig_url, method):
+        # some anti false positives checkers
+        if str(self.options.discode) in c_body: # provided by user
+            self.report("[Info] Reply contains code [ --discode ] provided to be discarded -> [DISCARDING!]\n")
+            self.add_failure(dest_url, payload, hashing, query_string, orig_url, method) # failed!
+        else:
+            if str('/&gt;' + hashing) in c_body or str('href=' + dest_url + hashing) in c_body or str('content=' + dest_url + hashing) in c_body:
+                self.report("[Info] Reply looks like a 'false positive' -> [DISCARDING!]\n")
+                self.add_failure(dest_url, payload, hashing, query_string, orig_url, method) # failed!
+            elif str(hashing+","):
+                self.report("[Info] Reply looks like a 'false positive' -> [DISCARDING!]\n")
+                self.add_failure(dest_url, payload, hashing, query_string, orig_url, method) # failed!
+            else:
+                if self.options.discode:
+                    self.report("[Info] Reply does NOT contain code [ --discode ] provided to be discarded -> [ADDING!] ;-)\n")
+                self.add_success(dest_url, payload, hashing, query_string, orig_url, method) # success!       
 
     def add_failure(self, dest_url, payload, hashing, query_string, orig_url, method='url'):
         """
