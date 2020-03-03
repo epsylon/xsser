@@ -4,7 +4,7 @@
 """
 This file is part of the XSSer project, https://xsser.03c8.net
 
-Copyright (c) 2010/2019 | psy <epsylon@riseup.net>
+Copyright (c) 2010/2020 | psy <epsylon@riseup.net>
 
 xsser is free software; you can redistribute it and/or modify it under
 the terms of the GNU General Public License as published by the Free
@@ -31,8 +31,8 @@ class Updater(object):
         GIT_REPOSITORY = "https://code.03c8.net/epsylon/xsser"
         GIT_REPOSITORY2 = "https://github.com/epsylon/xsser"
         rootDir = os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..', ''))
-        if not os.path.exists(os.path.join(rootDir, ".git")):
-            print("[Error] Not any .git repository found!\n")
+        if not os.path.exists(".git"):
+            print("Not any .git repository found!\n")
             print("="*30)
             print("\nTo have working this feature, you should clone XSSer with:\n")
             print("$ git clone %s" % GIT_REPOSITORY)
@@ -40,8 +40,8 @@ class Updater(object):
             print("$ git clone %s" % GIT_REPOSITORY2 + "\n")
         else:
             checkout = execute("git checkout . && git pull", shell=True, stdout=PIPE, stderr=PIPE).communicate()[0]
-            print(checkout)
-            if not "Already up-to-date" in checkout:
-                print("Congratulations!! XSSer has been updated... ;-)\n")
+            print("[Info] [GitHub] Reply:\n\n"+checkout.decode('utf-8'))
+            if not b"Already up-to-date" in checkout:
+                print("[Info] [AI] Congratulations!! XSSer has been updated... ;-)\n")
             else:
-                print("Your XSSer doesn't need to be updated... ;-)\n")
+                print("[Info] [AI] Your XSSer doesn't need to be updated... ;-)\n")

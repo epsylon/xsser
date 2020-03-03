@@ -1,6 +1,20 @@
 ================================================================
-Changelog: XSSer v1.8.2 (https://xsser.03c8.net)
+Changelog: XSSer v1.8.3 (https://xsser.03c8.net)
 ==============================
+
+=================
+March 3, 2020:
+=================
+
+- Modified/Updated: anti false positives checkers
+- Added: internal 'headless' browser: gecko/firefox engine
+- Modified/Updated: --reverse-check (GET/POST) (local/remote)
+- Removed: --reverse-open
+- Modified/Updated: DOM attack (added vectors: 13)
+- Modified/Updated: GTK+
+- Added: Requirements
+- Updated: Documentation
+- Updated: Website
 
 =================
 November 16, 2019:
@@ -9,10 +23,10 @@ November 16, 2019:
 - Ported to: Python3.x
 - Bugfixing
 - Added: Anti-antiXSS Firewall rules (Bypassers provided: SucuriWAF)
-- Modified/Updated GTK+
-- Added Requirements
-- Updated Documentation
-- Updated Website
+- Modified/Updated: GTK+
+- Added: Requirements
+- Updated: Documentation
+- Updated: Website
 
 =================
 September 20, 2019:
@@ -38,105 +52,105 @@ September 20, 2019:
 April 12, 2018:
 =================
 
-- Removed deprecated features (search engines, SSLv3...)
-- Fixed auto-update option
+- Removed: deprecated features (search engines, SSLv3...)
+- Fixed: auto-update option
 
 =================
 February 24, 2016:
 =================
 
-- Removed deprecated features
-- Updated Automatic XSS vectors list (Total: 578 = XSS: 558 + DCP: 4 + DOM: 5 + HTTPsr: 11)
-- Added XST (Cross Site Tracing)
-- Advanced XSA (Cross Site Agent), XSR (Cross Site Referer) and Cookie Injection
-- Updated/Fixed Dorkering system (Search engines supported: duck, bing, google, yahoo, yandex)
-- Added Dorking from file (30 potential 'XSS dorks' provided)
-- Added Mass-Dorking (search with all search engines provided)
-- Added Discarding response method to evade false positives
-- Added Anti-antiXSS Firewall rules (Bypassers provided for: PHPIDS, Imperva, WebKnight, F5BigIP, Barracuda, Apache-Modsec, QuickDefense)
-- Added 'Wizard Helper' to shell mode
-- Updated XSSer tool updater
-- Updated 'Mana' system
-- Fixed Crawlering system
-- Added feature: 'Automatically audit an entire target" 
-- Modified/Updated GTK+
-- Added Requirements
-- Updated Documentation
+- Removed: deprecated features
+- Updated: Automatic XSS vectors list (Total: 578 = XSS: 558 + DCP: 4 + DOM: 5 + HTTPsr: 11)
+- Added: XST (Cross Site Tracing)
+- Advanced: XSA (Cross Site Agent), XSR (Cross Site Referer) and Cookie Injection
+- Updated/Fixed: Dorkering system (Search engines supported: duck, bing, google, yahoo, yandex)
+- Added: Dorking from file (30 potential 'XSS dorks' provided)
+- Added: Mass-Dorking (search with all search engines provided)
+- Added: Discarding response method to evade false positives
+- Added: Anti-antiXSS Firewall rules (Bypassers provided for: PHPIDS, Imperva, WebKnight, F5BigIP, Barracuda, Apache-Modsec, QuickDefense)
+- Added: 'Wizard Helper' to shell mode
+- Updated: XSSer tool updater
+- Updated: 'Mana' system
+- Fixed: Crawlering system
+- Added: feature: 'Automatically audit an entire target" 
+- Modified/Updated: GTK+
+- Added: Requirements
+- Updated: Documentation
 
 =================
 November 28, 2011:
 =================
 
-- Added Drop Cookie option
-- Added Random IP X-Forwarded-For an X-Client-IP option
-- Added GSS and NTLM authentication methods
-- Added Ignore proxy option
-- Added TCP-NODELAY option
-- Added Follow redirects option
-- Added Follow redirects limiter parameter
-- Added Auto-HEAD precheck system
-- Added No-HEAD option
-- Added Isalive option
-- Added Check at url option (Blind XSS)
-- Added Reverse Check parameter
-- Added PHPIDS (v.0.6.5) exploit
-- Added More vectors to auto-payloading
-- Added HTML5 studied vectors
-- Fixed Different bugs on core
-- Fixed Curl handlerer options
-- Fixed Dorkerers system
-- Fixed Bugs on results propagation
-- Fixed POST requests
-- Added New features to GTK controller
-- Added Detailed views to GTK interface
+- Added: Drop Cookie option
+- Added: Random IP X-Forwarded-For an X-Client-IP option
+- Added: GSS and NTLM authentication methods
+- Added: Ignore proxy option
+- Added: TCP-NODELAY option
+- Added: Follow redirects option
+- Added: Follow redirects limiter parameter
+- Added: Auto-HEAD precheck system
+- Added: No-HEAD option
+- Added: Isalive option
+- Added: Check at url option (Blind XSS)
+- Added: Reverse Check parameter
+- Added: PHPIDS (v.0.6.5) exploit
+- Added: More vectors to auto-payloading
+- Added: HTML5 studied vectors
+- Fixed: Different bugs on core
+- Fixed: Curl handlerer options
+- Fixed: Dorkerers system
+- Fixed: Bugs on results propagation
+- Fixed: POST requests
+- Added: New features to GTK controller
+- Added: Detailed views to GTK interface
 
 =================
 February 21, 2011:
 =================
 
-- Added heuristic test
-- Updated dorkers list
-- HTTP Response Splitting Induced code 
-- GTK+ interface
-- Geomapping
-- Multithreading workers
-- Test controllers
-- Added websockets technology (orbited)
-- Added update option
-- DoS (server) side injection
-- DCP/DOM/Induced final code
-- Code clean
+- Added: heuristic test
+- Updated: dorkers list
+- Added: HTTP Response Splitting Induced
+- Added: GTK+ interface
+- Added: Geomapping
+- Added: Multithreading workers
+- Added: Test controllers
+- Added: websockets technology (orbited)
+- Added: update option
+- Added: DoS (server) side injection
+- Added: DCP/DOM/Induced final code
+- Updated: Code clean
 - Bugfixing
-- New options menu
-- More advanced statistics system
+- Added: New options menu
+- Advanced: statistics system
 
 =================
 November 7, 2010:
 =================
 
-- Added "final remote injections" option
-- Cross Flash Attack! 
-- Cross Frame Scripting
-- Data Control Protocol Injections  
-- Base64 (rfc2397) PoC
-- OnMouseMove PoC
-- Browser launcher
-- Code clean
+- Added: "final remote injections" option
+- Added: Cross Flash Attack! 
+- Added: Cross Frame Scripting
+- Added: Data Control Protocol Injections  
+- Added: Base64 (rfc2397) PoC
+- Added: OnMouseMove PoC
+- Added: Browser launcher
+- Updated: Code clean
 - Bugfixing
-- New options menu
-- Pre-check system
-- Crawler spidering clones
-- More advanced statistics system
-- "Mana" ouput results
+- Added: New options menu
+- Added: Pre-check system
+- Added: Crawler spidering clones
+- Added: More Advanced: statistics system
+- Added: "Mana" ouput results
 
 =================
 September 22, 2010:
 =================
 
-- Added a-xml exporter 
+- Added: a-xml exporter 
 - ImageXSS 
 - New dorker engines (total 10) 
-- Core clean 
+- Updated: Code clean
 - Bugfixing 
 - Social Networking auto-publisher
 - Started -federated- XSS (full disclosure) pentesting botnet
@@ -148,45 +162,47 @@ September 22, 2010:
 August 20, 2010:
 =================
 
-- Added attack payloads to fuzzer (26 new injections) 
-- POST 
-- Statistics 
-- URL Shorteners 
-- IP Octal 
-- Post-processing payloading 
-- DOM Shadows! 
-- Cookie injector 
-- Browser DoS (Denegation of Service)
+- Added: attack payloads to fuzzer (26 new injections) 
+- Added: POST 
+- Added: Statistics 
+- Added: URL Shorteners 
+- Added: IP Octal 
+- Added: Post-processing payloading 
+- Added: DOM Shadows! 
+- Added: Cookie injector 
+- Added: Browser DoS (Denegation of Service)
 
 =================
 July 1, 2010:
 =================
 
-- Dorking 
-- Crawling 
-- IP DWORD + Core clean
+- Added: Dorking 
+- Added: Crawling 
+- Added: IP DWORD
+- Updated: Code clean
 
 =================
 April 19, 2010:
 =================
 
-- HTTPS implemented + patched bugs
+- Bugfixing
+- Added: HTTPS
 
 =================
 March 22, 2010:
 =================
 
-- Added "inject your own payload" option. Can be used with all character encoding -bypassers- of XSSer
+- Added: "inject your own payload" option. Can be used with all character encoding -bypassers- of XSSer
 
 =================
 March 18, 2010:
 =================
 
-- Added attack payloads to fuzzer (62 different XSS injections)
+- Added: attack payloads to fuzzer (62 different XSS injections)
 
 =================
 March 16, 2010:
 =================
 
-- Added new payload encoders to bypass filters
+- Added: new payload encoders to bypass filters
 

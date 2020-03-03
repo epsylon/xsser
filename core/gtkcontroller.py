@@ -4,7 +4,7 @@
 """
 This file is part of the XSSer project, https://xsser.03c8.net
 
-Copyright (c) 2010/2019 | psy <epsylon@riseup.net>
+Copyright (c) 2010/2020 | psy <epsylon@riseup.net>
 
 xsser is free software; you can redistribute it and/or modify it under
 the terms of the GNU General Public License as published by the Free
@@ -352,7 +352,7 @@ class Controller(XSSerReporter):
         Callback called when the window is destroyed (close button clicked)
         """
         if self._flying:
-            print("[Info] Exiting... please wait until all mosquitoes return to mothership!\n")
+            print("[Info] Please wait... until all the mosquitoes have returned to the hieve... -> [Exiting!]\n")
             self._quitting = True
             self.on_stop_attack()
             self.do_quit()
@@ -387,7 +387,6 @@ class Controller(XSSerReporter):
             work_count = ""
             crawled = "X"
         pars = [crawled, rem, th_count, work_count]
-
         gdk.threads_enter()
         self.counters_label.set_text(" ".join(pars))
         if pars[3]:

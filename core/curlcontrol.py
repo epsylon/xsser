@@ -4,7 +4,7 @@
 """
 This file is part of the XSSer project, https://xsser.03c8.net
 
-Copyright (c) 2010/2019 | psy <epsylon@riseup.net>
+Copyright (c) 2010/2020 | psy <epsylon@riseup.net>
 
 xsser is free software; you can redistribute it and/or modify it under
 the terms of the GNU General Public License as published by the Free
@@ -495,7 +495,6 @@ class Curl:
                 print("Limit to follow:", cls.fli)
         else:
             print("Delaying:", cls.delay, "seconds")
-
         print("Retries:", cls.retries, "\n")
 
     def answered(self, check):

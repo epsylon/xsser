@@ -4,7 +4,7 @@
 """
 This file is part of the XSSer project, https://xsser.03c8.net
 
-Copyright (c) 2010/2019 | psy <epsylon@riseup.net>
+Copyright (c) 2010/2020 | psy <epsylon@riseup.net>
 
 xsser is free software; you can redistribute it and/or modify it under
 the terms of the GNU General Public License as published by the Free
@@ -30,7 +30,7 @@ class XSSerOptions(optparse.OptionParser):
         optparse.OptionParser.__init__(self, 
                            description='Cross Site "Scripter" is an automatic -framework- to detect, exploit and\nreport XSS vulnerabilities in web-based applications.',
                            prog='XSSer.py',
-			   version='\nXSSer v1.8[2]: "The Hiv3!" - (https://xsser.03c8.net) - 2010/2019 -> by psy\n',
+			   version='\nXSSer v1.8[3]: "The HiV€!" - (https://xsser.03c8.net) - 2010/2020 -> by psy\n',
                            usage= '\n\nxsser [OPTIONS] [--all <url> |-u <url> |-i <file> |-d <dork> (options)|-l ] [-g <get> |-p <post> |-c <crawl> (options)]\n[Request(s)] [Checker(s)] [Vector(s)] [Anti-antiXSS/IDS] [Bypasser(s)] [Technique(s)] [Final Injection(s)] [Reporting] {Miscellaneous}')
         self.set_defaults(verbose=False, threads=5, retries=1, delay=0, timeout=30,
                           silent=False)
@@ -95,7 +95,7 @@ class XSSerOptions(optparse.OptionParser):
         group4.add_option("--threads", action="store", dest="threads", type="int", help="Maximum number of concurrent requests (default: 5)") 
         group4.add_option("--delay", action="store", dest="delay", type="int", help="Delay in seconds between each request (default: 0)")
         group4.add_option("--tcp-nodelay", action="store_true", dest="tcp_nodelay", help="Use the TCP_NODELAY option")
-        group4.add_option("--follow-redirects", action="store_true", dest="followred", help="Follow server redirection responses (302)")
+        group4.add_option("--follow-redirects", action="store_true", dest="followred", help="Follow server redirections (default: FALSE)")
         group4.add_option("--follow-limit", action="store", dest="fli", type="int", help="Set limit for redirection requests (default: 50)")
         self.add_option_group(group4)
 
@@ -108,7 +108,6 @@ class XSSerOptions(optparse.OptionParser):
         group5.add_option("--checkmethod", action="store", dest="altm", help="Check reply using: GET or POST (default: GET)")
         group5.add_option("--checkatdata", action="store", dest="ald", help="Check reply using: <alternative payload>") 
         group5.add_option("--reverse-check", action="store_true", dest="reversecheck", help="Establish a reverse connection from target to XSSer")
-        group5.add_option("--reverse-open", action="store_true", dest="reverseopen", help="Open a web browser when a reverse check is established")
         self.add_option_group(group5)
 
         group6 = optparse.OptionGroup(self, "*Select Vector(s)*",
@@ -194,7 +193,7 @@ class XSSerOptions(optparse.OptionParser):
     def get_options(self, user_args=None):
         (options, args) = self.parse_args(user_args)
         if (not options.url and not options.readfile and not options.dork and not options.dork_file and not options.imx and not options.flash and not options.update and not options.xsser_gtk and not options.wizard and not options.xst and not options.target and not options.checktor):
-            print("\n", '='*75)
+            print("\n"+ '='*75)
             print(self.version)
             print("-----------", "\n")
             print(self.description, "\n")

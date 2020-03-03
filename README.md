@@ -41,14 +41,16 @@ XSSer runs on many platforms. It requires Python (3.x) and the following librari
     - python3-geoip2 - Python geoip2 API for web services and databases - Python 3.x
     - python3-gi - Python 3 bindings for gobject-introspection libraries
     - python3-cairocffi - cffi-based cairo bindings for Python (Python3)
+    - python3-selenium - Python3 bindings for Selenium
+    - firefoxdriver - Firefox WebDriver support
 
 On Debian-based systems (ex: Ubuntu), run: 
 
-    sudo apt-get install python3-pycurl python3-bs4 python3-geoip python3-geoip2 python3-gi python3-cairocffi
+    sudo apt-get install python3-pycurl python3-bs4 python3-geoip python3-geoip2 python3-gi python3-cairocffi python3-selenium firefoxdriver
 
 On other systems such as: Kali, Ubuntu, ArchLinux, ParrotSec, Fedora, etc... also run:
 
-    sudo pip3 install pycurl bs4 geoip2 gobject cairocffi
+    sudo pip3 install pycurl bs4 geoip2 gobject cairocffi selenium
 
 ####  Source libs:
 
@@ -59,6 +61,7 @@ On other systems such as: Kali, Ubuntu, ArchLinux, ParrotSec, Fedora, etc... als
    * PyGeoIP2: https://pypi.org/project/geoip2/
    * PyGObject: https://pypi.org/project/gobject/
    * PyCairocffi: https://pypi.org/project/cairocffi/
+   * PySelenium: https://pypi.org/project/selenium/
 
 ----------
 
@@ -78,6 +81,12 @@ in the [LICENSE](./docs/LICENSE) file.
   ![XSSer](https://xsser.03c8.net/xsser/thehive4.png "XSSer Configuration")
 
   ![XSSer](https://xsser.03c8.net/xsser/thehive5.png "XSSer Bypassers")
+
+  ![XSSer](https://xsser.03c8.net/xsser/thehive6.png "XSSer [HTTP GET] [LOCAL] Reverse Exploit")
+
+  ![XSSer](https://xsser.03c8.net/xsser/thehive7.png "XSSer [HTTP POST] [REMOTE] Reverse Exploit")
+
+  ![XSSer](https://xsser.03c8.net/xsser/thehive8.png "XSSer [HTTP DOM] Exploit")
 
   ![XSSer](https://xsser.03c8.net/xsser/zika4.png "XSSer GeoMap")
 

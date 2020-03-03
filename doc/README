@@ -8,7 +8,7 @@ Cross Site "Scripter" is an automatic -framework- to detect, exploit and report 
 Current Version:
 ==============================
 
-XSSer v1.8[2]: "The Hiv3!" (2010/2019) // [https://xsser.03c8.net]
+XSSer v1.8[3]: "The Hiv€!" (2010/2020) // [https://xsser.03c8.net]
 
 ================================================================
 Options and features:
@@ -98,7 +98,6 @@ Options:
     --checkmethod=ALTM  Check reply using: GET or POST (default: GET)
     --checkatdata=ALD   Check reply using: <alternative payload>
     --reverse-check     Establish a reverse connection from target to XSSer
-    --reverse-open      Open a web browser when a reverse check is established
 
   *Select Vector(s)*:
     These options can be used to specify injection(s) code. Important if
@@ -281,7 +280,7 @@ Commands and examples:
 
 * Simple injection from URL, using GET, injecting on Cookie, trying to use DOM shadow space (no server logging!) and if exists any vulnerability, exploiting your -own- final code:
 
-  xsser -u "https://target.com" -g "/news.asp?page=XSS" --Coo --Dom --Fp="<script>alert('XSSed');</script>"
+  xsser -u "https://target.com" -g "/news.asp?page=XSS" --Coo --Anchor --Fp="<script>alert('XSSed');</script>"
 
 ----------------------------------------
 

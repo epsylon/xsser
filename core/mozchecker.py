@@ -146,21 +146,16 @@ if __name__ == '__main__':
 
     gobject.timeout_add(30000, bailout)
     gobject.timeout_add(100, alertkill)
-
     win = gtk.Window()
     win.set_property('skip-taskbar-hint', True)
     win.set_property('skip-pager-hint', True)
     win.set_keep_below(True)
     win.connect('map', unmap)
-
     moz = MozEmbed()
     moz.load_url(sys.argv[1])
-
     moz.connect('net-stop', finished)
     moz.connect('new-window', new_window)
-
     win.set_title(sys.argv[1])
-
     win.add(moz)
     win.show_all()
     gtk.main()

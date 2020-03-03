@@ -4,7 +4,7 @@
 """
 This file is part of the XSSer project, https://xsser.03c8.net
 
-Copyright (c) 2010/2019 | psy <epsylon@riseup.net>
+Copyright (c) 2010/2020 | psy <epsylon@riseup.net>
 
 xsser is free software; you can redistribute it and/or modify it under
 the terms of the GNU General Public License as published by the Free
@@ -23,6 +23,9 @@ from threading import Thread
 import socket
 import time
 
+success_token_url = False
+token_arrived_hash = None
+
 class ReceiverThread(Thread):
     def __init__(self, client, addr, parent):
         Thread.__init__(self)
@@ -33,7 +36,9 @@ class ReceiverThread(Thread):
         data = self.client.recv(1024)
         if data:
             self.parent.data_arrived(data)
-            self.client.send('thanks for coming!')
+            self.client.send(b'XSSer "token-hub" service running... ;-)\n\n')
+            self.client.send(b'### INCOMING DATA:\n\n')
+            self.client.send(data)
             self.client.close()
         self.parent.client_finished(self)
 
@@ -46,19 +51,44 @@ class HubThread(Thread):
         self.ready = False
         self.running =False
         self.parent = parent
+        self.token_arrived_flag = False
+        self.success_arrived_flag = False
+    def check_hash(self, hashing):
+        if token_arrived_hash:
+            if success_token_url:
+                if token_arrived_hash == hashing: # [100% VULNERABLE] check!
+                    self.token_arrived_flag = True
+                    self.success_arrived_flag = False
+                elif '/success/' in success_token_url:
+                    self.token_arrived_flag = True
+                    self.success_arrived_flag = True
+                else:
+                    self.token_arrived_flag = False
+            else:
+                self.token_arrived_flag = False
+        else:
+            self.token_arrived_flag = False
+        return self.token_arrived_flag, self.success_arrived_flag, token_arrived_hash
     def url_request(self, url):
-        split_url = url.split("/")
+        split_url = url.split(b"/")
         if len(split_url) > 2:
-            if split_url[1] == 'success':
-                self.parent.token_arrived(split_url[2])
+            if split_url[1] == b'success':
+                global success_token_url
+                global token_arrived_hash
+                success_token_url = url.decode('utf-8')
+                token_arrived_hash = split_url[2].decode('utf-8')
+                self.parent.token_arrived(split_url[2].decode('utf-8'))
     def data_arrived(self, data):
-        data.split("\n")[0]
-        if data.startswith("GET"):
+        data.split(b"\n")[0]
+        if data.startswith(b"GET"):
             split_data = data.split()
             if len(split_data) > 1:
                 self.url_request(split_data[1])
     def client_finished(self, _thread):
-        self._clients.remove(_thread)
+        try:
+            self._clients.remove(_thread)
+        except:
+            pass
     def shutdown(self):
         if self.ready:
             try:

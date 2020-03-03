@@ -14,7 +14,7 @@
     <property name="can_default">True</property>
     <property name="has_tooltip">True</property>
     <property name="border_width">1</property>
-    <property name="title" translatable="yes">XSSer v1.8[2]: "The Hiv3!" - (https://xsser.03c8.net)</property>
+    <property name="title" translatable="yes">XSSer v1.8.[3]: "The Hiv€!" - (https://xsser.03c8.net) - by psy</property>
     <property name="window_position">center-always</property>
     <property name="destroy_with_parent">True</property>
     <property name="icon">images/xssericon_24x24.png</property>
