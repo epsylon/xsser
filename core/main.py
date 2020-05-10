@@ -50,7 +50,7 @@ from core.threadpool import ThreadPool, NoResultsPending
 from core.update import Updater
 
 # set to emit debug messages about errors (0 = off).
-DEBUG = True
+DEBUG = False
 
 class xsser(EncoderDecoder, XSSerReporter):
     """
@@ -1523,7 +1523,7 @@ class xsser(EncoderDecoder, XSSerReporter):
             options.add_argument("-app")
             options.add_argument("-safe-mode")
             current_dir = os.getcwd()
-            driver = webdriver.Firefox(options=options, firefox_profile=profile, executable_path="/usr/local/bin/geckodriver", log_path=os.devnull) # wrapping!
+            driver = webdriver.Firefox(options=options, firefox_profile=profile, executable_path=current_dir+"/core/driver/geckodriver", log_path=os.devnull) # wrapping!
         except:
             driver = None
             self.token_arrived_flag = False
