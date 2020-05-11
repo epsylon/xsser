@@ -1,6 +1,6 @@
 beautifulsoup4==4.8.1
 pycurl==7.43.0.3
-geoip2==2.9.0
+pygeoip=0.3.2
 gobject==0.1.0
 cffi>=1.1.0
 selenium=>3.141.0

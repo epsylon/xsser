@@ -19,7 +19,7 @@ You should have received a copy of the GNU General Public License along
 with xsser; if not, write to the Free Software Foundation, Inc., 51
 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 """
-import os
+import os, sys
 from pathlib import Path
 import gi
 gi.require_version('Gtk', '3.0')
@@ -44,8 +44,11 @@ import gzip
 import time
 from PIL import Image
 import array
-import GeoIP
-
+try:
+    import pygeoip
+except:
+    print("\n[Error] Cannot import lib: pygeoip. \n\n To install it try:\n\n $ 'sudo apt-get install python3-geoip' or 'pip3 install pygeoip'\n")
+    sys.exit()
 class PointType(object):
     checked = 15
     success = 10
@@ -160,7 +163,7 @@ class GlobalMap(gtk.DrawingArea, XSSerReporter):
             delattr(self, '_t')
         parent = self._parent
         geo_db_path = self.get_geodb_path()
-        Geo = GeoIP.open(geo_db_path, GeoIP.GEOIP_STANDARD)
+        Geo = pygeoip.GeoIP(geo_db_path)
         self.geo = Geo
         self.set_has_tooltip(True)
         self._max_points = 200

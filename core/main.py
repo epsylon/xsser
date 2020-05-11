@@ -20,11 +20,13 @@ with xsser; if not, write to the Free Software Foundation, Inc., 51
 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 """
 import os, re, sys, datetime, hashlib, time, cgi, traceback, webbrowser, random
+
 try:
     import urllib.request, urllib.error, urllib.parse
 except:
     print ("\n[Info] XSSer no longer supports Python2: (https://www.python.org/doc/sunset-python-2/). Try to run the tool with Python3.x.y... (ex: python3 xsser)\n")
     sys.exit()
+
 from random import randint
 from base64 import b64encode, b64decode
 import core.fuzzing
@@ -49,7 +51,7 @@ from core.reporter import XSSerReporter
 from core.threadpool import ThreadPool, NoResultsPending
 from core.update import Updater
 
-# set to emit debug messages about errors (0 = off).
+# set to emit debug messages about errors (False = off).
 DEBUG = False
 
 class xsser(EncoderDecoder, XSSerReporter):
@@ -1642,7 +1644,10 @@ class xsser(EncoderDecoder, XSSerReporter):
     def send_token_exploit(self, orig_url, tok_url, hashing, vector_found):
         try:
             if self.cookie_set_flag == False:
-                self.generate_headless_cookies(orig_url)
+                if not self.options.postdata: # GET
+                    self.generate_headless_cookies(tok_url) # send 'tok_url'
+                else: # POST
+                    self.generate_headless_cookies(orig_url) # send 'orig_url'
                 self.cookie_set_flag = True # cookie has been set!
             if self.options.postdata: # GET + web forms scrapping + POST
                 self.driver.get(orig_url) # GET request to store forms
@@ -2922,13 +2927,16 @@ class xsser(EncoderDecoder, XSSerReporter):
                                         self.report("[Info] XSS [HTTP GET] VECTOR [100% VULNERABLE] FOUND!:\n\n|-> "+"".join(self.successful_urls), "\n")
                                     self.token_arrived_hashes.append(self.token_arrived_hash) # add token arrived hashes for counting
                                 else:
-                                    self.report("[Error] Remote XSS exploit [--reverse-check]  has FAILED! -> [PASSING!]\n")
+                                    self.report("[Error] Remote XSS exploit [--reverse-check] has FAILED! -> [PASSING!]\n")
                 self.report("-"*25+"\n")
         if self.options.reversecheck or self.options.dom:
             try:
                 self.driver.close() # end headless embed web browser driver!
             except:
-                pass
+                try:
+                    self.driver.quit() # try quit()
+                except:
+                    pass
         for reporter in self._reporters:
             reporter.end_attack() # end reports
         if self.mothership:
@@ -3064,13 +3072,11 @@ class xsser(EncoderDecoder, XSSerReporter):
     def final_attack_callback(self, attack_hash):
         if attack_hash in self.final_attacks:
             dest_url = self.final_attacks[attack_hash]['url']
-            self.report('[*] Browser check:', dest_url)
             for reporter in self._reporters:
                 reporter.add_checked(dest_url)
             if self._reporter:
                 from twisted.internet import reactor
                 reactor.callFromThread(self._reporter.post, 'SUCCESS ' + dest_url)
-            self.final_attacks.pop(attack_hash)
 
     def apply_postprocessing(self, dest_url, description, method, hashing, query_string, payload, orig_url):
         real_attack_url = self.generate_real_attack_url(dest_url, description, method, hashing, query_string, payload, orig_url)

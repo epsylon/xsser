@@ -19,9 +19,13 @@ You should have received a copy of the GNU General Public License along
 with xsser; if not, write to the Free Software Foundation, Inc., 51
 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 """
-import os, urllib.request, urllib.parse, urllib.error, email, pycurl, re, time, random
+import os, urllib.request, urllib.parse, urllib.error, email, re, time, random, sys
 from io import StringIO as StringIO
-
+try:
+    import pycurl
+except:
+    print("\n[Error] Cannot import lib: pycurl. \n\n To install it try:\n\n $ 'sudo apt-get install python3-pycurl' or 'pip3 install pycurl'\n")
+    sys.exit()
 class Curl:
     """
     Class to control curl on behalf of the application.

@@ -21,7 +21,6 @@ Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 """
 import sys
 import urllib.request, urllib.parse, urllib.error
-import pycurl
 import time
 import traceback
 from . import curlcontrol
@@ -30,7 +29,11 @@ from queue import Queue
 from collections import defaultdict
 from bs4 import BeautifulSoup
 from bs4.dammit import EncodingDetector
-
+try:
+    import pycurl
+except:
+    print("\n[Error] Cannot import lib: pycurl. \n\n To install it try:\n\n $ 'sudo apt-get install python3-pycurl' or 'pip3 install pycurl'\n")
+    sys.exit()
 class EmergencyLanding(Exception):
     pass
 

@@ -49,7 +49,7 @@ class HubThread(Thread):
         self._clients = []
         self._armed = True
         self.ready = False
-        self.running =False
+        self.running = False
         self.parent = parent
         self.token_arrived_flag = False
         self.success_arrived_flag = False
@@ -103,12 +103,13 @@ class HubThread(Thread):
         while not self.running and self._armed:
             try:
                 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1) # try re-use socket
                 s.bind(('localhost', 19084))
                 self.running = True
             except socket.error as e:
-                #print("socket busy, retry opening")
+                #print("socket busy, retry opening:", e)
                 if e.errno == 98: # its in use wait a bit and retry
-                    time.sleep(3)
+                    time.sleep(5)
         if not self._armed:
             return
         self.socket = s
