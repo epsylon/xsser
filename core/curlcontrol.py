@@ -98,7 +98,7 @@ class Curl:
 
     def set_url(self, url):
         """
-        Set the base url.
+        Set HTTP base url.
         """
         self.base_url = url
         self.set_option(pycurl.URL, self.base_url)
@@ -106,7 +106,7 @@ class Curl:
 
     def set_cookie(self, cookie):
         """
-        Set the app cookie.
+        Set HTTP cookie.
         """
         self.cookie = cookie
         self.dropcookie = dropcookie
@@ -120,7 +120,7 @@ class Curl:
 
     def set_agent(self, agent):
         """
-        Set the user agent.
+        Set HTTP user agent.
         """
         self.agent = agent
         self.set_option(pycurl.USERAGENT, self.agent)
@@ -128,7 +128,7 @@ class Curl:
 
     def set_referer(self, referer):
         """
-        Set the referer.
+        Set HTTP referer.
         """
         self.referer = referer
         self.set_option(pycurl.REFERER, self.referer)

