@@ -138,14 +138,7 @@ class Curl:
         """
         Set extra headers.
         """
-        self.headers = headers
-        self.headers = self.headers.split("\n")
-        for headerValue in self.headers:
-            header, value = headerValue.split(": ")
-
-            if header and value:
-                self.set_option(pycurl.HTTPHEADER, (header, value))
-        return headers
+        self.set_option(pycurl.HTTPHEADER, [str(headers)])
 
     def set_proxy(self, ignoreproxy, proxy):
         """
@@ -279,7 +272,7 @@ class Curl:
             if str(self.handle.getinfo(pycurl.HTTP_CODE)) in ["302", "301"]:
                 self.set_option(pycurl.FOLLOWLOCATION, 1)
 
-    def __request(self, relative_url=None):
+    def __request(self, relative_url=None, headers=None):
         """
         Perform a request and returns the payload.
         """
@@ -305,9 +298,8 @@ class Curl:
                     self.set_option(pycurl.HTTPHEADER, self.fakeheaders + xforwfakevalue + xclientfakevalue)
             elif self.xclient:
                 self.set_option(pycurl.HTTPHEADER, self.fakeheaders + xclientfakevalue)
-        if self.headers:
-            self.fakeheaders = self.fakeheaders + self.headers
-        self.set_option(pycurl.HTTPHEADER, self.fakeheaders)
+        if headers:
+            self.set_headers(headers)
         if self.agent:
             self.set_option(pycurl.USERAGENT, self.agent)
         if self.referer:
@@ -406,22 +398,22 @@ class Curl:
                 return
         return self.payload
 
-    def get(self, url="", params=None):
+    def get(self, url="", headers=None, params=None):
         """
         Get a url.
         """
         if params:
             url += "?" + urllib.parse.urlencode(params)
         self.set_option(pycurl.HTTPGET, 1)
-        return self.__request(url)
+        return self.__request(url, headers)
 
-    def post(self, cgi, params):
+    def post(self, cgi, params, headers):
         """
         Post a url.
         """
         self.set_option(pycurl.POST, 1)
         self.set_option(pycurl.POSTFIELDS, params)
-        return self.__request(cgi)
+        return self.__request(cgi, headers)
 
     def body(self):
         """

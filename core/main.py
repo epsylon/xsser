@@ -914,6 +914,10 @@ class xsser(EncoderDecoder, XSSerReporter):
         else:
             pool = self.pool
         c = Curl()
+        if self.options.headers: # add extra headers
+            headers = self.options.headers
+        else:
+            headers = None
         if self.options.getdata or not self.options.postdata:
             dest_url, agent, referer, cookie = self.get_url_payload(url, payload, query_string, None)
             def _cb(request, result):
@@ -927,7 +931,7 @@ class xsser(EncoderDecoder, XSSerReporter):
             c.cookie = cookie
             if " " in dest_url: # parse blank spaces
                 dest_url = dest_url.replace(" ", "+")
-            pool.addRequest(c.get, [[dest_url]], _cb, _error_cb)
+            pool.addRequest(c.get, [[dest_url, headers]], _cb, _error_cb)
             self._ongoing_requests += 1
         if self.options.postdata:
             dest_url, agent, referer, cookie = self.get_url_payload("", payload, query_string, None)
@@ -941,7 +945,7 @@ class xsser(EncoderDecoder, XSSerReporter):
             c.agent = agent
             c.referer = referer
             c.cookie = cookie
-            pool.addRequest(c.post, [[url, dest_url]], _cb, _error_cb)
+            pool.addRequest(c.post, [[url, dest_url, headers]], _cb, _error_cb)
             self._ongoing_requests += 1
 
     def error_attack_url_payload(self, c, url, request, error):
