@@ -573,9 +573,11 @@ class Controller(XSSerReporter):
         torproxy = self.wTree.get_object('torproxy')
         proxy = self.wTree.get_object('proxy')
         if torproxy.get_property('active') == True:
-            proxy.set_property('text', 'http://127.0.0.1:8118')
+            torproxy.set_property('active', True)
+            proxy.set_text("http://127.0.0.1:8118")
         else:
-            proxy.set_property('text', "")
+            torproxy.set_property('active', False)
+            proxy.set_text("")
 
     def on_automatic_toggled(self, widget):
         """
@@ -1521,15 +1523,16 @@ class Controller(XSSerReporter):
             command.append(target_entry.get_text())
         # get PROXY
         proxy = self.wTree.get_object('proxy')
-        if proxy.get_text() == "":
+        torproxy = self.wTree.get_object('torproxy')
+        if proxy.get_text() == "" and torproxy.get_active() == False:
             pass
         else:
             command.append("--proxy")
-            command.append(proxy.get_text())
-            if proxy.get_text() == "http://127.0.0.1:8118":
-                torproxy = self.wTree.get_object('torproxy')
+            if torproxy.get_active() == True:
+                command.append("http://127.0.0.1:8118")
                 torproxy.set_property('active', True)
             else:
+                command.append(proxy.get_text())
                 torproxy.set_property('active', False)
         # get IGNORE-PROXY
         target_entry = self.wTree.get_object('ignore-proxy')
