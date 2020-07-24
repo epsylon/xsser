@@ -1125,7 +1125,7 @@ class xsser(EncoderDecoder, XSSerReporter):
             self.report("-"*45)
             self.report("\n[!] Hashing: \n")
             for key, value in self.hashed_injections.items():
-                if str(key) in dest_url:
+                if str(key) in str(dest_url):
                     if key not in current_hashes:
                         self.report(" [ " +key+" ] : [" , value + " ]")
                         self.final_hashes[key] = value
@@ -1145,50 +1145,60 @@ class xsser(EncoderDecoder, XSSerReporter):
                                 self.final_hashes[key] = value
                                 current_hashes.append(key)
                     else: # when using encoders (Str, Hex, Dec...)
-                        if "PAYLOAD" in payload["payload"]:
-                            payload_string = payload["payload"].replace("PAYLOAD", key)
-                        elif "VECTOR" in payload["payload"]:
-                            payload_string = payload["payload"].replace("VECTOR", key)
-                        elif "XSS" in payload["payload"]:
-                            payload_string = payload["payload"].replace("XSS", key)
-                        elif "X1S" in payload["payload"]:
-                            payload_string = payload["payload"].replace("X1S", key)
-                        if key not in current_hashes:
-                            self.report(" [ " +key+" ] : [" , value + " ]")
-                            self.final_hashes[key] = value
-                            current_hashes.append(key)
-                        hashed_payload = self.encoding_permutations(payload_string)
-                        if self.options.Cem:
-                            enc_perm = options.Cem.split(",")
-                            for e in enc_perm:
+                        if self.options.Str or self.options.Une or self.options.Mix or self.options.Dec or self.options.Hex or self.options.Hes or self.options.Cem:
+                            if "PAYLOAD" in payload["payload"]:
+                                payload_string = payload["payload"].replace("PAYLOAD", key)
+                            elif "VECTOR" in payload["payload"]:
+                                payload_string = payload["payload"].replace("VECTOR", key)
+                            elif "XSS" in payload["payload"]:
+                                payload_string = payload["payload"].replace("XSS", key)
+                            elif "X1S" in payload["payload"]:
+                                payload_string = payload["payload"].replace("X1S", key)
+                            if self.options.Cem:
+                                enc_perm = options.Cem.split(",")
+                                for e in enc_perm:
+                                    hashed_payload = self.encoding_permutations(payload_string)
+                                    if e == "Str":
+                                        hashed_payload = hashed_payload.replace(",", "%2C")
+                                        dest_url = dest_url.replace(",", "%2C")
+                                    if e == "Mix":
+                                        hashed_payload=urllib.parse.quote(hashed_payload)
+                                        dest_url = urllib.parse.quote(dest_url)
+                                    if e == "Dec":
+                                        hashed_payload = hashed_payload.replace("&#", "%26%23")
+                                        dest_url = dest_url.replace("&#", "%26%23")
+                                    if e == "Hex":
+                                        hashed_payload = hashed_payload.replace("%", "%25")
+                                        dest_url = dest_url.replace("%", "%25")
+                                    if e == "Hes":
+                                        hashed_payload = hashed_payload.replace("&#", "%26%23")
+                                        hashed_payload = hashed_payload.replace(";", "%3B")
+                                        dest_url = dest_url.replace("&#", "%26%23")
+                                        dest_url = dest_url.replace(";", "%3B")
+                            else:
                                 hashed_payload = self.encoding_permutations(payload_string)
-                                if e == "Str":
+                                if self.options.Str:
                                     hashed_payload = hashed_payload.replace(",", "%2C")
-                                if e == "Mix":
+                                    dest_url = dest_url.replace(",", "%2C")
+                                if self.options.Mix:
                                     hashed_payload=urllib.parse.quote(hashed_payload)
-                                if e == "Dec":
+                                    dest_url = urllib.parse.quote(dest_url)
+                                if self.options.Dec:
                                     hashed_payload = hashed_payload.replace("&#", "%26%23")
-                                if e == "Hex":
+                                    dest_url = dest_url.replace("&#", "%26%23")
+                                if self.options.Hex:
                                     hashed_payload = hashed_payload.replace("%", "%25")
-                                if e == "Hes":
+                                    dest_url = dest_url.replace("%", "%25")
+                                if self.options.Hes:
                                     hashed_payload = hashed_payload.replace("&#", "%26%23")
                                     hashed_payload = hashed_payload.replace(";", "%3B")
-                        else:
-                            if self.options.Str:
-                                hashed_payload = hashed_payload.replace(",", "%2C")
-                            if self.options.Mix:
-                                hashed_payload=urllib.parse.quote(hashed_payload)
-                            if self.options.Dec:
-                                hashed_payload = hashed_payload.replace("&#", "%26%23")
-                            if self.options.Hex:
-                                hashed_payload = hashed_payload.replace("%", "%25")
-                            if self.options.Hes:
-                                hashed_payload = hashed_payload.replace("&#", "%26%23")
-                                hashed_payload = hashed_payload.replace(";", "%3B")
-                        if str(hashed_payload) in str(dest_url):
-                            if key not in current_hashes:
-                                self.report(" [ " +key+" ] : [" , value + " ]")
-                                self.final_hashes[key] = value
+                                    dest_url = dest_url.replace("&#", "%26%23")
+                                    dest_url = dest_url.replace(";", "%3B")
+                            if str(hashed_payload) in str(dest_url):
+                                if key not in current_hashes:
+                                    self.report(" [ " +key+" ] : [" , value + " ]")
+                                    self.final_hashes[key] = value
+                                    current_hashes.append(key)
             if self.extra_hashed_injections:
                 for k, v in self.extra_hashed_injections.items():
                     payload_url = str(v[1])
@@ -1776,9 +1786,10 @@ class xsser(EncoderDecoder, XSSerReporter):
         current_hashes = [] # to check for ongoing hashes
         if payload['browser'] == "[Heuristic test]":
             for key, value in self.hashed_injections.items():
-                if key not in current_hashes:
-                    self.final_hashes[key] = value
-                    current_hashes.append(key)
+                if str(key) in dest_url:
+                    if key not in current_hashes:
+                        self.final_hashes[key] = value
+                        current_hashes.append(key)
         elif self.options.hash:
             for key, value in self.hashed_injections.items():
                 self.final_hashes[key] = value
@@ -1787,7 +1798,7 @@ class xsser(EncoderDecoder, XSSerReporter):
             self.report("-"*45)
             self.report("\n[!] Hashing: \n")
             for key, value in self.hashed_injections.items():
-                if str(key) in str(dest_url): # GET
+                if str(key) in str(dest_url):
                     if key not in current_hashes:
                         self.report(" [ " +key+" ] : [" , value + " ]")
                         self.final_hashes[key] = value
@@ -1807,40 +1818,60 @@ class xsser(EncoderDecoder, XSSerReporter):
                                 self.final_hashes[key] = value
                                 current_hashes.append(key)
                     else: # when using encoders (Str, Hex, Dec...)
-                        payload_string = payload["payload"].replace("PAYLOAD", key)
-                        hashed_payload = self.encoding_permutations(payload_string)
-                        if self.options.Cem:
-                            enc_perm = options.Cem.split(",")
-                            for e in enc_perm:
+                        if self.options.Str or self.options.Une or self.options.Mix or self.options.Dec or self.options.Hex or self.options.Hes or self.options.Cem:
+                            if "PAYLOAD" in payload["payload"]:
+                                payload_string = payload["payload"].replace("PAYLOAD", key)
+                            elif "VECTOR" in payload["payload"]:
+                                payload_string = payload["payload"].replace("VECTOR", key)
+                            elif "XSS" in payload["payload"]:
+                                payload_string = payload["payload"].replace("XSS", key)
+                            elif "X1S" in payload["payload"]:
+                                payload_string = payload["payload"].replace("X1S", key)
+                            if self.options.Cem:
+                                enc_perm = options.Cem.split(",")
+                                for e in enc_perm:
+                                    hashed_payload = self.encoding_permutations(payload_string)
+                                    if e == "Str":
+                                        hashed_payload = hashed_payload.replace(",", "%2C")
+                                        dest_url = dest_url.replace(",", "%2C")
+                                    if e == "Mix":
+                                        hashed_payload=urllib.parse.quote(hashed_payload)
+                                        dest_url = urllib.parse.quote(dest_url)
+                                    if e == "Dec":
+                                        hashed_payload = hashed_payload.replace("&#", "%26%23")
+                                        dest_url = dest_url.replace("&#", "%26%23")
+                                    if e == "Hex":
+                                        hashed_payload = hashed_payload.replace("%", "%25")
+                                        dest_url = dest_url.replace("%", "%25")
+                                    if e == "Hes":
+                                        hashed_payload = hashed_payload.replace("&#", "%26%23")
+                                        hashed_payload = hashed_payload.replace(";", "%3B")
+                                        dest_url = dest_url.replace("&#", "%26%23")
+                                        dest_url = dest_url.replace(";", "%3B")
+                            else:
                                 hashed_payload = self.encoding_permutations(payload_string)
-                                if e == "Str":
+                                if self.options.Str:
                                     hashed_payload = hashed_payload.replace(",", "%2C")
-                                if e == "Mix":
+                                    dest_url = dest_url.replace(",", "%2C")
+                                if self.options.Mix:
                                     hashed_payload=urllib.parse.quote(hashed_payload)
-                                if e == "Dec":
+                                    dest_url = urllib.parse.quote(dest_url)
+                                if self.options.Dec:
                                     hashed_payload = hashed_payload.replace("&#", "%26%23")
-                                if e == "Hex":
+                                    dest_url = dest_url.replace("&#", "%26%23")
+                                if self.options.Hex:
                                     hashed_payload = hashed_payload.replace("%", "%25")
-                                if e == "Hes":
+                                    dest_url = dest_url.replace("%", "%25")
+                                if self.options.Hes:
                                     hashed_payload = hashed_payload.replace("&#", "%26%23")
                                     hashed_payload = hashed_payload.replace(";", "%3B")
-                        else:
-                            if self.options.Str:
-                                hashed_payload = hashed_payload.replace(",", "%2C")
-                            if self.options.Mix:
-                                hashed_payload=urllib.parse.quote(hashed_payload)
-                            if self.options.Dec:
-                                hashed_payload = hashed_payload.replace("&#", "%26%23")
-                            if self.options.Hex:
-                                hashed_payload = hashed_payload.replace("%", "%25")
-                            if self.options.Hes:
-                                hashed_payload = hashed_payload.replace("&#", "%26%23")
-                                hashed_payload = hashed_payload.replace(";", "%3B")
-                        if str(hashed_payload) in str(dest_url): 
-                            if key not in current_hashes:
-                                self.report(" [ " +key+" ] : [" , value + " ]")
-                                self.final_hashes[key] = value
-                                current_hashes.append(key)
+                                    dest_url = dest_url.replace("&#", "%26%23")
+                                    dest_url = dest_url.replace(";", "%3B")
+                            if str(hashed_payload) in str(dest_url):
+                                if key not in current_hashes:
+                                    self.report(" [ " +key+" ] : [" , value + " ]")
+                                    self.final_hashes[key] = value
+                                    current_hashes.append(key)
             if self.extra_hashed_injections:
                 for k, v in self.extra_hashed_injections.items():
                     payload_url = str(v[1])
@@ -2090,7 +2121,7 @@ class xsser(EncoderDecoder, XSSerReporter):
         elif str(curl_handle.info()["http-code"]) == "504":
             self.report("\n[Error] 504 Gateway Timeout: The server did not receive a timely response specified by the URI (try: --ignore-proxy)\n")
         elif str(curl_handle.info()["http-code"]) == "0":
-            self.report("\n[Error] XSSer (or your TARGET) is not working properly...\n\n - Firewall\n - Proxy\n - Target offline\n - [?] ...\n")
+            self.report("\n[Error] XSSer (or your TARGET) is not working properly...\n\n - Wrong URL\n - Firewall\n - Proxy\n - Target offline\n - [?] ...\n")
         else:
             self.report("\n[Error] Not injected!. Server responses with http-code different to: 200 OK (" + str(curl_handle.info()["http-code"]) + ")\n")
         if str(curl_handle.info()["http-code"]) == "404":
@@ -2445,7 +2476,7 @@ class xsser(EncoderDecoder, XSSerReporter):
                 self.report("")
             else:
                 self.report("-"*25)
-                self.report("\n[Error] XSSer (or your TARGET) is not working properly...\n\n - Firewall\n - Proxy\n - Target offline\n - [?] ...\n")
+                self.report("\n[Error] XSSer (or your TARGET) is not working properly...\n\n - Wrong URL\n - Firewall\n - Proxy\n - Target offline\n - [?] ...\n")
             return self.crawled_urls
 
         if not options.imx or not options.flash or not options.xsser_gtk or not options.update:
@@ -3092,7 +3123,6 @@ class xsser(EncoderDecoder, XSSerReporter):
                 self.coo_injection = self.coo_injection + 1
                 self.options.cookie = cookie
                 extra_cookie = cookie
-                self.extra_hashed_injections[hashing] = "COO", payload['payload']
         return extra_agent, extra_referer, extra_cookie
 
     def attack(self, urls, payloads, query_string):
