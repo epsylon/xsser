@@ -3123,6 +3123,7 @@ class xsser(EncoderDecoder, XSSerReporter):
                 self.coo_injection = self.coo_injection + 1
                 self.options.cookie = cookie
                 extra_cookie = cookie
+                self.extra_hashed_injections[hashing] = "COO", payload['payload']
         return extra_agent, extra_referer, extra_cookie
 
     def attack(self, urls, payloads, query_string):
