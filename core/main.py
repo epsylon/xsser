@@ -1071,7 +1071,7 @@ class xsser(EncoderDecoder, XSSerReporter):
             if self.options.altm == 'POST':
                 dest_url = "" + query_string + user_attack_payload
                 dest_url = dest_url.strip().replace("/", "", 1)
-                data = c.post(url, dest_url)
+                data = c.post(url, dest_url, None)
             else:
                 dest_url = self.options.alt + query_string + user_attack_payload
                 c.get(dest_url)
@@ -1906,8 +1906,6 @@ class xsser(EncoderDecoder, XSSerReporter):
             if not self.options.hash and not self.options.script:
                 if not "XSS" in dest_url or not "X1S" in dest_url and self.options.xsa or self.options.xsr or self.options.coo:
                     pass
-                else:
-                    self.report("-"*45)
         if payload['browser'] == "[Heuristic test]" or payload['browser'] == "[hashed_precheck_system]" or payload['browser'] == "[manual_injection]":
             pass
         else:
