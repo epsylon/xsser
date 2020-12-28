@@ -450,7 +450,7 @@ class Curl:
         try:
             m['content-type'] = (self.handle.getinfo(pycurl.CONTENT_TYPE) or '').strip(';')
         except:
-            m['content-type'] = None
+            m['content-type'] = str("text/html; charset=UTF-8")
         m['cookielist'] = str(self.handle.getinfo(pycurl.INFO_COOKIELIST))
         #m['content-length-download'] = str(self.handle.getinfo(pycurl.CONTENT_LENGTH_DOWNLOAD))
         #m['content-length-upload'] = str(self.handle.getinfo(pycurl.CONTENT_LENGTH_UPLOAD))
