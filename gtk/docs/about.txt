@@ -4,7 +4,7 @@
                                                                     `.`                   ..              
             Welcome to XSSer ....                       `-:`              .-`               
                                                                         `/-     -      +`                                        
-                                                                          o     +      /                                  v1.8[3] -> "The Hiv€!"
+                                                                          o     +      /                                  v1.8[4] -> "The Hiv€!"
                                                                           ./   -Ny    /.                                         
                                                              `::-`       :--yMN:--.      `.....                      
                                          `mMMMMMmdhysoooosMyoo+oyhdmNMMMMMMMs       
@@ -16,7 +16,7 @@
                                                                   .::`     h`  o-  o.    :+.                       
                        GPLv3                                .--.        :o      y       :/.          
                                                                ``            h      .s         -:.        
-                                                                              :/       o.          ``                2010/2020 - by psy
+                                                                              :/       o.          ``                2010/2021 - by psy
                                                                             .o         o                   
                                                                              o          ./                  
                                                                             +`           :.                 

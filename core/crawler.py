@@ -4,7 +4,7 @@
 """
 This file is part of the XSSer project, https://xsser.03c8.net
 
-Copyright (c) 2010/2020 | psy <epsylon@riseup.net>
+Copyright (c) 2010/2021 | psy <epsylon@riseup.net>
 
 xsser is free software; you can redistribute it and/or modify it under
 the terms of the GNU General Public License as published by the Free
@@ -77,7 +77,7 @@ class Crawler(object):
         find parameters in given url.
         """
         parsed = urllib.parse.urlparse(url)
-        if "C=" in parsed.query and "O=" in  parsed.query:
+        if "C=" in parsed.query and "O=" in parsed.query:
             qs = ""
         else:
             qs = urllib.parse.parse_qs(parsed.query)
@@ -215,20 +215,23 @@ class Crawler(object):
             data_len = len(html_data)
         except:
             data_len = html_data
-        while pos < data_len:
-            if len(links)+start > self._max:
-                break
-            pos = html_data.find("href=", pos)
-            if not pos == -1:
-                sep = html_data[pos+5]
-                if sep == "h":
-                    pos -= 1
-                    sep=">"
-                href = html_data[pos+6:html_data.find(sep, pos+7)].split("#")[0]
-                pos = pos+1
-                links.add(href)
-            else:
-                break
+        try:
+            while pos < data_len:
+                if len(links)+start > self._max:
+                    break
+                pos = html_data.find("href=", pos)
+                if not pos == -1:
+                    sep = html_data[pos+5]
+                    if sep == "h":
+                        pos -= 1
+                        sep=">"
+                    href = html_data[pos+6:html_data.find(sep, pos+7)].split("#")[0]
+                    pos = pos+1
+                    links.add(href)
+                else:
+                    break
+        except:
+            pass
         return [{'href': s} for s in links]
 
     def _get_done_dummy(self, request, result):
@@ -278,7 +281,6 @@ class Crawler(object):
                 if pars:
                     links.append({"url":action_path + '?' + urllib.parse.urlencode(pars)})
                 else:
-                    self.report("form with no pars")
                     links.append({"url":action_path})
             links += self._emergency_parse(html_data, len(links))
         if self.verbose == 2:

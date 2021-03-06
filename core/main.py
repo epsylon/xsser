@@ -4,7 +4,7 @@
 """
 This file is part of the XSSer project, https://xsser.03c8.net
 
-Copyright (c) 2010/2020 | psy <epsylon@riseup.net>
+Copyright (c) 2010/2021 | psy <epsylon@riseup.net>
 
 xsser is free software; you can redistribute it and/or modify it under
 the terms of the GNU General Public License as published by the Free
@@ -1531,7 +1531,7 @@ class xsser(EncoderDecoder, XSSerReporter):
             else:
                 self.do_token_check(orig_url, hashing, payload, query_string, dest_url)
 
-    def create_headless_embed_browser(self):
+    def create_headless_embed_browser(self): # selenium + firefox + gecko(bin)
         agents = [] # user-agents
         self.cookie_set_flag = False # used for cookie
         f = open("core/fuzzing/user-agents.txt").readlines() # set path for user-agents
@@ -1541,10 +1541,14 @@ class xsser(EncoderDecoder, XSSerReporter):
             agent = random.choice(agents).strip() # set random user-agent
         except:
             agent = "Privoxy/1.0" # set static user-agent
-        try: # selenium + firefox + gecko(bin)
+        try:
             from selenium import webdriver
             from selenium.webdriver.firefox.options import Options as FirefoxOptions
             from selenium.common.exceptions import UnexpectedAlertPresentException as UnexpectedAlertPresentException # used for search alert dialogs at DOM
+        except:
+            print("\n[Error] Importing: selenium lib. \n\n To install it on Debian based systems:\n\n $ 'sudo apt-get install python3-selenium'\n")
+            sys.exit(2)
+        try:
             self.dom_browser_alert = UnexpectedAlertPresentException
             profile = webdriver.FirefoxProfile()
             profile.set_preference("general.useragent.override", str(agent)) # set Firefox (profile) - random user-agent
@@ -2231,13 +2235,14 @@ class xsser(EncoderDecoder, XSSerReporter):
             self.report("\n[Info] The following actions will be performed at the end:\n")
             self.report("  1- Output with detailed statistics\n")
             self.report("  2- Export results to files: \n\n     - a) XSSreport.raw \n     - b) XSSer_<target>_<datetime>.xml\n")
-            self.options.crawling = "99999" # set max num of urls to crawl
-            self.options.crawler_width = "5" # set max num of deeping levels
+            self.options.crawling = 99999 # set max num of urls to crawl
+            self.options.crawler_width = 5 # set max num of deeping levels
+            self.options.crawler_local = True # set crawlering range to local only
             self.options.statistics = True # detailed output
-            self.options.timeout = "60" # timeout
-            self.options.retries = "2" # retries  
-            self.options.delay = "5" # delay
-            self.options.threads = "10" # threads
+            self.options.timeout = 60 # timeout
+            self.options.retries = 2 # retries  
+            self.options.delay = 5 # delay
+            self.options.threads = 10 # threads
             self.options.followred = True # follow redirs
             self.options.nohead = False # HEAD check
             self.options.reversecheck = True # try to establish a reverse connection 
@@ -2432,8 +2437,12 @@ class xsser(EncoderDecoder, XSSerReporter):
                     self.options.crawler_width = 2 # default crawlering-width
             if self.options.crawler_local == None:
                 self.options.crawler_local = False # default crawlering to LOCAL
+            if self.options.crawling > 100:
+                warning_text = " -> (WARNING: It can take long time...)"
+            else:
+                warning_text = ""
             for url in set(urls):
-                self.report("\n[Info] Crawlering TARGET:", url, "\n\n   - Max. limit: "+ str(self.options.crawling)+ " \n   - Deep level: "+ str(options.crawler_width))
+                self.report("\n[Info] Crawlering TARGET:", url, "\n\n   - Max. limit: "+ str(self.options.crawling)+warning_text+ " \n   - Deep level: "+ str(options.crawler_width))
             crawler = Crawler(self, Curl, all_crawled,
                               self.pool)
             crawler.set_reporter(self)
@@ -2464,17 +2473,17 @@ class xsser(EncoderDecoder, XSSerReporter):
             # report parsed crawled urls
             self.report("\n" + "-"*25)
             self.report("\n[Info] Mosquitoes have found: [ " + str(len(self.crawled_urls)) + " ] possible attacking vector(s)")
-            if self.options.verbose:
+            if self.crawled_urls:
                 self.report("")
                 for u in self.crawled_urls:
                     if '/XSS' in u:
                         u = u.replace("/XSS", "")
-                    print(" - " + str(u))
-            if len(self.crawled_urls) > 0:
-                self.report("")
-            else:
-                self.report("-"*25)
+                    self.report("   - " + str(u))
+            if not len(self.crawled_urls) > 0:
+                self.report("\n" + "-"*25)
                 self.report("\n[Error] XSSer (or your TARGET) is not working properly...\n\n - Wrong URL\n - Firewall\n - Proxy\n - Target offline\n - [?] ...\n")
+            else:
+                self.report("")
             return self.crawled_urls
 
         if not options.imx or not options.flash or not options.xsser_gtk or not options.update:
@@ -2529,27 +2538,24 @@ class xsser(EncoderDecoder, XSSerReporter):
         agent = random.choice(agents).strip() # set random user-agent
         referer = '127.0.0.1'
         import subprocess, shlex
-        self.report('='*75)
-        self.report("\n[Info] Trying method: Cross Site Tracing (XST)\n")
+        if not self.options.xst:
+            self.report("-"*25 + "\n")
+        self.report("[Info] REQUEST: Cross Site Tracing (XST) Vulnerability...\n")
         if self.options.xst:
-            xst = subprocess.Popen(shlex.split('curl -q -s -i -m 30 -A ' + agent + ' -e ' + referer + ' -X TRACE ' + self.options.xst), stdout=subprocess.PIPE)
+            xst = subprocess.Popen(shlex.split('curl -q -s -i -m 30 -A ' + agent + ' -e ' + referer + ' -X TRACE -N ' + self.options.xst), stdout=subprocess.PIPE)
         if self.options.target:
-            xst = subprocess.Popen(shlex.split('curl -q -s -i -m 30 -A ' + agent + ' -e ' + referer + ' -X TRACE ' + self.options.target), stdout=subprocess.PIPE)
-        line1 = xst.stdout.readline()
+            xst = subprocess.Popen(shlex.split('curl -q -s -i -m 30 -A ' + agent + ' -e ' + referer + ' -X TRACE -N ' + self.options.target), stdout=subprocess.PIPE)
+        line1 = xst.stdout.read().decode('utf-8')
         if self.options.verbose:
-            print("-"*25 + "\n")
-            while True:
-                line = xst.stdout.readline()
-                if line != '':
-                    print(line.rstrip())
-                else:
-                    break
+            if line1 != '':
+               self.report("[Info] Reply:", line1.rstrip())
             self.report("")
-        self.report('-'*50+"\n")
-        if "200 OK" in line1.rstrip():
-            print("[Info] Target is vulnerable to XST! (Cross Site Tracing) ;-)\n")
+        if "405 Not Allowed" in line1.rstrip() or "405 Method Not Allowed" in line1.rstrip():
+            self.report("[Info] REPLY: Target is NOT vulnerable...\n")
+        elif "TRACE / HTTP" in line1.rstrip():
+            self.report("[Info] REPLY: Target is vulnerable to XST!\n")
         else:
-            print("[Info] Target is NOT vulnerable to XST (Cross Site Tracing) ;-(\n")
+            self.repot("[Info] REPLY: Target is NOT vulnerable...\n")
         if self.options.target:
             self.report('='*75)
  
@@ -2897,12 +2903,17 @@ class xsser(EncoderDecoder, XSSerReporter):
                 self.report('='*75)
                 self.report(str(p.version))
                 self.report('='*75)
-                self.report("[XST Attack!] checking for HTTP TRACE method ...")
-                self.report('='*75)
+                self.report("[XST Attack!] Checking for -HTTP TRACE- method ...")
+                self.report('='*75+"\n")
             self.check_trace()
- 
+
         if self.options.reversecheck or self.options.dom: # generate headless embed web browser
             self.driver = self.create_headless_embed_browser()
+            if self.driver == None:
+                print("\n[Error] Importing: firefoxdriver lib. \n\n To install it on Debian based systems:\n\n $ 'sudo apt-get install firefoxdriver'")
+                print("\n[Error] Options: '--reverse-check' and '--Dom' will be aborted...\n")
+                self.options.reversecheck = None # aborting '--reverse-check' connection 
+                self.options.dom = None # aborting '--Dom' injections
 
         if options.checktor:
             url = self.check_tor_url # TOR status checking site
@@ -2953,12 +2964,12 @@ class xsser(EncoderDecoder, XSSerReporter):
             reporter.report_state('scanning')
         
         # step 1: get urls
-        urls = self.try_running(self._get_attack_urls, "\n[Error] Internal error getting -targets-\n")
+        urls = self.try_running(self._get_attack_urls, "\n[Error] WARNING: Some internal errors getting -targets-\n")
         for reporter in self._reporters:
             reporter.report_state('arming')
         
         # step 2: get payloads
-        payloads = self.try_running(self.get_payloads, "\n[Error] Internal error getting -payloads-\n")
+        payloads = self.try_running(self.get_payloads, "\n[Error] WARNING: Some internal errors getting -payloads-\n")
         for reporter in self._reporters:
             reporter.report_state('cloaking')
         if options.Dwo:
@@ -2969,7 +2980,7 @@ class xsser(EncoderDecoder, XSSerReporter):
             reporter.report_state('locking targets')
 
         # step 3: get query string
-        query_string = self.try_running(self.get_query_string, "\n[Error] Internal problems getting query -string-\n")
+        query_string = self.try_running(self.get_query_string, "\n[Error] WARNING: Some internal problems getting query -string-\n")
         for reporter in self._reporters:
             reporter.report_state('sanitize')
         urls = self.sanitize_urls(urls)
@@ -2977,7 +2988,7 @@ class xsser(EncoderDecoder, XSSerReporter):
             reporter.report_state('attack')
 
         # step 4: perform attack
-        self.try_running(self.attack, "\n[Error] Internal problems running attack...\n", (urls, payloads, query_string))
+        self.try_running(self.attack, "\n[Error] WARNING: Some internal problems running attack...\n", (urls, payloads, query_string))
         for reporter in self._reporters:
             reporter.report_state('reporting')
         if len(self.final_attacks):
@@ -3141,7 +3152,7 @@ class xsser(EncoderDecoder, XSSerReporter):
         """
         Generate a real attack url using data from a successful test.
 
-	    This method also applies DOM stealth mechanisms.
+	This method also applies DOM stealth mechanisms.
         """
         user_attack_payload = payload['payload']
         if self.options.finalpayload:
@@ -3578,10 +3589,10 @@ class xsser(EncoderDecoder, XSSerReporter):
         if self.options.fileoutput:
             fout.close()
         if self.options.fileoutput and not self.options.filexml:
-           self.report("[Info] Generating report: [ XSSreport.raw ]\n")
+           self.report("\n[Info] Generating report: [ XSSreport.raw ]\n")
            self.report("-"*25+"\n")
         if self.options.fileoutput and self.options.filexml:
-           self.report("[Info] Generating report: [ XSSreport.raw ] | Exporting results to: [ " + str(self.options.filexml) + " ] \n")
+           self.report("\n[Info] Generating report: [ XSSreport.raw ] | Exporting results to: [ " + str(self.options.filexml) + " ] \n")
            self.report("-"*25+"\n")
         if len(self.hash_found) > 10 and not self.options.fileoutput: # write results fo file when large output (white magic!)
             if not self.options.filexml: 
@@ -3777,8 +3788,11 @@ class xsser(EncoderDecoder, XSSerReporter):
                     mana = mana + 100
                 if self.options.proxy:
                     mana = mana + 100
-                if self.options.threads > 9:
-                    mana = mana + 100
+                try:
+                    if self.options.threads > 9:
+                        mana = mana + 100
+                except:
+                    pass
                 if self.options.heuristic:
                     mana = mana + 100
                 if self.options.finalpayload or self.options.finalremote:
@@ -3859,7 +3873,7 @@ class xsser(EncoderDecoder, XSSerReporter):
             if len(self.hash_found) + len(self.hash_notfound) == 0 and not Exception:
                 self.report("\n[Error] XSSer cannot send any data... maybe -something- is blocking connection(s)!?\n")
             if len(self.hash_found) + len(self.hash_notfound) == 0 and self.options.crawling:
-                if self.options.xsser_gtk:
+                if self.options.xsser_gtk or self.options.target:
                     self.report('='*75)
                 self.report("\n[Error] Not any feedback from crawler... Aborting! :(\n")
                 self.report('='*75 + '\n')

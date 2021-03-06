@@ -4,7 +4,7 @@
 """
 This file is part of the XSSer project, https://xsser.03c8.net
 
-Copyright (c) 2010/2020 | psy <epsylon@riseup.net>
+Copyright (c) 2010/2021 | psy <epsylon@riseup.net>
 
 xsser is free software; you can redistribute it and/or modify it under
 the terms of the GNU General Public License as published by the Free
@@ -33,7 +33,7 @@ except:
     orbited_main = None
     traceback.print_exc()
 
-print("\nXSSer v1.8[3]: 'The HiV€'\n")
+print("\nXSSer v1.8[4]: 'The HiV€'\n")
 print("Daemon(s): ready!", "//" , "Interfaz: ready!\n")
 print("Connect to http://127.0.0.1:19084/static/ via Web or Telnet to manage your swarm\n")
 print("Listening...")
