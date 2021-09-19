@@ -384,7 +384,7 @@ class xsser(EncoderDecoder, XSSerReporter):
                 if options.hash:
                     payloads = checker_payload + payloads
                     if options.inducedcode:
-                        payloads = payaloads + payloads_httpsr
+                        payloads = payloads + payloads_httpsr
                         if options.heuristic:
                             payloads = heuristic_params + payloads
                             if options.dom:
@@ -436,7 +436,7 @@ class xsser(EncoderDecoder, XSSerReporter):
             elif options.hash:
                 payloads = checker_payload + payloads
                 if options.inducedcode:
-                    payloads = payloads + inducedcode
+                    payloads = payloads + options.inducedcode
                     if options.heuristic:
                         payloads = heuristic_params + payloads
                         if options.dom:
@@ -478,7 +478,7 @@ class xsser(EncoderDecoder, XSSerReporter):
             elif options.heuristic:
                 payloads = heuristic_params + payloads
                 if options.dom:
-                    paylaods = payloads + payloads_dom
+                    payloads = payloads + payloads_dom
             elif options.dom:
                 payloads = payloads + payloads_dom
         elif options.inducedcode:
