@@ -2555,7 +2555,7 @@ class xsser(EncoderDecoder, XSSerReporter):
         elif "TRACE / HTTP" in line1.rstrip():
             self.report("[Info] REPLY: Target is vulnerable to XST!\n")
         else:
-            self.repot("[Info] REPLY: Target is NOT vulnerable...\n")
+            self.report("[Info] REPLY: Target is NOT vulnerable...\n")
         if self.options.target:
             self.report('='*75)
  
