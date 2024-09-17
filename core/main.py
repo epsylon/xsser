@@ -517,7 +517,7 @@ class xsser(EncoderDecoder, XSSerReporter):
         """
         Mask ips in given text to DWORD
         """
-        ips = re.findall("\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", text)
+        ips = re.findall(r"\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", text)
         for ip in ips:
             text = text.replace(ip, str(self._ipDwordEncode(ip)))
         return text
@@ -526,7 +526,7 @@ class xsser(EncoderDecoder, XSSerReporter):
         """
        	Mask ips in given text to Octal
 	    """
-        ips = re.findall("\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", text)
+        ips = re.findall(r"\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", text)
         for ip in ips:
             text = text.replace(ip, str(self._ipOctalEncode(ip)))
         return text
@@ -2918,13 +2918,13 @@ class xsser(EncoderDecoder, XSSerReporter):
         if options.checktor:
             url = self.check_tor_url # TOR status checking site
             print('='*75)
-            print("")
-            print("        _                         ")
-            print("       /_/_      .'''.            ")
-            print("    =O(_)))) ...'     `.          ")
-            print("       \_\              `.    .'''")
-            print("                          `..'    ") 
-            print("")
+            print(r"")
+            print(r"        _                         ")
+            print(r"       /_/_      .'''.            ")
+            print(r"    =O(_)))) ...'     `.          ")
+            print(r"       \_\              `.    .'''")
+            print(r"                          `..'    ") 
+            print(r"")
             print('='*75)
             agents = [] # user-agents
             try:

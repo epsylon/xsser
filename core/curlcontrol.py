@@ -337,7 +337,7 @@ class Curl:
             if atypelower not in ( "basic", "digest", "ntlm", "gss" ):
                 print("\n[E] HTTP authentication type value must be: Basic, Digest, GSS or NTLM\n")
                 return
-            acredregexp = re.search("^(.*?)\:(.*?)$", self.acred)
+            acredregexp = re.search(r"^(.*?)\:(.*?)$", self.acred)
             if not acredregexp:
                 print("\n[E] HTTP authentication credentials value must be in format username:password\n")
                 return
