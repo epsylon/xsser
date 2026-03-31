@@ -1,0 +1,93 @@
+{
+  "name": "repo-repos-xsser",
+  "root": "repos/xsser",
+  "projectType": "library",
+  "targets": {
+    "status": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "git -C repos/xsser status --short || true"
+      },
+      "metadata": {
+        "supervisorRequired": true
+      }
+    },
+    "fetch": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "git -C repos/xsser fetch --all --prune || true"
+      },
+      "metadata": {
+        "supervisorRequired": true
+      }
+    },
+    "log": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "git -C repos/xsser log --oneline -10 || true"
+      },
+      "metadata": {
+        "supervisorRequired": true
+      }
+    },
+    "manifests": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "find repos/xsser \\( -name package.json -o -name pyproject.toml -o -name Cargo.toml -o -name go.mod -o -name setup.py \\) -not -path '*/node_modules/*' -not -path '*/testdata/*' -not -path '*/fixtures/*' -print | sort"
+      },
+      "metadata": {
+        "supervisorRequired": true
+      }
+    },
+    "python-test": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "sh -lc 'cd repos/xsser && pytest -q || python -m pytest -q || true'"
+      },
+      "metadata": {
+        "supervisorRequired": true
+      }
+    },
+    "python-lint": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "sh -lc 'cd repos/xsser && ruff check . || flake8 . || true'"
+      },
+      "metadata": {
+        "supervisorRequired": true
+      }
+    },
+    "python-build": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "sh -lc 'cd repos/xsser && python -m build || true'"
+      },
+      "metadata": {
+        "supervisorRequired": true
+      }
+    },
+    "security-python": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "sh -lc 'cd repos/xsser && pip-audit || true'"
+      },
+      "metadata": {
+        "supervisorRequired": true
+      }
+    },
+    "security": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "sh -lc 'printf \"security targets: security-python\\n\"'"
+      },
+      "metadata": {
+        "supervisorRequired": true
+      }
+    }
+  },
+  "tags": [
+    "scope:repos",
+    "type:subrepo",
+    "lang:python"
+  ]
+}
