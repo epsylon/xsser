@@ -260,8 +260,7 @@ class xsser(EncoderDecoder, XSSerReporter):
         for reporter in self._reporters:
             reporter.post(msg)
         if self._reporter:
-            from twisted.internet import reactor
-            reactor.callFromThread(self._reporter.post, msg)
+            self._reporter.post(msg)
 
     def set_options(self, options):
         """
@@ -3415,8 +3414,7 @@ class xsser(EncoderDecoder, XSSerReporter):
             for reporter in self._reporters:
                 reporter.add_checked(dest_url)
             if self._reporter:
-                from twisted.internet import reactor
-                reactor.callFromThread(self._reporter.post, 'SUCCESS ' + dest_url)
+                self._reporter.post('SUCCESS ' + dest_url)
 
     def apply_postprocessing(self, dest_url, description, method, hashing, query_string, payload, orig_url):
         real_attack_url = self.generate_real_attack_url(dest_url, description, method, hashing, query_string, payload, orig_url)

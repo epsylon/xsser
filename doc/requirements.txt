@@ -1,8 +1,10 @@
 beautifulsoup4>=4.12.3
 pycurl>=7.45.3
-pygeoip>=0.3.2
-PyGObject>=3.48.2
-cffi>=1.16.0
-selenium>=4.20.0
-ddgs>=9.0.0
 fpdf2>=2.8.1
+ddgs>=9.0.0
+selenium>=4.20.0
+PyGObject>=3.48.2
+pycairo>=1.20
+pygeoip>=0.3.2
+Pillow>=9.0
+cffi>=1.16.0

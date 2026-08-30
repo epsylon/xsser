@@ -36,14 +36,7 @@ from xml.dom import minidom
 
 gdk.threads_init()
 
-use_twisted = False
-
-if use_twisted:
-    from twisted.internet import gtk2reactor
-    gtk2reactor.install()
-    from twisted.internet import reactor
-else:
-    reactor = None
+reactor = None
 
 from core.main import xsser
 from core.globalmap import GlobalMap

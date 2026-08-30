@@ -20,35 +20,52 @@ XSSer v1.9: "Bl4ck Swarm!" (2010/2026) // [https://xsser.03c8.net]
 + INSTALL: MANUAL
 ===================
 
-XSSer runs on many platforms. It requires Python (3.x) and the following libraries:
+XSSer runs on many platforms. It requires Python (>=3.9).
 
-    - python3-pycurl - Python bindings to libcurl (Python 3)
-    - python3-bs4 - error-tolerant HTML parser for Python 3
-    - python3-geoip - Python3 bindings for the GeoIP IP-to-country resolver library
-    - python3-gi - Python 3 bindings for gobject-introspection libraries
-    - python3-selenium - Python3 bindings for Selenium
-    - firefoxdriver - Firefox WebDriver support
-    - ddgs - DuckDuckGo search library (used by the 'dorking' engine)
-    - fpdf2 - PDF generation library (used by the '--pdf' report exporter)
+Only two libraries are mandatory (the core HTTP engine and the HTML parser):
 
-On Debian-based systems (ex: Ubuntu), run:
+    - pycurl         - Python bindings to libcurl
+    - beautifulsoup4 - error-tolerant HTML parser
 
-    sudo apt-get install python3-pycurl python3-bs4 python3-geoip python3-gi python3-selenium firefoxdriver python3-fpdf2
+The rest are optional and only needed for a specific feature. If missing, XSSer
+tries to auto-install them on demand (pip) the first time the feature is used:
 
-On other systems such as: Kali, Ubuntu, ArchLinux, ParrotSec, Fedora, etc... also run:
+    - fpdf2          - '--pdf' report exporter                   [extra: pdf]
+    - ddgs           - 'dorking' engine ('-d' / '-l')            [extra: dork]
+    - selenium       - DOM / reverse-check browser ('--Dom')     [extra: dom]
+    - PyGObject + pycairo + pygeoip + Pillow - GTK GUI + GeoMap ('--gtk') [extra: gtk]
 
-    sudo pip3 install pycurl bs4 pygeoip PyGObject selenium ddgs fpdf2
+Install (from the source tree), core only or with the extras you want:
+
+    pip3 install .                 # mandatory libs only
+    pip3 install .[pdf]            # + PDF reporting
+    pip3 install .[full]           # everything (all optional features)
+
+On Debian-based systems (ex: Kali, Ubuntu, ParrotSec) the libs are also packaged:
+
+    # mandatory:
+    sudo apt-get install python3-pycurl python3-bs4
+    # optional (per feature you want to enable):
+    sudo apt-get install python3-fpdf2 python3-selenium python3-gi python3-gi-cairo python3-pil python3-geoip
+
+Some optional features also need system-level (non-pip) components:
+
+    - '--Dom' / '--reverse-check' : firefox + geckodriver (the Firefox WebDriver).
+    - '--gtk'                     : the GObject-Introspection typelibs, e.g.
+                                    'gir1.2-gtk-3.0' (GTK 3), on top of PyGObject.
 
 ####  Source libs:
 
        * Python: https://www.python.org/downloads/
-       * PyCurl: http://pycurl.sourceforge.net/
-       * PyBeautifulSoup4: https://pypi.org/project/beautifulsoup4/
-       * PyGeoIP: https://pypi.org/project/pygeoip/
-       * PyGObject: https://pypi.org/project/gobject/
-       * PySelenium: https://pypi.org/project/selenium/
-       * ddgs: https://pypi.org/project/ddgs/
+       * PyCurl: https://pypi.org/project/pycurl/
+       * BeautifulSoup4: https://pypi.org/project/beautifulsoup4/
        * fpdf2: https://pypi.org/project/fpdf2/
+       * ddgs: https://pypi.org/project/ddgs/
+       * Selenium: https://pypi.org/project/selenium/
+       * PyGObject: https://pypi.org/project/PyGObject/
+       * pycairo: https://pypi.org/project/pycairo/
+       * PyGeoIP: https://pypi.org/project/pygeoip/
+       * Pillow: https://pypi.org/project/Pillow/
 
 ================================================================
 
