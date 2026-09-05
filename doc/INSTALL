@@ -28,7 +28,9 @@ Only two libraries are mandatory (the core HTTP engine and the HTML parser):
     - beautifulsoup4 - error-tolerant HTML parser
 
 The rest are optional and only needed for a specific feature. If missing, XSSer
-tries to auto-install them on demand (pip) the first time the feature is used:
+can auto-install them on demand (pip) the first time the feature is used, except
+on 'externally-managed' (PEP 668) Python environments, where it prints the manual
+install command instead (set XSSER_AUTOINSTALL=1 to override):
 
     - fpdf2          - '--pdf' report exporter                   [extra: pdf]
     - ddgs           - 'dorking' engine ('-d' / '-l')            [extra: dork]
@@ -41,18 +43,34 @@ Install (from the source tree), core only or with the extras you want:
     pip3 install .[pdf]            # + PDF reporting
     pip3 install .[full]           # everything (all optional features)
 
-On Debian-based systems (ex: Kali, Ubuntu, ParrotSec) the libs are also packaged:
+On Debian-based systems (ex: Kali, Ubuntu, ParrotSec) the same libs are also
+packaged. The distro package name differs from the pip name; the mapping is:
+
+    pip name        Debian/Ubuntu/Kali package
+    ------------    --------------------------
+    beautifulsoup4  python3-bs4
+    pycurl          python3-pycurl
+    fpdf2           python3-fpdf2
+    selenium        python3-selenium
+    PyGObject       python3-gi
+    pycairo         python3-cairo   (+ python3-gi-cairo for GTK integration)
+    Pillow          python3-pil
+    pygeoip         python3-geoip
+    (ddgs has no distro package yet: install it with pip)
 
     # mandatory:
     sudo apt-get install python3-pycurl python3-bs4
     # optional (per feature you want to enable):
-    sudo apt-get install python3-fpdf2 python3-selenium python3-gi python3-gi-cairo python3-pil python3-geoip
+    sudo apt-get install python3-fpdf2 python3-selenium python3-gi python3-gi-cairo python3-cairo python3-pil python3-geoip
 
 Some optional features also need system-level (non-pip) components:
 
     - '--Dom' / '--reverse-check' : firefox + geckodriver (the Firefox WebDriver).
-    - '--gtk'                     : the GObject-Introspection typelibs, e.g.
-                                    'gir1.2-gtk-3.0' (GTK 3), on top of PyGObject.
+    - '--gtk'                     : GTK 3 plus its GObject-Introspection typelib
+                                    files (the .typelib for Gtk-3.0). That typelib
+                                    ships under different system package names per
+                                    distro, e.g. 'gir1.2-gtk-3.0' on Debian/Ubuntu/
+                                    Kali, and 'gtk3' on Fedora/Arch.
 
 ####  Source libs:
 

@@ -1,7 +1,7 @@
 xsser (1.9) unstable; urgency=low
 
   * New upstream release: XSSer v1.9 "Bl4ck Swarm!".
-  * 1487 XSS vectors; modern WAF bypassers (Cloudflare, Akamai, AWS, Azure,
+  * More than 1500 XSS vectors; modern WAF bypassers (Cloudflare, Akamai, AWS, Azure,
     Wordfence, FortiWeb, ...) and character-encoding bypassers.
   * Dorking engine rewritten with 7 providers; PDF and JSON reporting.
   * --reverse-check headless-browser confirmation (no false positives).

@@ -1,0 +1,66 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "xsser"
+version = "1.9"
+description = "Cross Site Scripter (XSSer): automatic framework to detect, exploit and report XSS vulnerabilities in web-based applications"
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "GPLv3" }
+authors = [{ name = "psy", email = "epsylon@riseup.net" }]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
+    "Operating System :: POSIX :: Linux",
+    "Environment :: Console",
+    "Intended Audience :: Information Technology",
+    "Topic :: Security",
+]
+dependencies = [
+    "beautifulsoup4>=4.12.3",
+    "pycurl>=7.45.3",
+]
+
+[project.optional-dependencies]
+pdf = ["fpdf2>=2.8.1"]
+dork = ["ddgs>=9.0.0"]
+dom = ["selenium>=4.20.0"]
+gtk = ["PyGObject>=3.48.2", "pycairo>=1.20", "pygeoip>=0.3.2", "Pillow>=9.0"]
+full = [
+    "fpdf2>=2.8.1",
+    "ddgs>=9.0.0",
+    "selenium>=4.20.0",
+    "PyGObject>=3.48.2",
+    "pycairo>=1.20",
+    "pygeoip>=0.3.2",
+    "Pillow>=9.0",
+]
+
+[project.urls]
+Homepage = "https://xsser.03c8.net"
+Source = "https://github.com/epsylon/xsser"
+
+[tool.setuptools]
+packages = ["core", "core.fuzzing", "core.post", "core.driver"]
+license-files = ["doc/COPYING"]
+
+[external]
+build-requires = [
+    "virtual:compiler/c",
+    "dep:generic/libcurl",
+]
+dependencies = [
+    "dep:generic/libcurl",
+]
+
+[external.optional-dependencies]
+dom = [
+    "dep:generic/geckodriver",
+    "dep:generic/firefox",
+]
+gtk = [
+    "dep:generic/gtk3",
+    "dep:generic/gobject-introspection",
+]

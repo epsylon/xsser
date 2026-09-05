@@ -11,5 +11,7 @@ pycurl>=7.45.3
 #   --gtk GUI + world map ......... PyGObject>=3.42, pycairo>=1.20, pygeoip>=0.3.2, Pillow>=9.0
 #                                   (+ system: gir1.2-gtk-3.0 and related GObject-Introspection typelibs)
 #
-# Note: xsser auto-installs the optional pip libs on demand via core/_ensure.py,
-# so they are declared as setuptools 'extras_require', not as hard requirements.
+# Note: on a normal Python, xsser can auto-install the optional pip libs on demand
+# (core/_ensure.py). On 'externally-managed' (PEP 668) environments it does NOT;
+# install them via your package manager / a venv, or set XSSER_AUTOINSTALL=1.
+# They are declared as setuptools 'extras_require', not as hard requirements.

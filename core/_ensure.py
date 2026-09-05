@@ -19,9 +19,18 @@ You should have received a copy of the GNU General Public License along
 with xsser; if not, write to the Free Software Foundation, Inc., 51
 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 """
-import sys, subprocess, importlib
+import sys, os, subprocess, importlib, sysconfig
 
 PIP_FLAGS = ["--no-warn-script-location", "--root-user-action=ignore", "--break-system-packages"]
+
+def externally_managed():
+    marker = os.path.join(sysconfig.get_path("stdlib"), "EXTERNALLY-MANAGED")
+    return os.path.exists(marker)
+
+def autoinstall_allowed():
+    if os.environ.get("XSSER_AUTOINSTALL") == "1":
+        return True
+    return not externally_managed()
 
 def pip_install(pip_name):
     print("[Info] [AUTO-INSTALL] Trying to install missing lib: '" + pip_name + "' ... -> [WAIT!]")
@@ -45,6 +54,11 @@ def ensure(module_name, pip_name=None):
     try:
         return importlib.import_module(module_name)
     except ImportError:
+        if not autoinstall_allowed():
+            print("[Error] Missing lib: '" + pkg + "'. This looks like a system-managed Python (PEP 668).")
+            print("        Install it with your package manager, or inside a venv, e.g.: python3 -m pip install " + pkg)
+            print("        (or set XSSER_AUTOINSTALL=1 to let xsser install it automatically)")
+            return None
         if not pip_install(pkg):
             print("[Error] You can install it manually with: python3 -m pip install " + pkg + " --break-system-packages")
             return None
